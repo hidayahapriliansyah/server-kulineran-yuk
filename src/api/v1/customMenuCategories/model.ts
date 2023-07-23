@@ -5,6 +5,7 @@ import { IRestaurant } from '../restaurants/model';
 export interface ICustomMenuCategory extends TimestampsDocument {
   restaurantId: IRestaurant['_id'];
   name: string;
+  isBungkusAble: boolean;
 }
 
 const customMenuCategorySchema = new Schema<ICustomMenuCategory>(
@@ -22,6 +23,10 @@ const customMenuCategorySchema = new Schema<ICustomMenuCategory>(
         50,
         'Nama kategori custom menu maksimal memiliki 50 karakter',
       ],
+    },
+    isBungkusAble: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

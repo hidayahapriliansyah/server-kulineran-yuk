@@ -36,6 +36,11 @@ const groupBotramOrderSchema = new Schema<IGroupBotramOrder>(
       type: Number,
       required: true,
     },
+    status: {
+      type: String,
+      enum: Object.values(GroupBotramOrderStatus),
+      default: GroupBotramOrderStatus.ORDERING,
+    },
     isPaid: {
       type: Boolean,
       default: false,

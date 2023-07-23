@@ -15,8 +15,10 @@ export interface IOrder extends TimestampsDocument {
   customerId: ICustomer['_id'];
   restaurantId: IRestaurant['_id'];
   isGroup: boolean;
+  customerNote: string;
   total: number;
   status: OrderStatus;
+  isAcceptedByCustomer: boolean;
   isPaid: boolean;
 }
 
@@ -44,9 +46,17 @@ const orderSchema = new Schema<IOrder>({
     enum: Object.values(OrderStatus),
     default: OrderStatus.READYTORDER,
   },
+  isAcceptedByCustomer: {
+    type: Boolean,
+    default: false,
+  },
   isPaid: {
     type: Boolean,
     default: false,
+  },
+  customerNote: {
+    type: String,
+    maxlength: [150, 'Catatan maksimal memiliki 150 karakter'],
   },
 }, { timestamps: true });
 

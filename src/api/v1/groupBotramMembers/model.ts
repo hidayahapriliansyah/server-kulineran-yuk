@@ -7,6 +7,8 @@ enum GroupBotramMemberStatus {
   NOTJOINYET = 'notjoinyet',
   ORDERING = 'ordering',
   ORDERREADY = 'orderready',
+  EXIT = 'exit',
+  EXPELLED = 'expelled',
 }
 
 export interface IGroupBotramMember extends TimestampsDocument {

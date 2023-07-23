@@ -11,6 +11,7 @@ export interface IRestaurant extends TimestampsDocument {
   username: string;
   email: string;
   password: string;
+  passMinimumProfileSetting: boolean;
   avatar: string;
   isVerified: boolean;
   customerPayment: CustomerPaymentType;
@@ -24,7 +25,7 @@ export interface IRestaurant extends TimestampsDocument {
   openingHour: Date;
   closingHour: Date;
   daysOff: string[];
-  fasities: string[];
+  fasilities: string[];
 }
 
 const restaurantSchema = new Schema<IRestaurant>(
@@ -37,6 +38,7 @@ const restaurantSchema = new Schema<IRestaurant>(
     },
     username: {
       type: String,
+      required: [true, 'Username harus diisi'],
       unique: true,
       minlength: [3, 'Username restoran minimal memiliki 3 karakter'],
       maxlengt: [30, 'Username restoran maximal memiliki 30 karakter'],
@@ -50,6 +52,10 @@ const restaurantSchema = new Schema<IRestaurant>(
     password: {
       type: String,
       minlength: [6, 'Password minimal memiliki 6 karakter'],
+    },
+    passMinimumProfileSetting: {
+      type: Boolean,
+      default: false,
     },
     avatar: {
       type: String,
@@ -95,8 +101,9 @@ const restaurantSchema = new Schema<IRestaurant>(
     daysOff: {
       type: [String],
     },
-    fasities: {
+    fasilities: {
       type: [String],
+      maxlength: 50,
     },
   },
   { timestamps: true }

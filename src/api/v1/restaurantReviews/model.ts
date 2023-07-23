@@ -3,9 +3,10 @@ import { TimestampsDocument } from '../../../global/types';
 import { ICustomer } from '../customers/model';
 import { IRestaurant } from '../restaurants/model';
 
-interface IRestaurantReview extends TimestampsDocument {
+export interface IRestaurantReview extends TimestampsDocument {
   customerId: ICustomer['_id'];
   restaurantId: IRestaurant['_id'];
+  hasCustomerBeenShoppingHere: boolean;
   reviewDescription: string;
   rating: 1 | 2 | 3 | 4 | 5;
 }
@@ -21,6 +22,10 @@ const restaurantReviewSchema = new Schema<IRestaurantReview>(
       type: Schema.Types.ObjectId,
       required: true,
       ref: 'Restaurant',
+    },
+    hasCustomerBeenShoppingHere: {
+      type: Boolean,
+      default: false,
     },
     reviewDescription: {
       type: String,

@@ -6,6 +6,8 @@ import { IEtalase } from '../etalases/model';
 export interface IMenu extends TimestampsDocument {
   restaurantId: IRestaurant['_id'];
   name: string;
+  isBungkusAble: boolean;
+  slug: string;
   descripttion: string;
   price: number;
   stock: number;
@@ -31,6 +33,15 @@ const menuSchema = new Schema<IMenu>(
       minlength: [1, 'Nama menu minimal memiliki 1 karakter'],
       maxlength: [80, 'Nama menu maksimal memiliki 80 karakter'],
     },
+    isBungkusAble: {
+      type: Boolean,
+      default: false,
+    },
+    slug: {
+      type: String,
+      unique: true,
+      required: [true, 'Slug is required']
+    },
     descripttion: {
       type: String,
       required: [true, 'Deskripsi menu harus diisi'],
@@ -47,7 +58,7 @@ const menuSchema = new Schema<IMenu>(
     },
     isActive: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     image1: {
       type: String,

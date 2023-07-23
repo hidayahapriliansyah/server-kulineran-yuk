@@ -5,6 +5,7 @@ import { IRestaurant } from '../restaurants/model';
 
 enum GroupBotramStatus {
   ORDERING = 'ordering',
+  ALLORDERREADY = 'allorderready',
   DONE = 'done',
 }
 
@@ -12,6 +13,7 @@ export interface IGroupBotram extends TimestampsDocument {
   creatorCustomerId: ICustomer['_id'];
   restaurantId: IRestaurant['_id'];
   name: string;
+  openMembership: boolean;
   status: GroupBotramStatus;
 }
 
@@ -27,6 +29,10 @@ const groupBotramSchema = new Schema<IGroupBotram>(
       required: [true, 'Nama group botram harus diiisi'],
       minlength: [3, 'Nama group botram minimal memiliki 3 karakter'],
       maxlength: [30, 'Nama group botram maximal memiliki 30 karakter'],
+    },
+    openMembership: {
+      type: Boolean,
+      default: true,
     },
     status: {
       type: String,
