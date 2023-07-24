@@ -9,6 +9,7 @@ export interface IRestaurantReview extends TimestampsDocument {
   hasCustomerBeenShoppingHere: boolean;
   reviewDescription: string;
   rating: 1 | 2 | 3 | 4 | 5;
+  isReplied: boolean;
 }
 
 const restaurantReviewSchema = new Schema<IRestaurantReview>(
@@ -29,11 +30,15 @@ const restaurantReviewSchema = new Schema<IRestaurantReview>(
     },
     reviewDescription: {
       type: String,
-      maxlength: [500, 'Ulasan maksimal memiliki 500 karakter'],
+      maxlength: [200, 'Ulasan maksimal memiliki 200 karakter'],
     },
     rating: {
       type: Number,
       required: true,
+    },
+    isReplied: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

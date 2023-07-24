@@ -24,6 +24,6 @@ const restaurantReviewResponseSchema = new Schema<IRestaurantReviewResponse>({
     type: String,
     required: [true, 'Balasan harus diisi'],
     minlength: [1, 'Balasana minimal memiliki 1 karakter'],
-    maxlength: [150, 'Balasana minimal memiliki 150 karakter'],
+    maxlength: [200, 'Balasana minimal memiliki 200 karakter'],
   },
 }, { timestamps: true });
