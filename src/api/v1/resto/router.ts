@@ -1,11 +1,8 @@
 import express, { Router, Request, Response } from 'express';
+import restoAuthRouter from './auth/route';
 
 const restoRouter = Router();
 
-restoRouter.use('/', () => {});
-
-restoRouter.get('/', (req: Request, res: Response) => {
-  res.send('Resto router');
-});
+restoRouter.use('/', restoAuthRouter);
 
 export default restoRouter;
