@@ -3,7 +3,7 @@ import { IRegency } from './Regency';
 import { DocumentWithIdObjectId } from '../global/types';
 
 export interface IDistrict extends DocumentWithIdObjectId {
-  regencieId: IRegency['id'];
+  regencyId: IRegency['id'];
   district: string;
 }
 
@@ -12,7 +12,7 @@ const districtSchmea = new Schema<IDistrict>({
     type: String,
     required: true,
   },
-  regencieId: {
+  regencyId: {
     type: String,
     required: true,
     ref: 'Regency',
