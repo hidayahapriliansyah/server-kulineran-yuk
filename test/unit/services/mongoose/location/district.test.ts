@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 import { Request } from 'express';
-import { getDistrict } from '../../../../src/services/mongoose/location/district';
-import config from '../../../../src/config';
-import { BadRequest, NotFound } from '../../../../src/errors';
+import { getDistrict } from '../../../../../src/services/mongoose/location/district';
+import config from '../../../../../src/config';
+import { BadRequest, NotFound } from '../../../../../src/errors';
 
 beforeEach(async () => {
   await mongoose.connect(config.urlDb);

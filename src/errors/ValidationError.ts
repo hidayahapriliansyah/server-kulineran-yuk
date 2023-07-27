@@ -3,9 +3,10 @@ import CustomAPIError from './CustomAPIError';
 
 class ValidationError extends CustomAPIError {
   errors: any;
+  statusCode = StatusCodes.BAD_REQUEST;
   constructor(message: string, errors: any) {
     super(message);
-    this.name = 'Validation Error API';
+    this.name = 'ValidationError';
     this.errors = errors;
   }
 }

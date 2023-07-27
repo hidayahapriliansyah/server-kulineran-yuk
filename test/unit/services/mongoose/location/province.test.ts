@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import { IProvinceDTO, getAllProvinces } from '../../../../src/services/mongoose/location/province';
-import config from '../../../../src/config';
+import { IProvinceDTO, getAllProvinces } from '../../../../../src/services/mongoose/location/province';
+import config from '../../../../../src/config';
 
 // if need connection to db => create connection first tho
 

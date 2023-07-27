@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 import { Request } from 'express';
-import { getRegency } from '../../../../src/services/mongoose/location/regency';
-import config from '../../../../src/config';
-import { BadRequest, NotFound } from '../../../../src/errors';
+import { getRegency } from '../../../../../src/services/mongoose/location/regency';
+import config from '../../../../../src/config';
+import { BadRequest, NotFound } from '../../../../../src/errors';
 
 beforeEach(async () => {
   await mongoose.connect(config.urlDb);

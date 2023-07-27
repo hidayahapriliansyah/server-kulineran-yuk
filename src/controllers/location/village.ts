@@ -1,10 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { SuccessAPIResponse } from '../../../../global/types';
-import { getVillage } from '../../../../services/mongoose/location/village';
-import Village from '../../../../models/Village';
+import { getVillage } from '../../services/mongoose/location/village';
+import { SuccessAPIResponse } from '../../global/types';
 
-const index = async (
+const getVillageController = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -21,4 +20,4 @@ const index = async (
   }
 };
 
-export { index };
+export { getVillageController };

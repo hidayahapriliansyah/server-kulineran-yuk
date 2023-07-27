@@ -5,17 +5,17 @@ import { StatusCodes } from 'http-status-codes';
 
 const SignupBodyForm = z.object({
   name: z.string().regex(/^[a-zA-Z0-9.,_-]+$/).min(3).max(50).nonempty(),
-  username: z.string().regex(/^[a-zA-Z0-9._]+$/).min(3).max(30).nonempty(),
-  email: z.string().email().nonempty(),
+  username: z.string().regex(/^[a-zA-Z0-9._']+$/).min(3).max(30).nonempty(),
+  email: z.string().email().max(254).nonempty(),
   password: z.string().min(6).nonempty(),
 });
 
 type SignupBodyForm = z.infer<typeof SignupBodyForm>;
 
-const signup = async (req: Request) => {
+const signupForm = async (req: Request) => {
   const body: SignupBodyForm = SignupBodyForm.parse(req.body); 
   const result = await Restaurant.create(body);
   return result;
 };
 
-export { signup };
+export { signupForm };

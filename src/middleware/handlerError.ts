@@ -6,6 +6,7 @@ import { Error as MongooseError } from 'mongoose';
 
 import { ZodError, custom } from 'zod';
 import ValidationError from '../errors/ValidationError';
+import { ValidationErrorAPIResponse } from '../global/types';
 
 const errorHandlerMiddleware = (
   err: Error | MongooseError | CustomAPIError | MongoError,
@@ -13,30 +14,37 @@ const errorHandlerMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  let customError: { statusCode: StatusCodes, message: string, errors?: {}[] } = {
-    statusCode: err instanceof CustomAPIError ? err.statusCode : StatusCodes.INTERNAL_SERVER_ERROR, 
-    message: err.message,
-  }
+  let customError: { statusCode: StatusCodes; message: string; errors?: { message: string; field: string; }[] } =
+    {
+      statusCode:
+        err instanceof CustomAPIError
+          ? err.statusCode
+          : StatusCodes.INTERNAL_SERVER_ERROR,
+      message: err.message,
+    };
 
   if (err instanceof ZodError) {
     const errors = err.issues.map((e) => ({
       message: e.message,
       field: e.path[0],
     }));
-    customError.statusCode = StatusCodes.BAD_REQUEST;
-    customError.message = 'Validation errors in your request.';
-    customError.errors = errors;
+
+    customError = new ValidationError(
+      'Validation errors in your request.',
+      errors
+    );
+
+    return res
+      .status(customError.statusCode)
+      .json(
+        new ValidationErrorAPIResponse(customError.message, customError.errors!)
+      );
   }
 
   // return res.status(customError.statusCode).json({
   //   message: customError.message,
   //   errors: customError?.errors,
   // });
-
-  return res.status(customError.statusCode).json(new ValidationError(
-    customError.message,
-    customError.errors,
-  ));
 
   // if (err instanceof MongoError ) {
   //   if (err.code && err.code === 11000) {
@@ -45,7 +53,7 @@ const errorHandlerMiddleware = (
   // }
 
   // if (err instanceof MongooseError.ValidationError) {
-    
+
   // }
 
   // if (err instanceof MongooseError.CastError) {}

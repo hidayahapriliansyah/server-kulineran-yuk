@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import config from './config';
 import mongoose from 'mongoose';
-import rootRouter from './route';
+import rootRouter from './routes';
 import routeNotFound from './middleware/routeNotFound';
 import errorHandlerMiddleware from './middleware/handlerError';
 

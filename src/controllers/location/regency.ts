@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { SuccessAPIResponse } from '../../../../global/types';
-import { getRegency } from '../../../../services/mongoose/location/regency';
+import { getRegency } from '../../services/mongoose/location/regency';
+import { SuccessAPIResponse } from '../../global/types';
 
-const index = async (
+const getRegencyController = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -20,4 +20,4 @@ const index = async (
   }
 };
 
-export { index };
+export { getRegencyController };

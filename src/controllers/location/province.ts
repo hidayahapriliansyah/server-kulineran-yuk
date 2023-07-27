@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
+import { getAllProvinces } from '../../services/mongoose/location/province';
 import { StatusCodes } from 'http-status-codes';
-import { getAllProvinces } from '../../../../services/mongoose/location/province';
-import { SuccessAPIResponse } from '../../../../global/types';
+import { SuccessAPIResponse } from '../../global/types';
 
-const index = async (
+const getProvinceController = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -21,4 +21,4 @@ const index = async (
   }
 };
 
-export { index };
+export { getProvinceController };

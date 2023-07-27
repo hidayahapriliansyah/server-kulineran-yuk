@@ -1,15 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
-import { SuccessAPIResponse } from '../../../../global/types';
+import { signupForm } from '../../services/mongoose/resto/auth';
 import { StatusCodes } from 'http-status-codes';
-import { signup } from '../../../../services/mongoose/resto/auth';
+import { SuccessAPIResponse } from '../../global/types';
 
-const signupForm = async (
+const signupFormController = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
-    const result = await signup(req);
+    const result = await signupForm(req);
     res
       .status(StatusCodes.CREATED)
       .json(new SuccessAPIResponse('Signup successfully', result));
@@ -18,4 +18,4 @@ const signupForm = async (
   }
 };
 
-export { signupForm };
+export { signupFormController };

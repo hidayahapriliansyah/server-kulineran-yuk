@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { SuccessAPIResponse } from '../../../../global/types';
-import { getDistrict } from '../../../../services/mongoose/location/district';
+import { getDistrict } from '../../services/mongoose/location/district';
+import { SuccessAPIResponse } from '../../global/types';
 
-const index = async (
+const getDistrictController = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -20,4 +20,4 @@ const index = async (
   }
 };
 
-export { index };
+export { getDistrictController };
