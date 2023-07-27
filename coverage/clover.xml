@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1690437054314" clover="3.2.0">
-  <project timestamp="1690437054315" name="All files">
-    <metrics statements="107" coveredstatements="99" conditionals="18" coveredconditionals="18" methods="20" coveredmethods="18" elements="145" coveredelements="135" complexity="0" loc="107" ncloc="107" packages="5" files="17" classes="17"/>
+<coverage generated="1690468265292" clover="3.2.0">
+  <project timestamp="1690468265293" name="All files">
+    <metrics statements="108" coveredstatements="102" conditionals="18" coveredconditionals="18" methods="20" coveredmethods="18" elements="146" coveredelements="138" complexity="0" loc="108" ncloc="108" packages="5" files="17" classes="17"/>
     <package name="src">
       <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
       <file name="config.ts" path="C:\Users\DELL LATTITUDE E5440\Desktop\projects\kulineran-yuk\server\src\config.ts">
         <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-        <line num="1" count="4" type="stmt"/>
-        <line num="2" count="4" type="stmt"/>
-        <line num="4" count="4" type="stmt"/>
+        <line num="1" count="5" type="stmt"/>
+        <line num="2" count="5" type="stmt"/>
+        <line num="4" count="5" type="stmt"/>
       </file>
     </package>
     <package name="src.errors">
@@ -162,17 +162,18 @@
       </file>
     </package>
     <package name="src.services.mongoose.resto">
-      <metrics statements="8" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+      <metrics statements="9" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
       <file name="auth.ts" path="C:\Users\DELL LATTITUDE E5440\Desktop\projects\kulineran-yuk\server\src\services\mongoose\resto\auth.ts">
-        <metrics statements="8" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <metrics statements="9" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
-        <line num="6" count="1" type="stmt"/>
-        <line num="15" count="1" type="stmt"/>
-        <line num="16" count="1" type="stmt"/>
-        <line num="17" count="0" type="stmt"/>
-        <line num="18" count="0" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="14" count="20" type="stmt"/>
+        <line num="15" count="20" type="stmt"/>
+        <line num="16" count="3" type="stmt"/>
+        <line num="20" count="3" type="stmt"/>
         <line num="21" count="1" type="stmt"/>
+        <line num="24" count="1" type="stmt"/>
       </file>
     </package>
   </project>
