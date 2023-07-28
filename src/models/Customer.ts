@@ -58,6 +58,7 @@ const customerSchema = new Schema<ICustomer>(
   { timestamps: true }
 );
 
-const Customer: Model<ICustomer> = models.Customer || model('Customer', customerSchema);
+const Customer: Model<ICustomer> =
+  models.Customer || model('Customer', customerSchema);
 
 export default Customer;

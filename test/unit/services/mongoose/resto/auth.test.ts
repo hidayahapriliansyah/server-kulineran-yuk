@@ -6,6 +6,8 @@ import { signupForm } from '../../../../../src/services/mongoose/resto/auth';
 import config from '../../../../../src/config';
 import Restaurant, { IRestaurant } from '../../../../../src/models/Restaurant';
 import { MongoServerError } from 'mongodb';
+import RestaurantVerification from '../../../../../src/models/RestaurantVerification';
+import moment from 'moment';
 
 describe('signupForm Resto', () => {
   describe('validation error input field scenario', () => {
@@ -333,18 +335,19 @@ describe('signupForm Resto', () => {
     });
   });
 
-  describe('signup success and duplicate email and username scenario', () => {
+  describe('signup + create verification success and duplicate email or username scenario', () => {
     beforeAll(async () => {
       await mongoose.connect(config.urlDb);
     });
 
     afterAll(async () => {
       await Restaurant.deleteMany({});
+      await RestaurantVerification.deleteMany({});
       await mongoose.connection.close();
     });
 
-    // should return restaurant object after signup
-    it('should return restaurant object after signup', async () => {
+    // should return restaurant and restaurant verification after signup
+    it('should return restaurant and restaurant verification after signup', async () => {
       const username = 'hello123';
       const name = 'Hello Hidayah';
       const email = 'hidayahapriliansyah@gmail.com';
@@ -358,12 +361,26 @@ describe('signupForm Resto', () => {
           password,
         },
       } as unknown as Request;
-      const result: IRestaurant = await signupForm(req);
+      const result = await signupForm(req);
       expect(result).toHaveProperty('_id');
-      expect(result.passMinimumProfileSetting).toBe(true);
-      expect(result.username).toBe(username);
-      expect(result.name).toBe(name);
-      expect(result.email).toBe(email);
+
+      const restaurant = await Restaurant.findById(result);
+      expect(restaurant!.passMinimumProfileSetting).toBe(true);
+      expect(restaurant!.username).toBe(username);
+      expect(restaurant!.name).toBe(name);
+      expect(restaurant!.email).toBe(email);
+
+      const restaurantVerification = await RestaurantVerification.findOne({
+        restaurantId: result,
+      });
+      expect(restaurantVerification!.email).toBe(restaurant!.email);
+
+      const comparingTime =
+        moment(restaurantVerification!.expiredAt).isSame(
+          moment(restaurant!.createdAt).add(10, 'minutes'),
+          'minutes'
+        );
+      expect(comparingTime).toBe(true);
     });
 
     // should give mongoerror if email is already exist
@@ -407,7 +424,6 @@ describe('signupForm Resto', () => {
         } as unknown as Request;
         await signupForm(req);
       } catch (error: unknown) {
-        console.log('error unique mongoseerror =>>', error);
         expect((error as MongoServerError).code).toBe(11000);
         expect((error as MongoServerError).keyValue).toHaveProperty('username');
       }
