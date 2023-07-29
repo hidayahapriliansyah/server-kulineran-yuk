@@ -369,6 +369,7 @@ describe('signupForm Resto', () => {
       expect(restaurant!.username).toBe(username);
       expect(restaurant!.name).toBe(name);
       expect(restaurant!.email).toBe(email);
+      expect(restaurant!.isVerified).toBe(false);
 
       const restaurantVerification = await RestaurantVerification.findOne({
         restaurantId: result,
