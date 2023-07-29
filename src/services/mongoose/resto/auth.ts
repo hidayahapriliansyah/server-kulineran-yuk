@@ -8,19 +8,19 @@ import db from '../../../db';
 
 const SignupBodyForm = z.object({
 	name: z.string().regex(/^[a-zA-Z0-9.,_\s-]+$/).min(3).max(50).nonempty(),
-	username: z.string().regex(/^[a-zA-Z0-9._']+$/).min(3).max(30).nonempty(),
+	username: z.string().regex(/^[a-z0-9._']+$/).min(3).max(30).nonempty(),
 	email: z.string().email().max(254).nonempty(),
 	password: z.string().min(6).nonempty(),
 });
 
 type SignupBodyForm = z.infer<typeof SignupBodyForm>;
-type SignupPayload = SignupBodyForm & { passMinimumProfileSetting: boolean };
+type SignupPayload = SignupBodyForm & Pick<IRestaurant, 'passMinimumProfileSetting'>
 
 const signupForm = async (req: Request): Promise<IRestaurant['_id'] | Error> => {
 	const body: SignupBodyForm = SignupBodyForm.parse(req.body);
 	const payload: SignupPayload = {
 		...body,
-		passMinimumProfileSetting: true,
+		passMinimumProfileSetting: true
 	};
 
 	const session = await db.startSession();

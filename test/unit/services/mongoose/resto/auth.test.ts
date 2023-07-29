@@ -48,7 +48,7 @@ describe('signupForm Resto', () => {
       it('should return validation error if username has invalid character', async () => {
         const req = {
           body: {
-            username: 'werrt-',
+            username: 'werrt--',
           },
         } as unknown as Request;
         try {
@@ -88,11 +88,11 @@ describe('signupForm Resto', () => {
         }
       });
       // should return validation error if username has more than 30 character
-      it('should return validation error if username has invalid character', async () => {
+      it('should return validation error if username has more than 30 character', async () => {
         const req = {
           body: {
             username:
-              'usrererhdjfh0000000000000000dddddQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ',
+              'usrererhdjfhdfdfdfdfdf999999999999999999999999999999999ffffffffffffffffffffffffffffffffffffffffffffffffffffff',
           },
         } as unknown as Request;
         try {

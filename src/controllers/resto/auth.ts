@@ -19,4 +19,11 @@ const signupFormController = async (
   }
 };
 
-export { signupFormController };
+const signupGoogleOauthController = async () => {
+  
+};
+
+export { 
+  signupFormController,
+  signupGoogleOauthController
+};
