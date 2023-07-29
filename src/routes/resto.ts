@@ -1,5 +1,5 @@
 import express, { Router, Request, Response } from 'express';
-import { signupFormController } from '../controllers/resto/auth';
+import { signinFormController, signupFormController } from '../controllers/resto/auth';
 import passport, { session } from 'passport';
 import passportConfigResto from '../services/passport/passportConfigResto';
 import { IRestaurant } from '../models/Restaurant';
@@ -24,8 +24,8 @@ restoRouter.get(
     console.log('request user dari oauth', req.user);
   }
 );
-restoRouter.post('/auth/signin', () => {});
-
+restoRouter.post('/auth/signin', signinFormController);
+restoRouter.get('/auth/signin/google', passport.authenticate('google', { scope: ['email', 'profile'] }));
 // profile
 // account
 // order today
