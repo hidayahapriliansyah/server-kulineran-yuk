@@ -2,12 +2,13 @@ import { Request } from 'express';
 import mongoose from 'mongoose';
 import { ZodError } from 'zod';
 
-import { signupForm } from '../../../../../src/services/mongoose/resto/auth';
+import { signinForm, signupForm } from '../../../../../src/services/mongoose/resto/auth';
 import config from '../../../../../src/config';
 import Restaurant, { IRestaurant } from '../../../../../src/models/Restaurant';
 import { MongoServerError } from 'mongodb';
 import RestaurantVerification from '../../../../../src/models/RestaurantVerification';
 import moment from 'moment';
+import { BadRequest, Unauthorized } from '../../../../../src/errors';
 
 describe('signupForm Resto', () => {
   describe('validation error input field scenario', () => {
@@ -371,6 +372,9 @@ describe('signupForm Resto', () => {
       expect(restaurant!.email).toBe(email);
       expect(restaurant!.isVerified).toBe(false);
 
+      const comparePassword = await restaurant!.comparePassword(password);
+      expect(comparePassword).toBeTruthy();
+
       const restaurantVerification = await RestaurantVerification.findOne({
         restaurantId: result,
       });
@@ -431,3 +435,92 @@ describe('signupForm Resto', () => {
     });
   });
 });
+
+describe('signinForm Resto', () => {
+  const username = 'hello123';
+  const name = 'Hello Hidayah';
+  const email = 'hidayahapriliansyah@gmail.com';
+  const password = '123456789';
+
+  beforeAll(async () => {
+    await mongoose.connect(config.urlDb);
+    await Restaurant.create({
+      username,
+      name,
+      email,
+      password,
+    });
+  });
+
+  afterAll(async () => {
+    await Restaurant.deleteMany({});
+    await mongoose.connection.close();
+  });
+
+  // error
+  // should give badrequest if email or password undefined
+  it('should give badrequest if email or password undefined', async () =>{
+    try {
+      const req = {
+        body: {}
+      } as unknown as Request;
+      await signinForm(req);
+    } catch (error: any) {
+      expect(error).toBeInstanceOf(BadRequest);
+    }
+  });
+  // shodl give unauthorized if email or username is wrong (email)
+  it('shodl give unauthorized if email or username is wrong (email)', async () => {
+    try {
+      const req = {
+        body: {
+          email: 'hidayahapriliansyah@gmail.co',
+          password: 'sdfskdfjkjdf',
+        }
+      } as unknown as Request;
+      await signinForm(req);
+    } catch (error: any) {
+      expect(error).toBeInstanceOf(Unauthorized);
+    }
+  });
+  // shodl give unauthorized if email or username is wrong (username)
+  it('shodl give unauthorized if email or username is wrong (username)', async () => {
+    try {
+      const req = {
+        body: {
+          email: 'hello123dfdf',
+          password: 'sdfskdfjkjdf',
+        }
+      } as unknown as Request;
+      await signinForm(req);
+    } catch (error: any) {
+      expect(error).toBeInstanceOf(Unauthorized);
+    }
+  });
+  // should give unauthorized if password wrong
+  it('should give unauthorized if password wrong', async () => {
+    try {
+      const req = {
+        body: {
+          email: email,
+          password: 'sdfskdfjkjdfsdsd',
+        }
+      } as unknown as Request;
+      await signinForm(req);
+    } catch (error: any) {
+      expect(error).toBeInstanceOf(Unauthorized);
+    }
+  });
+  // success
+  // should give success api response if email and password valid
+  it('should give success api response if email and password valid', async () => {
+    const req = {
+      body: {
+        email: email,
+        password: password,
+      }
+    } as unknown as Request;
+    const result = await signinForm(req);
+    expect(result).toBeTruthy();
+  });
+})

@@ -8,9 +8,8 @@ const restoRouter = Router();
 passportConfigResto(passport);
 
 // auth
-restoRouter.post('/signup', signupFormController);
-restoRouter.get('/signup/hello', (req, res) => { res.send('hello')});
-restoRouter.get('/signup/google', passport.authenticate('google', { scope: ['email', 'profile'] }));
+restoRouter.post('/auth/signup', signupFormController);
+restoRouter.get('/auth/signup/google', passport.authenticate('google', { scope: ['email', 'profile'] }));
 restoRouter.get(
   '/auth/google/callback',
   passport.authenticate('google', { session: false }),
@@ -25,6 +24,7 @@ restoRouter.get(
     console.log('request user dari oauth', req.user);
   }
 );
+restoRouter.post('/auth/signin', () => {});
 
 // profile
 // account

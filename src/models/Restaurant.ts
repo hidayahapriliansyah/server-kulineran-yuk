@@ -1,5 +1,6 @@
 import { Schema, Model, model, models } from 'mongoose';
 import { TimestampsDocument } from '../global/types';
+import bcrypt from 'bcryptjs';
 
 enum CustomerPaymentType {
   AFTERORDER = 'afterorder',
@@ -26,6 +27,7 @@ export interface IRestaurant extends TimestampsDocument {
   closingHour: Date;
   daysOff: string[];
   fasilities: string[];
+  comparePassword(inputtedPassword: string): Promise<boolean>;
 }
 
 const restaurantSchema = new Schema<IRestaurant>(
@@ -108,6 +110,20 @@ const restaurantSchema = new Schema<IRestaurant>(
   },
   { timestamps: true }
 );
+
+restaurantSchema.pre('save', async function(next) {
+  const Restaurant = this as IRestaurant;
+  if (Restaurant.isModified('password')) {
+    Restaurant.password = await bcrypt.hash(Restaurant.password, 12);
+  }
+  next();
+});
+
+restaurantSchema.methods.comparePassword = 
+  async function(inputtedPassword: string): Promise<boolean> {
+    const isMatch = await bcrypt.compare(inputtedPassword, this.password);
+    return isMatch;
+  };
 
 const Restaurant: Model<IRestaurant> = models.Restaurant || model('Restauran', restaurantSchema);
 

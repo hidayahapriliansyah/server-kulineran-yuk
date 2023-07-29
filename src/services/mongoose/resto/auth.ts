@@ -5,6 +5,7 @@ import RestaurantVerification from '../../../models/RestaurantVerification';
 import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
 import db from '../../../db';
+import { BadRequest, Unauthorized } from '../../../errors';
 
 const SignupBodyForm = z.object({
 	name: z.string().regex(/^[a-zA-Z0-9.,_\s-]+$/).min(3).max(50).nonempty(),
@@ -13,10 +14,10 @@ const SignupBodyForm = z.object({
 	password: z.string().min(6).nonempty(),
 });
 
-type SignupBodyForm = z.infer<typeof SignupBodyForm>;
-type SignupPayload = SignupBodyForm & Pick<IRestaurant, 'passMinimumProfileSetting'>
-
 const signupForm = async (req: Request): Promise<IRestaurant['_id'] | Error> => {
+	type SignupBodyForm = z.infer<typeof SignupBodyForm>;
+	type SignupPayload = SignupBodyForm & Pick<IRestaurant, 'passMinimumProfileSetting'>
+
 	const body: SignupBodyForm = SignupBodyForm.parse(req.body);
 	const payload: SignupPayload = {
 		...body,
@@ -53,4 +54,35 @@ const signupForm = async (req: Request): Promise<IRestaurant['_id'] | Error> => 
 	}
 };
 
-export { signupForm };
+const signinForm = async (req: Request): Promise<IRestaurant['_id'] | Error> => {
+	try {
+		type signinFormBody = {
+			email: string;
+			password: string;
+		}
+		const { email, password } = req.body as signinFormBody;
+
+		if (!email || !password) {
+			throw new BadRequest('Invalid Request. Please check your input data.');
+		}
+
+		const result = await Restaurant.findOne({ $or: [{ email }, { username: email }] });
+		if (!result) {
+			throw new Unauthorized('Credential Error. User is not exist.');
+		}
+
+		const isPasswordMatch = await result!.comparePassword(password);
+		if (!isPasswordMatch) {
+			throw new Unauthorized('Credential Error. User is not exist.');
+		}
+
+		return result._id;
+	} catch (error: any) {
+		throw error;
+	}
+};
+
+export { 
+	signupForm,
+	signinForm,
+};
