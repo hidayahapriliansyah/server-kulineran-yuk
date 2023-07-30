@@ -1,12 +1,13 @@
 import express, { Request, Response } from 'express';
-import config from './config';
-import mongoose from 'mongoose';
 import rootRouter from './routes';
 import routeNotFound from './middleware/routeNotFound';
 import errorHandlerMiddleware from './middleware/handlerError';
+import cookieParser from 'cookie-parser';
 
 const app = express();
+
 app.use(express.json());
+app.use(cookieParser());
 
 // router
 app.use('/api/v1', rootRouter);

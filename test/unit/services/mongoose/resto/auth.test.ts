@@ -349,9 +349,9 @@ describe('signupForm Resto', () => {
 
     // should return restaurant and restaurant verification after signup
     it('should return restaurant and restaurant verification after signup', async () => {
-      const username = 'hello123';
+      const username = 'hello12345';
       const name = 'Hello Hidayah';
-      const email = 'hidayahapriliansyah@gmail.com';
+      const email = 'hidayahapriliansyah2@gmail.com';
       const password = '123456789';
 
       const req = {

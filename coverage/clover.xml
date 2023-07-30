@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1690624302018" clover="3.2.0">
-  <project timestamp="1690624302018" name="All files">
-    <metrics statements="158" coveredstatements="155" conditionals="26" coveredconditionals="26" methods="24" coveredmethods="23" elements="208" coveredelements="204" complexity="0" loc="158" ncloc="158" packages="6" files="19" classes="19"/>
+<coverage generated="1690687878162" clover="3.2.0">
+  <project timestamp="1690687878163" name="All files">
+    <metrics statements="209" coveredstatements="189" conditionals="34" coveredconditionals="27" methods="40" coveredmethods="29" elements="283" coveredelements="245" complexity="0" loc="209" ncloc="209" packages="7" files="22" classes="22"/>
     <package name="src">
       <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
       <file name="config.ts" path="C:\Users\DELL LATTITUDE E5440\Desktop\projects\kulineran-yuk\server\src\config.ts">
         <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-        <line num="1" count="5" type="stmt"/>
-        <line num="2" count="5" type="stmt"/>
-        <line num="4" count="5" type="stmt"/>
+        <line num="1" count="7" type="stmt"/>
+        <line num="2" count="7" type="stmt"/>
+        <line num="4" count="7" type="stmt"/>
       </file>
     </package>
     <package name="src.db">
@@ -26,52 +26,52 @@
       <metrics statements="31" coveredstatements="28" conditionals="0" coveredconditionals="0" methods="5" coveredmethods="4"/>
       <file name="BadRequest.ts" path="C:\Users\DELL LATTITUDE E5440\Desktop\projects\kulineran-yuk\server\src\errors\BadRequest.ts">
         <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
-        <line num="1" count="4" type="stmt"/>
-        <line num="2" count="4" type="stmt"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
         <line num="5" count="10" type="stmt"/>
         <line num="7" count="10" type="stmt"/>
         <line num="9" count="10" type="stmt"/>
-        <line num="13" count="4" type="stmt"/>
+        <line num="13" count="6" type="stmt"/>
       </file>
       <file name="CustomAPIError.ts" path="C:\Users\DELL LATTITUDE E5440\Desktop\projects\kulineran-yuk\server\src\errors\CustomAPIError.ts">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
-        <line num="7" count="16" type="stmt"/>
-        <line num="11" count="4" type="stmt"/>
+        <line num="7" count="17" type="stmt"/>
+        <line num="11" count="6" type="stmt"/>
       </file>
       <file name="NotFound.ts" path="C:\Users\DELL LATTITUDE E5440\Desktop\projects\kulineran-yuk\server\src\errors\NotFound.ts">
         <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
-        <line num="1" count="4" type="stmt"/>
-        <line num="2" count="4" type="stmt"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
         <line num="5" count="3" type="stmt"/>
         <line num="7" count="3" type="stmt"/>
         <line num="9" count="3" type="stmt"/>
-        <line num="13" count="4" type="stmt"/>
+        <line num="13" count="6" type="stmt"/>
       </file>
       <file name="Unauthenticated.ts" path="C:\Users\DELL LATTITUDE E5440\Desktop\projects\kulineran-yuk\server\src\errors\Unauthenticated.ts">
         <metrics statements="6" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
-        <line num="1" count="4" type="stmt"/>
-        <line num="2" count="4" type="stmt"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
         <line num="5" count="0" type="stmt"/>
         <line num="7" count="0" type="stmt"/>
         <line num="9" count="0" type="stmt"/>
-        <line num="13" count="4" type="stmt"/>
+        <line num="13" count="6" type="stmt"/>
       </file>
       <file name="Unauthorized.ts" path="C:\Users\DELL LATTITUDE E5440\Desktop\projects\kulineran-yuk\server\src\errors\Unauthorized.ts">
         <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
-        <line num="1" count="4" type="stmt"/>
-        <line num="2" count="4" type="stmt"/>
-        <line num="5" count="3" type="stmt"/>
-        <line num="7" count="3" type="stmt"/>
-        <line num="9" count="3" type="stmt"/>
-        <line num="13" count="4" type="stmt"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="5" count="4" type="stmt"/>
+        <line num="7" count="4" type="stmt"/>
+        <line num="9" count="4" type="stmt"/>
+        <line num="13" count="6" type="stmt"/>
       </file>
       <file name="index.ts" path="C:\Users\DELL LATTITUDE E5440\Desktop\projects\kulineran-yuk\server\src\errors\index.ts">
         <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-        <line num="1" count="4" type="stmt"/>
-        <line num="2" count="4" type="stmt"/>
-        <line num="3" count="4" type="stmt"/>
-        <line num="4" count="4" type="stmt"/>
-        <line num="6" count="4" type="stmt"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="3" count="6" type="stmt"/>
+        <line num="4" count="6" type="stmt"/>
+        <line num="6" count="6" type="stmt"/>
       </file>
     </package>
     <package name="src.models">
@@ -99,22 +99,22 @@
       </file>
       <file name="Restaurant.ts" path="C:\Users\DELL LATTITUDE E5440\Desktop\projects\kulineran-yuk\server\src\models\Restaurant.ts">
         <metrics statements="16" coveredstatements="16" conditionals="5" coveredconditionals="5" methods="3" coveredmethods="3"/>
-        <line num="1" count="1" type="stmt"/>
-        <line num="3" count="1" type="stmt"/>
-        <line num="5" count="1" type="cond" truecount="2" falsecount="0"/>
-        <line num="6" count="1" type="stmt"/>
-        <line num="7" count="1" type="stmt"/>
-        <line num="33" count="1" type="stmt"/>
-        <line num="114" count="1" type="stmt"/>
-        <line num="115" count="4" type="stmt"/>
-        <line num="116" count="4" type="cond" truecount="1" falsecount="0"/>
-        <line num="117" count="4" type="stmt"/>
-        <line num="119" count="4" type="stmt"/>
-        <line num="122" count="1" type="stmt"/>
+        <line num="1" count="3" type="stmt"/>
+        <line num="3" count="3" type="stmt"/>
+        <line num="5" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="6" count="3" type="stmt"/>
+        <line num="7" count="3" type="stmt"/>
+        <line num="33" count="3" type="stmt"/>
+        <line num="114" count="3" type="stmt"/>
+        <line num="115" count="7" type="stmt"/>
+        <line num="116" count="7" type="cond" truecount="1" falsecount="0"/>
+        <line num="117" count="7" type="stmt"/>
+        <line num="119" count="7" type="stmt"/>
+        <line num="122" count="3" type="stmt"/>
         <line num="124" count="3" type="stmt"/>
         <line num="125" count="3" type="stmt"/>
-        <line num="128" count="1" type="cond" truecount="2" falsecount="0"/>
-        <line num="130" count="1" type="stmt"/>
+        <line num="128" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="130" count="3" type="stmt"/>
       </file>
       <file name="RestaurantVerification.ts" path="C:\Users\DELL LATTITUDE E5440\Desktop\projects\kulineran-yuk\server\src\models\RestaurantVerification.ts">
         <metrics statements="4" coveredstatements="4" conditionals="2" coveredconditionals="2" methods="0" coveredmethods="0"/>
@@ -189,9 +189,9 @@
       </file>
     </package>
     <package name="src.services.mongoose.resto">
-      <metrics statements="41" coveredstatements="41" conditionals="5" coveredconditionals="5" methods="4" coveredmethods="4"/>
+      <metrics statements="41" coveredstatements="38" conditionals="5" coveredconditionals="5" methods="4" coveredmethods="4"/>
       <file name="auth.ts" path="C:\Users\DELL LATTITUDE E5440\Desktop\projects\kulineran-yuk\server\src\services\mongoose\resto\auth.ts">
-        <metrics statements="41" coveredstatements="41" conditionals="5" coveredconditionals="5" methods="4" coveredmethods="4"/>
+        <metrics statements="41" coveredstatements="38" conditionals="5" coveredconditionals="5" methods="4" coveredmethods="4"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
         <line num="4" count="1" type="stmt"/>
@@ -207,17 +207,17 @@
         <line num="28" count="3" type="stmt"/>
         <line num="29" count="3" type="stmt"/>
         <line num="31" count="3" type="stmt"/>
-        <line num="33" count="1" type="stmt"/>
-        <line num="34" count="1" type="stmt"/>
-        <line num="35" count="1" type="stmt"/>
-        <line num="36" count="1" type="stmt"/>
-        <line num="38" count="1" type="stmt"/>
-        <line num="45" count="1" type="stmt"/>
-        <line num="46" count="1" type="stmt"/>
-        <line num="48" count="1" type="stmt"/>
-        <line num="50" count="2" type="stmt"/>
-        <line num="51" count="2" type="stmt"/>
-        <line num="53" count="2" type="stmt"/>
+        <line num="33" count="3" type="stmt"/>
+        <line num="34" count="3" type="stmt"/>
+        <line num="35" count="3" type="stmt"/>
+        <line num="36" count="3" type="stmt"/>
+        <line num="38" count="3" type="stmt"/>
+        <line num="45" count="3" type="stmt"/>
+        <line num="46" count="3" type="stmt"/>
+        <line num="48" count="3" type="stmt"/>
+        <line num="50" count="0" type="stmt"/>
+        <line num="51" count="0" type="stmt"/>
+        <line num="53" count="0" type="stmt"/>
         <line num="57" count="5" type="stmt"/>
         <line num="58" count="5" type="stmt"/>
         <line num="63" count="5" type="stmt"/>
@@ -233,6 +233,69 @@
         <line num="81" count="4" type="stmt"/>
         <line num="86" count="1" type="stmt"/>
         <line num="87" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.utils">
+      <metrics statements="51" coveredstatements="37" conditionals="8" coveredconditionals="1" methods="16" coveredmethods="6"/>
+      <file name="createJwtPayloadData.ts" path="C:\Users\DELL LATTITUDE E5440\Desktop\projects\kulineran-yuk\server\src\utils\createJwtPayloadData.ts">
+        <metrics statements="16" coveredstatements="12" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="2"/>
+        <line num="17" count="2" type="stmt"/>
+        <line num="20" count="1" type="stmt"/>
+        <line num="24" count="1" type="stmt"/>
+        <line num="27" count="2" type="stmt"/>
+        <line num="30" count="0" type="stmt"/>
+        <line num="34" count="0" type="stmt"/>
+        <line num="37" count="2" type="stmt"/>
+        <line num="40" count="1" type="stmt"/>
+        <line num="46" count="1" type="stmt"/>
+        <line num="49" count="2" type="stmt"/>
+        <line num="52" count="0" type="stmt"/>
+        <line num="58" count="0" type="stmt"/>
+        <line num="62" count="2" type="stmt"/>
+        <line num="63" count="2" type="stmt"/>
+        <line num="64" count="2" type="stmt"/>
+        <line num="65" count="2" type="stmt"/>
+      </file>
+      <file name="index.ts" path="C:\Users\DELL LATTITUDE E5440\Desktop\projects\kulineran-yuk\server\src\utils\index.ts">
+        <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="8" coveredmethods="3"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="16" count="2" type="stmt"/>
+        <line num="17" count="2" type="stmt"/>
+        <line num="18" count="3" type="stmt"/>
+        <line num="19" count="2" type="stmt"/>
+        <line num="20" count="2" type="stmt"/>
+        <line num="21" count="2" type="stmt"/>
+        <line num="22" count="3" type="stmt"/>
+        <line num="23" count="3" type="stmt"/>
+      </file>
+      <file name="jwt.ts" path="C:\Users\DELL LATTITUDE E5440\Desktop\projects\kulineran-yuk\server\src\utils\jwt.ts">
+        <metrics statements="25" coveredstatements="15" conditionals="8" coveredconditionals="1" methods="4" coveredmethods="1"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="14" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="18" count="0" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="26" count="2" type="stmt"/>
+        <line num="34" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="38" count="0" type="stmt"/>
+        <line num="43" count="0" type="stmt"/>
+        <line num="46" count="2" type="stmt"/>
+        <line num="54" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="58" count="1" type="stmt"/>
+        <line num="59" count="1" type="stmt"/>
+        <line num="61" count="1" type="stmt"/>
+        <line num="65" count="2" type="stmt"/>
+        <line num="73" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="77" count="0" type="stmt"/>
+        <line num="78" count="0" type="stmt"/>
+        <line num="80" count="0" type="stmt"/>
+        <line num="85" count="2" type="stmt"/>
+        <line num="86" count="2" type="stmt"/>
+        <line num="87" count="2" type="stmt"/>
+        <line num="88" count="2" type="stmt"/>
       </file>
     </package>
   </project>

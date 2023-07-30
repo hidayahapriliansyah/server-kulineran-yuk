@@ -3,6 +3,7 @@ import { signinForm, signupForm } from '../../services/mongoose/resto/auth';
 import { StatusCodes } from 'http-status-codes';
 import { SuccessAPIResponse } from '../../global/types';
 import { IRestaurant } from '../../models/Restaurant';
+import { createCookieRestoAccessToken } from '../../utils/createCookie';
 
 const signupFormController = async (
   req: Request,
@@ -38,7 +39,24 @@ const signinFormController = async (
   }
 };
 
+const signInUpOAuthController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = req.user as IRestaurant;
+    createCookieRestoAccessToken(res, user);
+    res.status(StatusCodes.OK).json(new SuccessAPIResponse('Signin Successfully', {
+      userId: user._id,
+    }));
+  } catch (error) {
+    next(error);
+  }
+}
+
 export { 
   signupFormController,
   signinFormController,
+  signInUpOAuthController,
 };

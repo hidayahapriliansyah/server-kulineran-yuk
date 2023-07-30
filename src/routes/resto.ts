@@ -1,8 +1,13 @@
-import express, { Router, Request, Response } from 'express';
-import { signinFormController, signupFormController } from '../controllers/resto/auth';
-import passport, { session } from 'passport';
+import { Router, Request, Response } from 'express';
+import { signInUpOAuthController, signinFormController, signupFormController } from '../controllers/resto/auth';
+import passport from 'passport';
 import passportConfigResto from '../services/passport/passportConfigResto';
 import { IRestaurant } from '../models/Restaurant';
+import { createJWTPayloadDataRestoAccessToken } from '../utils';
+import { createAccessToken } from '../utils/jwt';
+import config from '../config';
+import { StatusCodes } from 'http-status-codes';
+import { SuccessAPIResponse } from '../global/types';
 
 const restoRouter = Router();
 passportConfigResto(passport);
@@ -10,23 +15,15 @@ passportConfigResto(passport);
 // auth
 restoRouter.post('/auth/signup', signupFormController);
 restoRouter.get('/auth/signup/google', passport.authenticate('google', { scope: ['email', 'profile'] }));
-restoRouter.get(
-  '/auth/google/callback',
-  passport.authenticate('google', { session: false }),
-  (req: Request, res: Response) => {
-    // todo create jwt token
-    const user = req.user as IRestaurant;
-    if (user.passMinimumProfileSetting) {
-      console.log('redirect to complete profile setting');
-    } else {
-      console.log('redirect to dashboard/home page');
-    }
-    console.log('request user dari oauth', req.user);
-  }
-);
+restoRouter.get('/auth/google/callback', passport.authenticate('google', { session: false }), signInUpOAuthController);
 restoRouter.post('/auth/signin', signinFormController);
 restoRouter.get('/auth/signin/google', passport.authenticate('google', { scope: ['email', 'profile'] }));
+
 // profile
+restoRouter.get('/testcookie', (req, res) => {
+  console.log('sodjfsdfjsdfhjsdhfjsdhfjsdfjsdfhj')
+  res.send('TEset cookie');
+});
 // account
 // order today
 // order history
