@@ -54,7 +54,7 @@ const signupForm = async (req: Request): Promise<IRestaurant['_id'] | Error> => 
 	}
 };
 
-const signinForm = async (req: Request): Promise<IRestaurant['_id'] | Error> => {
+const signinForm = async (req: Request): Promise<IRestaurant | Error> => {
 	try {
 		type signinFormBody = {
 			email: string;
@@ -76,7 +76,7 @@ const signinForm = async (req: Request): Promise<IRestaurant['_id'] | Error> => 
 			throw new Unauthorized('Credential Error. User is not exist.');
 		}
 
-		return result._id;
+		return result;
 	} catch (error: any) {
 		throw error;
 	}

@@ -25,14 +25,15 @@ const signupFormController = async (
 const signinFormController = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
-    const result = await signinForm(req) as IRestaurant['_id'];
+    const result = await signinForm(req) as IRestaurant;
+    createCookieRestoAccessToken(res, result);
     res
       .status(StatusCodes.OK)
       .json(new SuccessAPIResponse('Signin successfully', {
-        userId: result,
+        userId: result._id as IRestaurant['_id'],
       }));
   } catch (error: any) {
     next(error);
