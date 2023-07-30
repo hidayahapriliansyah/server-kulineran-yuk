@@ -19,6 +19,7 @@ const isEmailRestoVerified = async (
     if (restaurant!.isVerified) {
       res.locals.isEmailVerified = false;
     }
+    next();
   } catch (error) {
     next(error);
   }
@@ -39,6 +40,7 @@ const isEmailCustomerVerified = async (
     if (customer!.isVerified) {
       res.locals.isEmailVerified = false;
     }
+    next();
   } catch (error) {
     next(error);
   }
