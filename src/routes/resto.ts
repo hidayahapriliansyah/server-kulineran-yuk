@@ -8,6 +8,10 @@ import { createAccessToken } from '../utils/jwt';
 import config from '../config';
 import { StatusCodes } from 'http-status-codes';
 import { SuccessAPIResponse } from '../global/types';
+import { minimumSetupAccount } from '../middleware/minimumSetupAccount';
+import { authenticationAdminRestoAccount } from '../middleware/auth';
+import { isEmailRestoVerified } from '../middleware/emailVerification';
+import { getProfileController } from '../controllers/resto/profile';
 
 const restoRouter = Router();
 passportConfigResto(passport);
@@ -15,15 +19,20 @@ passportConfigResto(passport);
 // auth
 restoRouter.post('/auth/signup', signupFormController);
 restoRouter.get('/auth/signup/google', passport.authenticate('google', { scope: ['email', 'profile'] }));
-restoRouter.get('/auth/google/callback', passport.authenticate('google', { session: false }), signInUpOAuthController);
+restoRouter.get('/auth/google/callback',
+  passport.authenticate('google', { session: false }),
+  signInUpOAuthController
+);
 restoRouter.post('/auth/signin', signinFormController);
 restoRouter.get('/auth/signin/google', passport.authenticate('google', { scope: ['email', 'profile'] }));
 
 // profile
-restoRouter.get('/testcookie', (req, res) => {
-  console.log('sodjfsdfjsdfhjsdhfjsdhfjsdfjsdfhj')
-  res.send('TEset cookie');
-});
+restoRouter.get('/profile',
+  authenticationAdminRestoAccount,
+  minimumSetupAccount,
+  isEmailRestoVerified, 
+  getProfileController,
+);
 // account
 // order today
 // order history

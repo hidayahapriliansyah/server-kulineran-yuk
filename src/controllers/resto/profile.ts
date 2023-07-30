@@ -20,3 +20,7 @@ const getProfileController = async (
     next(error);
   }
 };
+
+export {
+  getProfileController,
+};

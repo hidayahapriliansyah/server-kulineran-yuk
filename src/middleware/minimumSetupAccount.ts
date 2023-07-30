@@ -23,3 +23,7 @@ const minimumSetupAccount = async (
     next(error);
   }
 };
+
+export {
+  minimumSetupAccount,
+};
