@@ -4,7 +4,7 @@ import { Unauthorized } from '../errors';
 import { IPayloadDataAccessToken } from '../utils/createJwtPayloadData';
 import { isAccessTokenValid } from '../utils';
 
-const authenticationAdminRestoAccount = async (
+const authenticationAdminRestoAccount = (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -30,7 +30,7 @@ const authenticationAdminRestoAccount = async (
   }
 };
 
-const authenticationCustomerAccount = async (
+const authenticationCustomerAccount = (
   req: Request,
   res: Response,
   next: NextFunction,
