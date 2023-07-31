@@ -6,7 +6,7 @@ class Unauthenticated extends CustomAPIError {
   constructor(message: string) {
     super(message);
 
-    this.name = 'UnauthorizedError';
+    this.name = 'UnauthenticatedError';
   }
 }
 

@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import config from '../../../src/config';
 import Restaurant from '../../../src/models/Restaurant';
 import { createAccessToken, createJWTPayloadDataRestoAccessToken, isAccessTokenValid } from '../../../src/utils';
-import { Unauthorized } from '../../../src/errors';
+import { Unauthenticated } from '../../../src/errors';
 
 // createaccesstoken resto
 describe('createAccessToken', () => {
@@ -46,12 +46,12 @@ describe('createAccessToken', () => {
 // isaccesstokenvalid resto
 describe('isAccessTokenValid', () => {
   // error
-  // should throw unauthorized error if token is acak acakan
-  it('should throw unauthorized error if token is acak acakan', () => {
+  // should throw unauthentitUnauthenticated error if token is acak acakan
+  it('should throw unauthentitUnauthenticated error if token is acak acakan', () => {
     try {
       isAccessTokenValid({ token: 'fdfdfdfd', userType: 'resto' });
     } catch (error: any) {
-      expect(error).toBeInstanceOf(Unauthorized);
+      expect(error).toBeInstanceOf(Unauthenticated);
     }
   });
 });

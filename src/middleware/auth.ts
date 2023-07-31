@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import config from '../config';
-import { Unauthorized } from '../errors';
+import { Unauthenticated } from '../errors';
 import { IPayloadDataAccessToken } from '../utils/createJwtPayloadData';
 import { isAccessTokenValid } from '../utils';
 
@@ -12,11 +12,11 @@ const authenticationAdminRestoAccount = (
   try {
     const cookieName = config.restoAccessTokenCookieName;
     if (!req.cookies) {
-      throw new Unauthorized('Access denied. Please authenticate to access this resource.');
+      throw new Unauthenticated('Access denied. Please authenticate to access this resource.');
     }
     const token = req.cookies[cookieName];
     if (!token) {
-      throw new Unauthorized('Access denied. Please authenticate to access this resource.');
+      throw new Unauthenticated('Access denied. Please authenticate to access this resource.');
     }
     const payload = isAccessTokenValid({ token, userType: 'resto' }) as IPayloadDataAccessToken;
 
@@ -38,11 +38,11 @@ const authenticationCustomerAccount = (
   try {
     const cookieName = config.customerAccessTokenCookieName;
     if (!req.cookies) {
-      throw new Unauthorized('Access denied. Please authenticate to access this resource.');
+      throw new Unauthenticated('Access denied. Please authenticate to access this resource.');
     }
     const token = req.cookies[cookieName];
     if (!token) {
-      throw new Unauthorized('Access denied. Please authenticate to access this resource.');
+      throw new Unauthenticated('Access denied. Please authenticate to access this resource.');
     }
     const payload = isAccessTokenValid({ token, userType: 'customer' }) as IPayloadDataAccessToken;
     

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { IPayloadDataAccessToken } from '../utils/createJwtPayloadData';
 import Restaurant from '../models/Restaurant';
-import { Unauthenticated } from '../errors';
+import { Unauthenticated, Unauthorized } from '../errors';
 import Customer from '../models/Customer';
 
 const isEmailRestoVerified = async (
@@ -16,11 +16,16 @@ const isEmailRestoVerified = async (
     if (!restaurant) {
       throw new Unauthenticated('Access denied. Please authenticate to access this resource.');
     }
-    if (restaurant!.isVerified) {
-      res.locals.isEmailVerified = false;
+    
+    if (!restaurant!.isVerified) {
+      throw new Unauthorized('Access denied. Please verify your email.');
     }
+
     next();
-  } catch (error) {
+  } catch (error: any) {
+    if (error.name === 'CastError') {
+      error = new Unauthenticated('Access denied. Please authenticate to access this resource.');
+    }
     next(error);
   }
 };

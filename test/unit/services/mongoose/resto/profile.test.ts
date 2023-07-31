@@ -3,7 +3,7 @@ import config from '../../../../../src/config';
 import Restaurant, { IRestaurant } from '../../../../../src/models/Restaurant';
 import { getProfile, getRestaurantProfileDataType } from '../../../../../src/services/mongoose/resto/profile';
 import { Request } from 'express';
-import { Unauthorized } from '../../../../../src/errors';
+import { Unauthenticated } from '../../../../../src/errors';
 import RestaurantAddress, { IRestaurantAddress } from '../../../../../src/models/RestaurantAddress';
 
 // getProfile
@@ -115,8 +115,8 @@ describe('getProfile', () => {
     ]);
   });
   // error
-  // shoudl throw Unauthorized error if id ngaco
-  it('shoudl throw Unauthorized error if id ngaco', async () => {
+  // shoudl throw Unauthenticated error if id ngaco
+  it('shoudl throw Unauthenticated error if id ngaco', async () => {
     const _id = 'ngacoidna';
     const req = {
       user: { _id }
@@ -125,11 +125,11 @@ describe('getProfile', () => {
     try {
       await getProfile(req);
     } catch (error: any) {
-      expect(error).toBeInstanceOf(Unauthorized);
+      expect(error).toBeInstanceOf(Unauthenticated);
     }
   });
-  // shoudl throw Unauthorized error if id undefined
-  it('shoudl throw Unauthorized error if id undefined', async () => {
+  // shoudl throw Unauthenticated error if id undefined
+  it('shoudl throw Unauthenticated error if id undefined', async () => {
     const req = {
       user: {}
     } as unknown as Request;
@@ -137,7 +137,7 @@ describe('getProfile', () => {
     try {
       const result = await getProfile(req);
     } catch (error: any) {
-      expect(error).toBeInstanceOf(Unauthorized);
+      expect(error).toBeInstanceOf(Unauthenticated);
     }
   });
 });

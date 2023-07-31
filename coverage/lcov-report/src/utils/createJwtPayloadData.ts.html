@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">75% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>12/16</span>
+                <span class='fraction'>8/16</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/4</span>
+                <span class='fraction'>0/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">75% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>12/16</span>
+                <span class='fraction'>8/16</span>
             </div>
         
             
@@ -145,17 +145,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -165,19 +155,17 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -189,11 +177,23 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Schema } from 'mongoose';
 import { ICustomer } from '../models/Customer';
@@ -211,14 +211,14 @@ export type IPayloadDataIDToken = {
   avatar: string;
 };
 &nbsp;
-const createJWTPayloadDataRestoAccessToken = (
+const createJWTPayloadDataRestoAccessToken = <span class="fstat-no" title="function not covered" >(</span>
   data: IRestaurant
 ): IPayloadDataAccessToken =&gt; {
-  const payloadData: Pick&lt;IRestaurant, '_id' | 'email'&gt;  = {
+  const payloadData: Pick&lt;IRestaurant, '_id' | 'email'&gt;  = <span class="cstat-no" title="statement not covered" >{</span>
     _id: data._id,
     email: data.email,
   }
-  return payloadData;
+<span class="cstat-no" title="statement not covered" >  return payloadData;</span>
 };
 &nbsp;
 const createJWTPayloadDataCustomerAccessToken = <span class="fstat-no" title="function not covered" >(</span>
@@ -231,16 +231,16 @@ const createJWTPayloadDataCustomerAccessToken = <span class="fstat-no" title="fu
 <span class="cstat-no" title="statement not covered" >  return payloadData;</span>
 };
 &nbsp;
-const createJWTPayloadDataRestoIDToken = (
+const createJWTPayloadDataRestoIDToken = <span class="fstat-no" title="function not covered" >(</span>
   data: IRestaurant
 ): IPayloadDataIDToken =&gt; {
-  const payloadData: Pick&lt;IRestaurant, 'name' | 'username' | 'email' | 'avatar'&gt; = {
+  const payloadData: Pick&lt;IRestaurant, 'name' | 'username' | 'email' | 'avatar'&gt; = <span class="cstat-no" title="statement not covered" >{</span>
     name: data.name,
     username: data.username,
     email: data.email,
     avatar: data.avatar,
   }
-  return payloadData;
+<span class="cstat-no" title="statement not covered" >  return payloadData;</span>
 };
 &nbsp;
 const createJWTPayloadDataCustomerIDToken = <span class="fstat-no" title="function not covered" >(</span>
@@ -268,7 +268,7 @@ export {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2023-07-30T03:31:17.742Z
+                at 2023-07-31T04:41:09.862Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import Restaurant, { IRestaurant } from '../../../models/Restaurant';
-import { Unauthorized } from '../../../errors';
+import { Unauthenticated } from '../../../errors';
 import RestaurantAddress, { IRestaurantAddress } from '../../../models/RestaurantAddress';
 import Village, { IVillage } from '../../../models/Village';
 import District, { IDistrict } from '../../../models/District';
@@ -33,13 +33,13 @@ const getProfile = async (req: Request): Promise<getRestaurantProfileDataType | 
   const { _id: id } = req.user as { _id: string };
 
   if (!id) {
-    throw new Unauthorized('Credential Error. User is not exist');
+    throw new Unauthenticated('Credential Error. User is not exist');
   }
   
   try {
     const restaurant = await Restaurant.findById(id);
     if (!restaurant) {
-      throw new Unauthorized('Credential Error. User is not exist');
+      throw new Unauthenticated('Credential Error. User is not exist');
     }
 
     const restaurantAddress = await RestaurantAddress.findOne({ restaurantId: restaurant._id });
@@ -80,7 +80,7 @@ const getProfile = async (req: Request): Promise<getRestaurantProfileDataType | 
 
     return result;
   } catch (error: any) {
-    throw new Unauthorized('Credential Error. User is not exist');
+    throw new Unauthenticated('Credential Error. User is not exist');
   }
 };
 
