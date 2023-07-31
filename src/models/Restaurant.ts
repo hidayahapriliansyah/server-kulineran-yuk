@@ -23,8 +23,8 @@ export interface IRestaurant extends TimestampsDocument {
   image3: string;
   image4: string;
   image5: string;
-  openingHour: Date;
-  closingHour: Date;
+  openingHour: string;
+  closingHour: string;
   daysOff: string[];
   fasilities: string[];
   comparePassword(inputtedPassword: string): Promise<boolean>;
@@ -95,16 +95,18 @@ const restaurantSchema = new Schema<IRestaurant>(
       type: String,
     },
     openingHour: {
-      type: Date,
+      type: String,
     },
     closingHour: {
-      type: Date,
+      type: String,
     },
     daysOff: {
       type: [String],
+      default: [],
     },
     fasilities: {
       type: [String],
+      default: [],
       maxlength: 50,
     },
   },
@@ -125,6 +127,6 @@ restaurantSchema.methods.comparePassword =
     return isMatch;
   };
 
-const Restaurant: Model<IRestaurant> = models.Restaurant || model('Restauran', restaurantSchema);
+const Restaurant: Model<IRestaurant> = models.Restaurant || model('Restaurant', restaurantSchema);
 
 export default Restaurant;

@@ -1,8 +1,8 @@
 import request from 'supertest';
-import app from '../../../src/app';
-import config from '../../../src/config';
+import app from '../../../../src/app';
+import config from '../../../../src/config';
 import mongoose from 'mongoose';
-import Restaurant from '../../../src/models/Restaurant';
+import Restaurant from '../../../../src/models/Restaurant';
 
 describe('auth', () => { 
   beforeAll(async () => {

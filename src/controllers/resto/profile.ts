@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { SuccessAPIResponse } from '../../global/types';
 import { StatusCodes } from 'http-status-codes';
 import { getProfile } from '../../services/mongoose/resto/profile';
+import { IRestaurant } from '../../models/Restaurant';
 
 const getProfileController = async (
   req: Request,
@@ -14,7 +15,7 @@ const getProfileController = async (
     res
       .status(StatusCodes.CREATED)
       .json(new SuccessAPIResponse('Get restaurant profile data successfully', {
-        userId: result,
+        data: result,
       }));
   } catch (error: any) {
     next(error);

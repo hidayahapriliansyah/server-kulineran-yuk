@@ -8,7 +8,7 @@ import { IRegency } from './Regency';
 import { IProvince } from './Province';
 import { TimestampsDocument } from '../global/types';
 
-interface IRestaurantAddress extends TimestampsDocument {
+export interface IRestaurantAddress extends TimestampsDocument {
   createdAt: Date;
   updatedAt: Date;
   restaurantId: IRestaurant['_id'];
@@ -30,7 +30,6 @@ const restaurantAddressSchema = new Schema<IRestaurantAddress>(
     villageId: {
       type: String,
       required: true,
-      ref: 'Village',
     },
     villageName: {
       type: String,
