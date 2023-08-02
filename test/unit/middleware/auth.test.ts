@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { authenticationAdminRestoAccount } from '../../../src/middleware/auth';
 import config from '../../../src/config';
 import { Unauthenticated } from '../../../src/errors';
+import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
 
 const cookieName = config.restoAccessTokenCookieName;
 const createNextMock = (): NextFunction  => jest.fn() as NextFunction;
@@ -17,7 +18,7 @@ describe('authenticationAdminRestoAccount', () => {
     const res = {} as Response;
     const next = createNextMock();
     authenticationAdminRestoAccount(req, res, next);
-    expect(next).toHaveBeenCalledWith();
+    expect(next).toHaveBeenCalledWith(expect.any(TokenExpiredError));
   });
 
   // should throw unauthenticated error if token is invalid
@@ -30,11 +31,10 @@ describe('authenticationAdminRestoAccount', () => {
     const res = {} as Response;
     const next = createNextMock();
     authenticationAdminRestoAccount(req, res, next);
-    expect(next).toHaveBeenCalledWith(new Unauthenticated('Access denied. Please authenticate to access this resource.'));
+    expect(next).toHaveBeenCalledWith(expect.any(JsonWebTokenError));
   });
   // should throw unauthenticated error if no token cookie
-  
-  it('should throw unauthenticated error if token is invalid', () => {
+  it('should throw unauthenticated error if no token cookie', () => {
     const req = {
       cookies: {
         [cookieName]: '',

@@ -442,7 +442,7 @@ describe('signinForm Resto', () => {
   const email = 'hidayahapriliansyah@gmail.com';
   const password = '123456789';
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     await mongoose.connect(config.urlDb);
     await Restaurant.create({
       username,
@@ -452,7 +452,7 @@ describe('signinForm Resto', () => {
     });
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await Restaurant.deleteMany({});
     await mongoose.connection.close();
   });

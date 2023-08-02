@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">75% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>8/16</span>
+                <span class='fraction'>12/16</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>2/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">75% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>8/16</span>
+                <span class='fraction'>12/16</span>
             </div>
         
             
@@ -148,6 +148,16 @@
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -158,23 +168,13 @@
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
@@ -211,14 +211,14 @@ export type IPayloadDataIDToken = {
   avatar: string;
 };
 &nbsp;
-const createJWTPayloadDataRestoAccessToken = <span class="fstat-no" title="function not covered" >(</span>
+const createJWTPayloadDataRestoAccessToken = (
   data: IRestaurant
 ): IPayloadDataAccessToken =&gt; {
-  const payloadData: Pick&lt;IRestaurant, '_id' | 'email'&gt;  = <span class="cstat-no" title="statement not covered" >{</span>
+  const payloadData: Pick&lt;IRestaurant, '_id' | 'email'&gt;  = {
     _id: data._id,
     email: data.email,
   }
-<span class="cstat-no" title="statement not covered" >  return payloadData;</span>
+  return payloadData;
 };
 &nbsp;
 const createJWTPayloadDataCustomerAccessToken = <span class="fstat-no" title="function not covered" >(</span>
@@ -231,16 +231,16 @@ const createJWTPayloadDataCustomerAccessToken = <span class="fstat-no" title="fu
 <span class="cstat-no" title="statement not covered" >  return payloadData;</span>
 };
 &nbsp;
-const createJWTPayloadDataRestoIDToken = <span class="fstat-no" title="function not covered" >(</span>
+const createJWTPayloadDataRestoIDToken = (
   data: IRestaurant
 ): IPayloadDataIDToken =&gt; {
-  const payloadData: Pick&lt;IRestaurant, 'name' | 'username' | 'email' | 'avatar'&gt; = <span class="cstat-no" title="statement not covered" >{</span>
+  const payloadData: Pick&lt;IRestaurant, 'name' | 'username' | 'email' | 'avatar'&gt; = {
     name: data.name,
     username: data.username,
     email: data.email,
     avatar: data.avatar,
   }
-<span class="cstat-no" title="statement not covered" >  return payloadData;</span>
+  return payloadData;
 };
 &nbsp;
 const createJWTPayloadDataCustomerIDToken = <span class="fstat-no" title="function not covered" >(</span>
@@ -268,7 +268,7 @@ export {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2023-07-31T04:41:09.862Z
+                at 2023-08-02T03:03:29.420Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

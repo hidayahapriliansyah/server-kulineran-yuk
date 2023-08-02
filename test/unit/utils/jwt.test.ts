@@ -3,6 +3,7 @@ import config from '../../../src/config';
 import Restaurant from '../../../src/models/Restaurant';
 import { createAccessToken, createJWTPayloadDataRestoAccessToken, isAccessTokenValid } from '../../../src/utils';
 import { Unauthenticated } from '../../../src/errors';
+import { JsonWebTokenError } from 'jsonwebtoken';
 
 // createaccesstoken resto
 describe('createAccessToken', () => {
@@ -51,7 +52,7 @@ describe('isAccessTokenValid', () => {
     try {
       isAccessTokenValid({ token: 'fdfdfdfd', userType: 'resto' });
     } catch (error: any) {
-      expect(error).toBeInstanceOf(Unauthenticated);
+      expect(error).toBeInstanceOf(JsonWebTokenError);
     }
   });
 });

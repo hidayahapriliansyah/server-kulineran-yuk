@@ -3,7 +3,7 @@ dotenv.config();
 
 export default {
   // server and database
-  urlDb: process.env.MONGODB_URL as string,
+  urlDb: process.env.MONGODB_URL_LOCAL as string,
   port: process.env.PORT as string,
   // google oauth
   googleClientId: process.env.GOOGLE_CLIENT_ID as string,

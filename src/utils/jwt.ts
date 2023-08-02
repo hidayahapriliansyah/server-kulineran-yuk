@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import config from '../config';
 import { IPayloadDataAccessToken, IPayloadDataIDToken } from './createJwtPayloadData';
-import { Unauthorized } from '../errors';
+import { Unauthenticated } from '../errors';
 
 const createAccessToken = ({
   payload,
@@ -58,7 +58,7 @@ const isAccessTokenValid = ({
   try {
     return jwt.verify(token, jwtSecret);
   } catch (error: any) {
-    throw new Unauthorized('Access denied. Please authenticate to access this resource.');
+    throw error;
   }
 };
 
@@ -77,7 +77,7 @@ const isIDTokenValid = ({
   try {
     return jwt.verify(token, jwtSecret);
   } catch (error: any) {
-    throw new Unauthorized('Access denied. Please authenticate to access this resource.');
+    throw new Unauthenticated('Access denied. Please authenticate to access this resource.');
   }
 };
 

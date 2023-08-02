@@ -30,9 +30,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">68.83% </span>
+                <span class="strong">89.61% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>106/154</span>
+                <span class='fraction'>138/154</span>
             </div>
         
             
@@ -182,37 +182,35 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -231,7 +229,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -284,18 +284,18 @@ const getProfile = async (req: Request): Promise&lt;getRestaurantProfileDataType
     }
 &nbsp;
     const restaurantAddress = await RestaurantAddress.findOne({ restaurantId: restaurant._id });
-    const village = await Village.findOne({ id: <span class="branch-1 cbranch-no" title="branch not covered" ><span class="branch-1 cbranch-no" title="branch not covered" >restaurantAddress?.v</span>illageId </span>});
-    const district = await District.findOne({ id: <span class="branch-1 cbranch-no" title="branch not covered" ><span class="branch-1 cbranch-no" title="branch not covered" >village?.d</span>istrictId </span>});
-    const regency = await Regency.findOne({ id: <span class="branch-1 cbranch-no" title="branch not covered" ><span class="branch-1 cbranch-no" title="branch not covered" >district?.r</span>egencyId </span>});
-    const province = await Province.findOne({ id: <span class="branch-1 cbranch-no" title="branch not covered" ><span class="branch-1 cbranch-no" title="branch not covered" >regency?.p</span>rovinceId </span>});
+    const village = await Village.findOne({ id: restaurantAddress?.villageId });
+    const district = await District.findOne({ id: village?.districtId });
+    const regency = await Regency.findOne({ id: district?.regencyId });
+    const province = await Province.findOne({ id: regency?.provinceId });
 &nbsp;
     const restAddrSummary: getRestaurantProfileDataType['address'] = {
-      provinceId: <span class="branch-1 cbranch-no" title="branch not covered" ><span class="branch-1 cbranch-no" title="branch not covered" >province?.i</span>d<span class="branch-0 cbranch-no" title="branch not covered" > </span>?? n</span>ull,
-      regencyId: <span class="branch-1 cbranch-no" title="branch not covered" ><span class="branch-1 cbranch-no" title="branch not covered" >regency?.i</span>d<span class="branch-0 cbranch-no" title="branch not covered" > </span>?? n</span>ull,
-      districtId: <span class="branch-1 cbranch-no" title="branch not covered" ><span class="branch-1 cbranch-no" title="branch not covered" >district?.i</span>d<span class="branch-0 cbranch-no" title="branch not covered" > </span>?? n</span>ull,
-      villageId: <span class="branch-1 cbranch-no" title="branch not covered" ><span class="branch-1 cbranch-no" title="branch not covered" >village?.i</span>d<span class="branch-0 cbranch-no" title="branch not covered" > </span>?? n</span>ull,
-      detail: <span class="branch-1 cbranch-no" title="branch not covered" ><span class="branch-1 cbranch-no" title="branch not covered" >restaurantAddress?.d</span>etail<span class="branch-0 cbranch-no" title="branch not covered" > </span>?? n</span>ull,
-      locationLink: restaurant.locationLink<span class="branch-0 cbranch-no" title="branch not covered" > ?? n</span>ull,
+      provinceId: province?.id ?? null,
+      regencyId: regency?.id ?? null,
+      districtId: district?.id ?? null,
+      villageId: village?.id ?? null,
+      detail: restaurantAddress?.detail ?? null,
+      locationLink: restaurant.locationLink ?? null,
     };
 &nbsp;
     const result: getRestaurantProfileDataType = {
@@ -303,17 +303,17 @@ const getProfile = async (req: Request): Promise&lt;getRestaurantProfileDataType
       username: restaurant<span class="branch-0 cbranch-no" title="branch not covered" >?.u</span>sername,
       name: restaurant<span class="branch-0 cbranch-no" title="branch not covered" >?.n</span>ame,
       address: restAddrSummary,
-      contact: restaurant<span class="branch-0 cbranch-no" title="branch not covered" >?.c</span>ontact<span class="branch-0 cbranch-no" title="branch not covered" > ?? n</span>ull,
+      contact: restaurant<span class="branch-0 cbranch-no" title="branch not covered" >?.c</span>ontact ?? null,
       imageGallery: [
-        restaurant<span class="branch-0 cbranch-no" title="branch not covered" >?.i</span>mage1<span class="branch-0 cbranch-no" title="branch not covered" > ?? n</span>ull,
-        restaurant<span class="branch-0 cbranch-no" title="branch not covered" >?.i</span>mage2<span class="branch-0 cbranch-no" title="branch not covered" > ?? n</span>ull,
-        restaurant<span class="branch-0 cbranch-no" title="branch not covered" >?.i</span>mage3<span class="branch-0 cbranch-no" title="branch not covered" > ?? n</span>ull,
-        restaurant<span class="branch-0 cbranch-no" title="branch not covered" >?.i</span>mage4<span class="branch-0 cbranch-no" title="branch not covered" > ?? n</span>ull,
-        restaurant<span class="branch-0 cbranch-no" title="branch not covered" >?.i</span>mage5<span class="branch-0 cbranch-no" title="branch not covered" > ?? n</span>ull,
+        restaurant<span class="branch-0 cbranch-no" title="branch not covered" >?.i</span>mage1 ?? null,
+        restaurant<span class="branch-0 cbranch-no" title="branch not covered" >?.i</span>mage2 ?? null,
+        restaurant<span class="branch-0 cbranch-no" title="branch not covered" >?.i</span>mage3 ?? null,
+        restaurant<span class="branch-0 cbranch-no" title="branch not covered" >?.i</span>mage4 ?? null,
+        restaurant<span class="branch-0 cbranch-no" title="branch not covered" >?.i</span>mage5 ?? null,
       ],
       bussinessHours: {
-        openingHours: restaurant<span class="branch-0 cbranch-no" title="branch not covered" >?.o</span>peningHour<span class="branch-0 cbranch-no" title="branch not covered" > ?? n</span>ull,
-        closingHours: restaurant<span class="branch-0 cbranch-no" title="branch not covered" >?.c</span>losingHour<span class="branch-0 cbranch-no" title="branch not covered" > ?? n</span>ull,
+        openingHours: restaurant<span class="branch-0 cbranch-no" title="branch not covered" >?.o</span>peningHour ?? null,
+        closingHours: restaurant<span class="branch-0 cbranch-no" title="branch not covered" >?.c</span>losingHour ?? null,
         daysOff: restaurant<span class="branch-0 cbranch-no" title="branch not covered" >?.d</span>aysOff ?? <span class="branch-1 cbranch-no" title="branch not covered" >[],</span>
       },
       fasilities: restaurant<span class="branch-0 cbranch-no" title="branch not covered" >?.f</span>asilities ?? <span class="branch-1 cbranch-no" title="branch not covered" >[],</span>
@@ -334,7 +334,7 @@ export {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2023-07-31T04:41:09.862Z
+                at 2023-08-02T03:03:29.420Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>
