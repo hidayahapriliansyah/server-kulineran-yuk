@@ -5,11 +5,11 @@ import mongoose from 'mongoose';
 import Restaurant from '../../../../src/models/Restaurant';
 
 describe('auth', () => { 
-  beforeAll(async () => {
+  beforeEach(async () => {
     await mongoose.connect(config.urlDb);
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await Restaurant.deleteMany({});
     await mongoose.connection.close();
   });

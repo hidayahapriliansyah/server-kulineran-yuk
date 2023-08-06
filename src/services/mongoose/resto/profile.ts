@@ -6,8 +6,11 @@ import Village, { IVillage } from '../../../models/Village';
 import District, { IDistrict } from '../../../models/District';
 import Regency, { IRegency } from '../../../models/Regency';
 import Province, { IProvince } from '../../../models/Province';
+import { z } from 'zod';
+import db from '../../../db';
+import { ObjectId, Schema } from 'mongoose';
 
-export type getRestaurantProfileDataType = {
+export type RestaurantProfileDTO = {
   avatar: string;
   username: string;
   name: string;
@@ -29,7 +32,7 @@ export type getRestaurantProfileDataType = {
   fasilities: string[] | [];
 }
 
-const getProfile = async (req: Request): Promise<getRestaurantProfileDataType | Error> => {
+const getProfile = async (req: Request): Promise<RestaurantProfileDTO | Error> => {
   const { _id: id } = req.user as { _id: string };
 
   if (!id) {
@@ -48,7 +51,7 @@ const getProfile = async (req: Request): Promise<getRestaurantProfileDataType | 
     const regency = await Regency.findOne({ id: district?.regencyId });
     const province = await Province.findOne({ id: regency?.provinceId });
 
-    const restAddrSummary: getRestaurantProfileDataType['address'] = {
+    const restAddrSummary: RestaurantProfileDTO['address'] = {
       provinceId: province?.id ?? null,
       regencyId: regency?.id ?? null,
       districtId: district?.id ?? null,
@@ -57,7 +60,7 @@ const getProfile = async (req: Request): Promise<getRestaurantProfileDataType | 
       locationLink: restaurant.locationLink ?? null,
     };
 
-    const result: getRestaurantProfileDataType = {
+    const result: RestaurantProfileDTO = {
       avatar: restaurant?.avatar,
       username: restaurant?.username,
       name: restaurant?.name,
@@ -84,6 +87,74 @@ const getProfile = async (req: Request): Promise<getRestaurantProfileDataType | 
   }
 };
 
+const updateProfileBody = z.object({
+  avatar: z.string(),
+  username: z.string().regex(/^[a-z0-9._']+$/).min(3).max(30),
+	name: z.string().regex(/^[a-zA-Z0-9.,_\s-]+$/).min(3).max(50),
+  villageId: z.string(),
+  locationLink: z.string(),
+  detail: z.string().max(200),
+  contact: z.string().max(14),
+  imageGallery: z.array(z.string()),
+  openingHour: z.string().length(5),
+  closingHour: z.string().length(5),
+  daysOff: z.array(z.enum(['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'])),
+  fasilities: z.array(z.string().max(100)),
+});
+
+const updateProfile = async (req: Request): Promise<IRestaurant['_id'] | Error> => {
+  type UpdateProfileBody = z.infer<typeof updateProfileBody>;
+  type UpdateRestaurantPayload = Omit<UpdateProfileBody, 'villageId' | 'detail'>;
+  type UpdateRestaurantAddressPayload = Pick<UpdateProfileBody, 'villageId' | 'detail'>;
+
+  const { _id: restaurantId } = req.user as { _id: ObjectId };
+  const body: UpdateProfileBody = updateProfileBody.parse(req.body);
+  const session = await db.startSession();
+  try {
+    session.startTransaction();
+
+    const {
+      avatar,
+      name,
+      username,
+      closingHour,
+      openingHour,
+      daysOff,
+      imageGallery,
+      fasilities,
+      contact,
+      locationLink,
+      detail,
+      villageId
+    } = body;
+    await Restaurant.findOneAndUpdate({ _id: restaurantId }, {
+      avatar,
+      name,
+      username,
+      closingHour,
+      openingHour,
+      daysOff,
+      imageGallery,
+      fasilities,
+      contact,
+      locationLink,
+    } as UpdateRestaurantPayload);
+    await RestaurantAddress.findOneAndUpdate(
+      { restaurantId },
+      { detail, villageId } as UpdateRestaurantAddressPayload
+    );
+    await session.commitTransaction();
+    await session.endSession();
+
+    return restaurantId;
+  } catch (error: any) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw error;
+  }
+}
+
 export {
   getProfile,
+  updateProfile,
 };

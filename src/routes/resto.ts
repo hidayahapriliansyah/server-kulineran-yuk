@@ -11,7 +11,7 @@ import { SuccessAPIResponse } from '../global/types';
 import { minimumSetupAccount } from '../middleware/minimumSetupAccount';
 import { authenticationAdminRestoAccount } from '../middleware/auth';
 import { isEmailRestoVerified } from '../middleware/emailVerification';
-import { getProfileController } from '../controllers/resto/profile';
+import { getProfileController, updateProfileController } from '../controllers/resto/profile';
 
 const restoRouter = Router();
 passportConfigResto(passport);
@@ -32,6 +32,12 @@ restoRouter.get('/profile',
   minimumSetupAccount,
   isEmailRestoVerified, 
   getProfileController,
+);
+restoRouter.put('/profile',
+  authenticationAdminRestoAccount,
+  minimumSetupAccount,
+  isEmailRestoVerified, 
+  updateProfileController,
 );
 // account
 // order today

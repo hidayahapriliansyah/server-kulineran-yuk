@@ -45,6 +45,7 @@ const restaurantAddressSchema = new Schema<IRestaurantAddress>(
     },
     detail: {
       type: String,
+      maxlength: [200, 'Detail maksimal memiliki 200 karakter'],
     },
   },
   { timestamps: true }

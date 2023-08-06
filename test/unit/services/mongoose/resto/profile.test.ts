@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import config from '../../../../../src/config';
 import Restaurant, { IRestaurant } from '../../../../../src/models/Restaurant';
-import { getProfile, getRestaurantProfileDataType } from '../../../../../src/services/mongoose/resto/profile';
+import { getProfile, RestaurantProfileDTO } from '../../../../../src/services/mongoose/resto/profile';
 import { Request } from 'express';
 import { Unauthenticated } from '../../../../../src/errors';
 import RestaurantAddress, { IRestaurantAddress } from '../../../../../src/models/RestaurantAddress';
@@ -33,7 +33,7 @@ describe('getProfile', () => {
       user: { _id }
     } as unknown as Request;
 
-    const result = await getProfile(req) as getRestaurantProfileDataType;
+    const result = await getProfile(req) as RestaurantProfileDTO;
     expect(result.username).toBe(restaurantData.username);
     expect(result.name).toBe(restaurantData.name);
     expect(result.address).toBeDefined();
@@ -89,7 +89,7 @@ describe('getProfile', () => {
       user: { _id }
     } as unknown as Request;
 
-    const result = await getProfile(req) as getRestaurantProfileDataType;
+    const result = await getProfile(req) as RestaurantProfileDTO;
 
     expect(result.username).toBe(restaurantData.username);
     expect(result.name).toBe(restaurantData.name);
@@ -140,4 +140,8 @@ describe('getProfile', () => {
       expect(error).toBeInstanceOf(Unauthenticated);
     }
   });
+});
+
+describe('updateProfile', () => {
+
 });
