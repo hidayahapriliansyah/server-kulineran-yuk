@@ -20,4 +20,4 @@ describe('getAllProvinces', () => {
 
 afterEach(async () => {
   await mongoose.connection.close();
-})
+});

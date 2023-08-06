@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { getRegency } from '../../services/mongoose/location/regency';
-import { SuccessAPIResponse } from '../../global/types';
+import { getRegency } from '../../../../services/mongoose/location/regency';
+import { SuccessAPIResponse } from '../../../../global/types';
 
 const getRegencyController = async (
   req: Request,

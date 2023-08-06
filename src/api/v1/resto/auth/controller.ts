@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction, json } from 'express';
-import { signinForm, signupForm } from '../../services/mongoose/resto/auth';
 import { StatusCodes } from 'http-status-codes';
-import { SuccessAPIResponse } from '../../global/types';
-import { IRestaurant } from '../../models/Restaurant';
-import { createCookieRestoAccessToken } from '../../utils/createCookie';
+
+import { signinForm, signupForm } from '../../../../services/mongoose/resto/auth';
+import { SuccessAPIResponse } from '../../../../global/types';
+import { IRestaurant } from '../../../../models/Restaurant';
+import { createCookieRestoAccessToken } from '../../../../utils/createCookie';
 
 const signupFormController = async (
   req: Request,

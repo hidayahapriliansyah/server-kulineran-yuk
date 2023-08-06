@@ -1,9 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { SuccessAPIResponse } from '../../global/types';
+import { SuccessAPIResponse } from '../../../../global/types';
 import { StatusCodes } from 'http-status-codes';
-import { getProfile, updateProfile } from '../../services/mongoose/resto/profile';
-import { IRestaurant } from '../../models/Restaurant';
-import { string, z } from 'zod';
+import { getProfile, updateProfile } from '../../../../services/mongoose/resto/profile';
 
 const getProfileController = async (
   req: Request,
@@ -14,7 +12,7 @@ const getProfileController = async (
     const result = await getProfile(req);
 
     res
-      .status(StatusCodes.CREATED)
+      .status(StatusCodes.OK)
       .json(new SuccessAPIResponse('Get restaurant profile data successfully', {
         data: result,
       }));
@@ -32,7 +30,7 @@ const updateProfileController = async (
     const result = await updateProfile(req);
 
     res
-      .status(StatusCodes.CREATED)
+      .status(StatusCodes.OK)
       .json(new SuccessAPIResponse('Update restaurant profile data successfully', {
         data: result,
       }));

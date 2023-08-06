@@ -1,12 +1,11 @@
 import express, { Router, Request, Response } from 'express';
-import locationRouter from './location';
-import restoRouter from './resto';
+import locationRouter from '../api/v1/location/route';
+import restoRouter from '../api/v1/resto/route';
 
 const rootRouter = Router();
 
-// this route is divided by common/user categories on api spec
+rootRouter.use('/location', locationRouter);
 rootRouter.use('/resto', restoRouter);
 rootRouter.use('/', () => {});
-rootRouter.use('/location', locationRouter);
 
 export default rootRouter;
