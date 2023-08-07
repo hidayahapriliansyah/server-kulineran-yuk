@@ -9,6 +9,7 @@ import Province, { IProvince } from '../../../models/Province';
 import { z } from 'zod';
 import db from '../../../db';
 import { ObjectId, Schema } from 'mongoose';
+import convertImageGallery from '../../../utils/convertImageGallery';
 
 export type RestaurantProfileDTO = {
   avatar: string;
@@ -88,23 +89,29 @@ const getProfile = async (req: Request): Promise<RestaurantProfileDTO | Error> =
 };
 
 const updateProfileBody = z.object({
-  avatar: z.string(),
-  username: z.string().regex(/^[a-z0-9._']+$/).min(3).max(30),
-	name: z.string().regex(/^[a-zA-Z0-9.,_\s-]+$/).min(3).max(50),
-  villageId: z.string(),
-  locationLink: z.string(),
-  detail: z.string().max(200),
-  contact: z.string().max(14),
-  imageGallery: z.array(z.string()),
-  openingHour: z.string().length(5),
-  closingHour: z.string().length(5),
-  daysOff: z.array(z.enum(['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'])),
-  fasilities: z.array(z.string().max(100)),
+  avatar: z.string().optional(),
+  username: z.string().regex(/^[a-z0-9._']+$/).min(3).max(30).optional(),
+	name: z.string().regex(/^[a-zA-Z0-9.,_\s-]+$/).min(3).max(50).optional(),
+  villageId: z.string().optional(),
+  locationLink: z.string().optional(),
+  detail: z.string().max(200).optional(),
+  contact: z.string().max(14).optional(),
+  imageGallery: z.array(z.string()).optional(),
+  openingHour: z.string().length(5).optional(),
+  closingHour: z.string().length(5).optional(),
+  daysOff: z.array(z.enum(['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'])).optional(),
+  fasilities: z.array(z.string().max(100)).optional(),
 });
 
 const updateProfile = async (req: Request): Promise<IRestaurant['_id'] | Error> => {
   type UpdateProfileBody = z.infer<typeof updateProfileBody>;
-  type UpdateRestaurantPayload = Omit<UpdateProfileBody, 'villageId' | 'detail'>;
+  type UpdateRestaurantPayload = Omit<UpdateProfileBody, 'villageId' | 'detail' | 'imageGallery'> & {
+    image1: string;
+    image2: string;
+    image3: string;
+    image4: string;
+    image5: string;
+  };
   type UpdateRestaurantAddressPayload = Pick<UpdateProfileBody, 'villageId' | 'detail'>;
 
   const { _id: restaurantId } = req.user as { _id: ObjectId };
@@ -120,13 +127,16 @@ const updateProfile = async (req: Request): Promise<IRestaurant['_id'] | Error> 
       closingHour,
       openingHour,
       daysOff,
-      imageGallery,
       fasilities,
+      imageGallery,
       contact,
       locationLink,
       detail,
-      villageId
+      villageId,
     } = body;
+
+    const imageGalleryObject = convertImageGallery(imageGallery!);
+
     await Restaurant.findOneAndUpdate({ _id: restaurantId }, {
       avatar,
       name,
@@ -134,15 +144,34 @@ const updateProfile = async (req: Request): Promise<IRestaurant['_id'] | Error> 
       closingHour,
       openingHour,
       daysOff,
-      imageGallery,
       fasilities,
       contact,
       locationLink,
+      ...imageGalleryObject,
     } as UpdateRestaurantPayload);
-    await RestaurantAddress.findOneAndUpdate(
-      { restaurantId },
-      { detail, villageId } as UpdateRestaurantAddressPayload
-    );
+
+    const restaurantAddressExist = await RestaurantAddress.findOne({ restaurantId });
+    const village = await Village.findOne({ id: villageId });
+    const district = await District.findOne({ id: village?.districtId });
+    const regency = await Regency.findOne({ id: district?.regencyId });
+    const province = await Province.findOne({ id: regency?.provinceId });
+
+    if (restaurantAddressExist) {
+      await RestaurantAddress.findOneAndUpdate(
+        { restaurantId },
+        { detail, villageId } as UpdateRestaurantAddressPayload
+      );
+    } else {
+      await RestaurantAddress.create({
+        restaurantId,
+        villageId,
+        detail,
+        villageName: village?.village,
+        districtName: district?.district,
+        regencyName: regency?.regency,
+        provinceName: province?.province,
+      });
+    }
     await session.commitTransaction();
     await session.endSession();
 

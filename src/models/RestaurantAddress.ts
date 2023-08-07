@@ -43,6 +43,10 @@ const restaurantAddressSchema = new Schema<IRestaurantAddress>(
       type: String,
       required: true,
     },
+    provinceName: {
+      type: String,
+      required: true,
+    },
     detail: {
       type: String,
       maxlength: [200, 'Detail maksimal memiliki 200 karakter'],
