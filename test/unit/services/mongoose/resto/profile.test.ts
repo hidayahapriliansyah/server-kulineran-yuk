@@ -1,11 +1,11 @@
 import mongoose, { ObjectId, mongo } from 'mongoose';
 import config from '../../../../../src/config';
 import Restaurant, { IRestaurant } from '../../../../../src/models/Restaurant';
-import { getProfile, RestaurantProfileDTO, updateProfile, setupProfile } from '../../../../../src/services/mongoose/resto/profile';
+import { getProfile, RestaurantProfileDTO, updateProfile, setupProfile, updateCustomerPaymentType } from '../../../../../src/services/mongoose/resto/profile';
 import { Request } from 'express';
 import { Unauthenticated } from '../../../../../src/errors';
 import RestaurantAddress from '../../../../../src/models/RestaurantAddress';
-import { ZodError } from 'zod';
+import { UnknownKeysParam, ZodError } from 'zod';
 
 // getProfile
 describe('getProfile', () => {
@@ -812,7 +812,6 @@ describe('testing setupProfile', () => {
 
       const result = await setupProfile(req);
       const updatedRestaurant = await Restaurant.findById(result);
-      console.log('updatedRestaurant setupProfile =>>', updatedRestaurant);
       expect(
         mongoose.Types.ObjectId.isValid(result as unknown as string)
       ).toBe(true);
@@ -820,5 +819,90 @@ describe('testing setupProfile', () => {
       expect(updatedRestaurant!.name).toBe(setupBodyData.name);
       expect(updatedRestaurant!.password).not.toBe(setupBodyData.password);
     });
+  });
+});
+
+describe('testing updateCustomerPaymentType', () => {
+  const userProfileSignupViaFormData = {
+    username: 'hidayahapriliansyah',
+    name: 'Hidayah Apriliansyah',
+    email: 'adihidayahapriliansyah@gmail.com',
+    password: '34y7rheurtheurt',
+  };
+
+  beforeEach(async () => {
+    await mongoose.connect(config.urlDb);
+    await Restaurant.create({
+      username: userProfileSignupViaFormData.username,
+      name: userProfileSignupViaFormData.name,
+      email: userProfileSignupViaFormData.email,
+      password: userProfileSignupViaFormData.password,
+      isVerified: true,
+    });
+  });
+
+  afterEach(async () => {
+    await Restaurant.deleteMany({});
+    await mongoose.connection.close();
+  });
+  // error
+  // should give error if customerPayment property is empty
+  
+  it('should give error if customerPayment property is empty', async () => {
+    const restaurant = await Restaurant.findOne();
+    const req = {
+      user: {
+        _id: restaurant!._id,
+      },
+      body: {},
+    } as unknown as Request;
+
+    try {
+      await updateCustomerPaymentType(req);
+    } catch (error: any) {
+      expect(error).toBeInstanceOf(ZodError);
+      expect(error.errors[0].path[0]).toBe('customerPayment');
+      expect(error.errors[0].message).toBe('Required');
+    }
+  });
+  // should give error if customerPayment property is not valid base on enum
+  it('should give error if customerPayment property is not valid base on enum', async () => {
+    const restaurant = await Restaurant.findOne();
+    const req = {
+      user: {
+        _id: restaurant!._id,
+      },
+      body: {
+        customerPayment: 'afterorde',
+      },
+    } as unknown as Request;
+
+    try {
+      await updateCustomerPaymentType(req);
+    } catch (error: any) {
+      expect(error).toBeInstanceOf(ZodError);
+      expect(error.errors[0].path[0]).toBe('customerPayment');
+      expect(error.errors[0].message).toContain('Invalid enum value. Expected \'afterorder\' | \'beforeorder\', received');
+    }
+  });
+  // success
+  // should give result id and customerPayment is the same like inputted
+  it('should give result id and customerPayment is the same like inputted', async () => {
+    const restaurant = await Restaurant.findOne();
+    const req = {
+      user: {
+        _id: restaurant!._id,
+      },
+      body: {
+        customerPayment: 'beforeorder',
+      },
+    } as unknown as Request;
+
+    const result = await updateCustomerPaymentType(req);
+    const updatedCustomerTypeRestaurant = await Restaurant.findById(result); 
+    expect(mongoose.Types.ObjectId.isValid(result as unknown as string))
+      .toBe(true);
+    expect(updatedCustomerTypeRestaurant!.customerPayment).not.toBe(restaurant!.customerPayment);
+    expect(updatedCustomerTypeRestaurant!.customerPayment).toBe('beforeorder');
   });
 });

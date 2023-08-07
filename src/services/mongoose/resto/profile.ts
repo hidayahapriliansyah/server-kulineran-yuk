@@ -210,8 +210,28 @@ const setupProfile = async (req: Request): Promise<IRestaurant['_id'] | Error> =
   }
 };
 
+const updateCustomerPaymentType = async (req: Request): Promise<IRestaurant['_id'] | Error> => {
+  const updateCustomerPaymentTypeBody = z.object({
+    customerPayment: z.enum(['afterorder', 'beforeorder']),
+  });
+  type UpdateCustomerPaymentTypeBody = z.infer<typeof updateCustomerPaymentTypeBody>;
+
+  const { _id: restaurantId } = req.user as { _id: ObjectId };
+  try {
+    const body: UpdateCustomerPaymentTypeBody = updateCustomerPaymentTypeBody.parse(req.body);
+    const { customerPayment } = body;
+    const result = await Restaurant.findOneAndUpdate({ _id: restaurantId }, {
+      customerPayment,
+    });
+    return result!._id;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 export {
   getProfile,
   updateProfile,
   setupProfile,
+  updateCustomerPaymentType,
 };

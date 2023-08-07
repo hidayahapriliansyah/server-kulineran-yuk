@@ -1,7 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { SuccessAPIResponse } from '../../../../global/types';
 import { StatusCodes } from 'http-status-codes';
-import { getProfile, setupProfile, updateProfile } from '../../../../services/mongoose/resto/profile';
+import {
+  getProfile,
+  setupProfile,
+  updateCustomerPaymentType,
+  updateProfile 
+} from '../../../../services/mongoose/resto/profile';
 
 const getProfileController = async (
   req: Request,
@@ -63,8 +68,29 @@ const setupProfileController = async (
   }
 };
 
+const updateCustomerPaymentTypeController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const result = await updateCustomerPaymentType(req);
+
+    res
+      .status(StatusCodes.OK)
+      .json(new SuccessAPIResponse('Update restaurant customer payment type successfully', {
+        data: {
+          userId: result,
+        },
+      }));
+  } catch (error: any) {
+    next(error);
+  }
+};
+
 export {
   getProfileController,
   updateProfileController,
   setupProfileController,
+  updateCustomerPaymentTypeController,
 };

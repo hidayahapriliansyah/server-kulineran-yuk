@@ -70,7 +70,7 @@ const restaurantSchema = new Schema<IRestaurant>(
     customerPayment: {
       type: String,
       enum: Object.values(CustomerPaymentType),
-      default: CustomerPaymentType.BEFOREORDER,
+      default: CustomerPaymentType.AFTERORDER,
     },
     locationLink: {
       type: String,
