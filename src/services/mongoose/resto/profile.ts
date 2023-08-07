@@ -88,22 +88,22 @@ const getProfile = async (req: Request): Promise<RestaurantProfileDTO | Error> =
   }
 };
 
-const updateProfileBody = z.object({
-  avatar: z.string().optional(),
-  username: z.string().regex(/^[a-z0-9._']+$/).min(3).max(30).optional(),
-	name: z.string().regex(/^[a-zA-Z0-9.,_\s-]+$/).min(3).max(50).optional(),
-  villageId: z.string().optional(),
-  locationLink: z.string().optional(),
-  detail: z.string().max(200).optional(),
-  contact: z.string().max(14).optional(),
-  imageGallery: z.array(z.string()).optional(),
-  openingHour: z.string().length(5).optional(),
-  closingHour: z.string().length(5).optional(),
-  daysOff: z.array(z.enum(['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'])).optional(),
-  fasilities: z.array(z.string().max(100)).optional(),
-});
 
 const updateProfile = async (req: Request): Promise<IRestaurant['_id'] | Error> => {
+  const updateProfileBody = z.object({
+    avatar: z.string().optional(),
+    username: z.string().regex(/^[a-z0-9._']+$/).min(3).max(30).optional(),
+    name: z.string().regex(/^[a-zA-Z0-9.,_\s-]+$/).min(3).max(50).optional(),
+    villageId: z.string().optional(),
+    locationLink: z.string().optional(),
+    detail: z.string().max(200).optional(),
+    contact: z.string().max(14).optional(),
+    imageGallery: z.array(z.string()).optional(),
+    openingHour: z.string().length(5).optional(),
+    closingHour: z.string().length(5).optional(),
+    daysOff: z.array(z.enum(['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'])).optional(),
+    fasilities: z.array(z.string().max(100)).optional(),
+  });
   type UpdateProfileBody = z.infer<typeof updateProfileBody>;
   type UpdateRestaurantPayload = Omit<UpdateProfileBody, 'villageId' | 'detail' | 'imageGallery'> & {
     image1: string;
@@ -115,11 +115,11 @@ const updateProfile = async (req: Request): Promise<IRestaurant['_id'] | Error> 
   type UpdateRestaurantAddressPayload = Pick<UpdateProfileBody, 'villageId' | 'detail'>;
 
   const { _id: restaurantId } = req.user as { _id: ObjectId };
-  const body: UpdateProfileBody = updateProfileBody.parse(req.body);
   const session = await db.startSession();
   try {
     session.startTransaction();
-
+    
+    const body: UpdateProfileBody = updateProfileBody.parse(req.body);
     const {
       avatar,
       name,
@@ -181,9 +181,37 @@ const updateProfile = async (req: Request): Promise<IRestaurant['_id'] | Error> 
     await session.endSession();
     throw error;
   }
-}
+};
+
+const setupProfile = async (req: Request): Promise<IRestaurant['_id'] | Error> => {
+  const setupProfileBody = z.object({
+    username: z.string().regex(/^[a-z0-9._']+$/).min(3).max(30).nonempty(),
+    name: z.string().regex(/^[a-zA-Z0-9.,_\s-]+$/).min(3).max(50).nonempty(),
+    password: z.string().min(6).nonempty(),
+  });
+
+  type SetupProfileBody = z.infer<typeof setupProfileBody>;
+
+  const { _id: restaurantId } = req.user as { _id: ObjectId };
+  
+  try {
+    const body: SetupProfileBody = setupProfileBody.parse(req.body);
+    const { username, name, password } = body;
+
+    const result = await Restaurant.findOneAndUpdate({ _id: restaurantId }, {
+      username,
+      name,
+      password,
+    });
+
+    return result!._id;
+  } catch (error: any) {
+    throw(error);
+  }
+};
 
 export {
   getProfile,
   updateProfile,
+  setupProfile,
 };

@@ -27,7 +27,6 @@ const errorHandlerMiddleware = (
     // if err.name === TokenExpiredError
     // if err.name === JsonWebTokenError
 
-
   if (err instanceof ZodError) {
     const errors = err.issues.map((e) => ({
       message: e.message,

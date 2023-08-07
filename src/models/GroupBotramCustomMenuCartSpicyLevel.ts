@@ -1,5 +1,5 @@
 import { Schema, Model, model, models } from 'mongoose';
-import { TimestampsDocument } from '../../../global/types';
+import { TimestampsDocument } from '../global/types';
 import { IGroupBotramCustomMenuCart } from './GroupBotramCustomMenuCart';
 
 interface IGroupBotramCustomMenuCartSpicyLevel extends TimestampsDocument {

@@ -126,6 +126,14 @@ restaurantSchema.pre('save', async function(next) {
   next();
 });
 
+restaurantSchema.pre('findOneAndUpdate', async function(next) {
+  const update = this.getUpdate() as { password: string };
+  if (update!.password) {
+    update.password = await bcrypt.hash(update.password, 12);
+  }
+  next();
+});
+
 restaurantSchema.methods.comparePassword = 
   async function(inputtedPassword: string): Promise<boolean> {
     const isMatch = await bcrypt.compare(inputtedPassword, this.password);

@@ -1,10 +1,10 @@
-import mongoose, { ObjectId } from 'mongoose';
+import mongoose, { ObjectId, mongo } from 'mongoose';
 import config from '../../../../../src/config';
 import Restaurant, { IRestaurant } from '../../../../../src/models/Restaurant';
-import { getProfile, RestaurantProfileDTO, updateProfile } from '../../../../../src/services/mongoose/resto/profile';
+import { getProfile, RestaurantProfileDTO, updateProfile, setupProfile } from '../../../../../src/services/mongoose/resto/profile';
 import { Request } from 'express';
 import { Unauthenticated } from '../../../../../src/errors';
-import RestaurantAddress, { IRestaurantAddress } from '../../../../../src/models/RestaurantAddress';
+import RestaurantAddress from '../../../../../src/models/RestaurantAddress';
 import { ZodError } from 'zod';
 
 // getProfile
@@ -415,5 +415,410 @@ describe('testing updateProfile', () => {
     expect(updatedRestaurantAddress!.regencyName).toBe('KABUPATEN TASIKMALAYA');
     expect(updatedRestaurantAddress!.provinceName).toBe('JAWA BARAT');
     expect(updatedRestaurantAddress!.detail).toBe(updatedRestaurantAddress!.detail);
+  });
+});
+
+describe('testing setupProfile', () => {
+  describe('username field', () => {
+    const userProfileSignupViaOauthData = {
+      username: 'hidayahapriliansyah',
+      name: 'Hidayah Apriliansyah',
+      email: 'adihidayahapriliansyah@gmail.com',
+    };
+
+    beforeEach(async () => {
+      await mongoose.connect(config.urlDb);
+      await Restaurant.create({
+        username: userProfileSignupViaOauthData.username,
+        name: userProfileSignupViaOauthData.name,
+        email: userProfileSignupViaOauthData.email,
+        isVerified: true,
+      });
+    });
+
+    afterEach(async () => {
+      await Restaurant.deleteMany({});
+      await mongoose.connection.close();
+    });
+    // error
+    // should throw error if username is undefined
+    it('should throw error if username is undefined', async () => {
+      const restaurant = await Restaurant.findOne();
+      const req = { 
+        user: restaurant!._id,
+        body: {}
+      } as unknown as Request;
+      try {
+        await setupProfile(req);
+      } catch (error: any | ZodError) {
+        expect(error).toBeInstanceOf(ZodError);
+        expect(
+          error.issues.map((issue: { path: string[] }) => issue.path[0])
+        ).toContain('username');
+        const usernameValidationError = error.issues.filter(
+          (issue: { path: string[] }) => issue.path[0] === 'username'
+        )[0];
+        expect(usernameValidationError.message).toBe('Required');
+      }
+    });
+    // should return validation error if username field is empty
+    it('should return validation error if username field is empty', async () => {
+      const restaurant = await Restaurant.findOne();
+      const req = { 
+        user: restaurant!._id,
+        body: { username: '' }
+      } as unknown as Request;
+      try {
+        await setupProfile(req);
+      } catch (error: any | ZodError) {
+        expect(error).toBeInstanceOf(ZodError);
+        expect(
+          error.issues.map((issue: { path: string[] }) => issue.path[0])
+        ).toContain('username');
+        const usernameValidationError = error.issues.filter(
+          (issue: { path: string[] }) => issue.path[0] === 'username'
+        )[0];
+        expect(usernameValidationError.message).toBe('Invalid');
+      }
+    });
+    // should return validation error if username has invalid character
+    it('should return validation error if username has invalid character', async () => {
+      const restaurant = await Restaurant.findOne();
+      const req = {
+        user: restaurant!._id,
+        body: {
+          username: 'werrt--',
+        },
+      } as unknown as Request;
+      try {
+        await setupProfile(req);
+      } catch (error: any | ZodError) {
+        expect(error).toBeInstanceOf(ZodError);
+        expect(
+          error.issues.map((issue: { path: string[] }) => issue.path[0])
+        ).toContain('username');
+        const usernameValidationError = error.issues.filter(
+          (issue: { path: string[] }) => issue.path[0] === 'username'
+        )[0];
+        expect(usernameValidationError.message).toBe('Invalid');
+      }
+    });
+    // should return validation error if username has less than 3 character
+    it('should return validation error if username has less than 3 character', async () => {
+      const restaurant = await Restaurant.findOne();
+      const req = {
+        user: restaurant!._id,
+        body: {
+          username: 'us',
+        },
+      } as unknown as Request;
+
+      try {
+        await setupProfile(req);
+      } catch (error: any | ZodError) {
+        expect(error).toBeInstanceOf(ZodError);
+        expect(
+          error.issues.map((issue: { path: string[] }) => issue.path[0])
+        ).toContain('username');
+        const usernameValidationError = error.issues.filter(
+          (issue: { path: string[] }) => issue.path[0] === 'username'
+        )[0];
+        expect(usernameValidationError.message).toBe(
+          'String must contain at least 3 character(s)'
+        );
+      }
+    });
+    // should return validation error if username has more than 30 character
+    it('should return validation error if username has more than 30 character', async () => {
+      const restaurant = await Restaurant.findOne();
+      const req = {
+        user: restaurant!._id,
+        body: {
+          username:
+            'usrererhdjfhdfdfdfdfdf999999999999999999999999999999999ffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+        },
+      } as unknown as Request;
+      try {
+        await setupProfile(req);
+      } catch (error: any | ZodError) {
+        expect(error).toBeInstanceOf(ZodError);
+        expect(
+          error.issues.map((issue: { path: string[] }) => issue.path[0])
+        ).toContain('username');
+        const usernameValidationError = error.issues.filter(
+          (issue: { path: string[] }) => issue.path[0] === 'username'
+        )[0];
+        expect(usernameValidationError.message).toBe(
+          'String must contain at most 30 character(s)'
+        );
+      }
+    });
+  });
+
+  describe('name field', () => {
+    const userProfileSignupViaOauthData = {
+      username: 'hidayahapriliansyah',
+      name: 'Hidayah Apriliansyah',
+      email: 'adihidayahapriliansyah@gmail.com',
+    };
+
+    beforeEach(async () => {
+      await mongoose.connect(config.urlDb);
+      await Restaurant.create({
+        username: userProfileSignupViaOauthData.username,
+        name: userProfileSignupViaOauthData.name,
+        email: userProfileSignupViaOauthData.email,
+        isVerified: true,
+      });
+    });
+
+    afterEach(async () => {
+      await Restaurant.deleteMany({});
+      await mongoose.connection.close();
+    });
+
+    // should throw error if name is undefined
+    it('should throw error if name is undefined', async () => {
+      const restaurant = await Restaurant.findOne();
+      const req = { 
+        user: restaurant!._id,
+        body: {}
+      } as unknown as Request;
+      try {
+        await setupProfile(req);
+      } catch (error: any | ZodError) {
+        expect(error).toBeInstanceOf(ZodError);
+        expect(
+          error.issues.map((issue: { path: string[] }) => issue.path[0])
+        ).toContain('name');
+        const nameValidationError = error.issues.filter(
+          (issue: { path: string[] }) => issue.path[0] === 'name'
+        )[0];
+        expect(nameValidationError.message).toBe('Required');
+      }
+    });
+    // should return validation error if name field is empty
+    it('should return validation error if name field is empty', async () => {
+      const restaurant = await Restaurant.findOne();
+      const req = { 
+        user: restaurant!._id,
+        body: { name: '' } 
+      } as unknown as Request;
+      try {
+        await setupProfile(req);
+      } catch (error: any | ZodError) {
+        expect(error).toBeInstanceOf(ZodError);
+        expect(
+          error.issues.map((issue: { path: string[] }) => issue.path[0])
+        ).toContain('name');
+        const nameValidationError = error.issues.filter(
+          (issue: { path: string[] }) => issue.path[0] === 'name'
+        )[0];
+        expect(nameValidationError.message).toBe('Invalid');
+      }
+    });
+    // should return validation error if name has invalid character
+    it('should return validation error if name has invalid character', async () => {
+      const restaurant = await Restaurant.findOne();
+      const req = { 
+        user: restaurant!._id,
+        body: { name: ')(=+}{' } 
+      } as unknown as Request;
+      try {
+        await setupProfile(req);
+      } catch (error: any | ZodError) {
+        expect(error).toBeInstanceOf(ZodError);
+        expect(
+          error.issues.map((issue: { path: string[] }) => issue.path[0])
+        ).toContain('name');
+        const usernameValidationError = error.issues.filter(
+          (issue: { path: string[] }) => issue.path[0] === 'name'
+        )[0];
+        expect(usernameValidationError.message).toBe('Invalid');
+      }
+    });
+    // should return validation error if name has less than 3 character
+    it('should return validation error if name has less than 3 character', async () => {
+      const restaurant = await Restaurant.findOne();
+      const req = {
+        user: restaurant!._id,
+        body: { name: 's' }
+      } as unknown as Request;
+      try {
+        await setupProfile(req);
+      } catch (error: any | ZodError) {
+        expect(error).toBeInstanceOf(ZodError);
+        expect(
+          error.issues.map((issue: { path: string[] }) => issue.path[0])
+        ).toContain('name');
+        const nameValidationError = error.issues.filter(
+          (issue: { path: string[] }) => issue.path[0] === 'name'
+        )[0];
+        expect(nameValidationError.message).toBe(
+          'String must contain at least 3 character(s)'
+        );
+      }
+    });
+    // should return validation error if name has more than 50 character
+    it('should return validation error if name has more than 50 character', async () => {
+      const restaurant = await Restaurant.findOne();
+      const req = {
+        user: restaurant!._id,
+        body: {
+          name: 'sdfjgkdfgdfhgkjdfhgkjdfkghdfjkgkdjfhgkjdfhgjkdfguerty968934534593499938475347534587345739457394857394589347593845938475345734957394573498573945734985734573949.-_,',
+        },
+      } as unknown as Request;
+      try {
+        await setupProfile(req);
+      } catch (error: any | ZodError) {
+        expect(error).toBeInstanceOf(ZodError);
+        expect(
+          error.issues.map((issue: { path: string[] }) => issue.path[0])
+        ).toContain('name');
+        const nameValidationError = error.issues.filter(
+          (issue: { path: string[] }) => issue.path[0] === 'name'
+        )[0];
+        expect(nameValidationError.message).toBe(
+          'String must contain at most 50 character(s)'
+        );
+      }
+    });
+  });
+
+  describe('password field', () => {
+    const userProfileSignupViaOauthData = {
+      username: 'hidayahapriliansyah',
+      name: 'Hidayah Apriliansyah',
+      email: 'adihidayahapriliansyah@gmail.com',
+    };
+
+    beforeEach(async () => {
+      await mongoose.connect(config.urlDb);
+      await Restaurant.create({
+        username: userProfileSignupViaOauthData.username,
+        name: userProfileSignupViaOauthData.name,
+        email: userProfileSignupViaOauthData.email,
+        isVerified: true,
+      });
+    });
+
+    afterEach(async () => {
+      await Restaurant.deleteMany({});
+      await mongoose.connection.close();
+    });
+
+    // should throw error if password is undefined
+    it('should return validation error if password field is undefined', async () => {
+      const restaurant = await Restaurant.findOne();
+      const req = {
+        user: restaurant!._id,
+        body: {}
+      } as unknown as Request;
+      try {
+        await setupProfile(req);
+      } catch (error: any | ZodError) {
+        expect(error).toBeInstanceOf(ZodError);
+        expect(
+          error.issues.map((issue: { path: string[] }) => issue.path[0])
+        ).toContain('password');
+        const passwordValidationError = error.issues.filter(
+          (issue: { path: string[] }) => issue.path[0] === 'password'
+        )[0];
+        expect(passwordValidationError.message).toBe('Required');
+      }
+    });
+    // should return validation error if password field is empty
+    it('should return validation error if password field is empty', async () => {
+      const restaurant = await Restaurant.findOne();
+      const req = {
+        user: restaurant!._id,
+        body: { password: '' }
+      } as unknown as Request;
+      try {
+        await setupProfile(req);
+      } catch (error: any | ZodError) {
+        expect(error).toBeInstanceOf(ZodError);
+        expect(
+          error.issues.map((issue: { path: string[] }) => issue.path[0])
+        ).toContain('password');
+        const passwordValidationError = error.issues.filter(
+          (issue: { path: string[] }) => issue.path[0] === 'password'
+        )[0];
+        expect(passwordValidationError.message).toBe(
+          'String must contain at least 6 character(s)'
+        );
+      }
+    });
+    // should return validation error if password has less than 6 character
+    it('should return validation error if password has less than 6 character', async () => {
+      const restaurant = await Restaurant.findOne();
+      const req = { 
+        user: restaurant!._id,
+        body: { password: '7894f' }
+      } as unknown as Request;
+      try {
+        await setupProfile(req);
+      } catch (error: any | ZodError) {
+        expect(error).toBeInstanceOf(ZodError);
+        expect(
+          error.issues.map((issue: { path: string[] }) => issue.path[0])
+        ).toContain('password');
+        const passwordValidationError = error.issues.filter(
+          (issue: { path: string[] }) => issue.path[0] === 'password'
+        )[0];
+        expect(passwordValidationError.message).toBe(
+          'String must contain at least 6 character(s)'
+        );
+      }
+    });
+  });
+
+  // success
+  describe('success setup profile', () => {
+    const userProfileSignupViaOauthData = {
+      username: 'hidayahapriliansyah',
+      name: 'Hidayah Apriliansyah',
+      email: 'adihidayahapriliansyah@gmail.com',
+    };
+
+    beforeEach(async () => {
+      await mongoose.connect(config.urlDb);
+      await Restaurant.create({
+        username: userProfileSignupViaOauthData.username,
+        name: userProfileSignupViaOauthData.name,
+        email: userProfileSignupViaOauthData.email,
+        isVerified: true,
+      });
+    });
+
+    afterEach(async () => {
+      await Restaurant.deleteMany({});
+      await mongoose.connection.close();
+    });
+
+    it('should return restaurant id if setup profile is successed', async () => {
+      const restaurant = await Restaurant.findOne();
+      const setupBodyData = {
+        username: 'warungmakansederhana',
+        name: 'Warung Makan Sederhana',
+        password: '&YDFysdfhg232',
+      };
+      const req = {
+        user: restaurant!._id,
+        body: {
+          ...setupBodyData,
+        }
+      } as unknown as Request;
+
+      const result = await setupProfile(req);
+      const updatedRestaurant = await Restaurant.findById(result);
+      console.log('updatedRestaurant setupProfile =>>', updatedRestaurant);
+      expect(
+        mongoose.Types.ObjectId.isValid(result as unknown as string)
+      ).toBe(true);
+      expect(updatedRestaurant!.username).toBe(setupBodyData.username);
+      expect(updatedRestaurant!.name).toBe(setupBodyData.name);
+      expect(updatedRestaurant!.password).not.toBe(setupBodyData.password);
+    });
   });
 });

@@ -1,5 +1,5 @@
 import { Schema, Model, model, models } from 'mongoose';
-import { TimestampsDocument } from '../../../global/types';
+import { TimestampsDocument } from '../global/types';
 import { IGroupBotram } from './GroupBotram';
 import { ICustomer } from './Customer';
 

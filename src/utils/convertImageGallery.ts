@@ -1,3 +1,7 @@
+interface ImageObject {
+  [key: string]: string;
+}
+
 const convertImageGallery = (imageGallery: string[]): ImageObject => {
   const imageObject: ImageObject = {};
 

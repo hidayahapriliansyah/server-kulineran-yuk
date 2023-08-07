@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { SuccessAPIResponse } from '../../../../global/types';
 import { StatusCodes } from 'http-status-codes';
-import { getProfile, updateProfile } from '../../../../services/mongoose/resto/profile';
+import { getProfile, setupProfile, updateProfile } from '../../../../services/mongoose/resto/profile';
 
 const getProfileController = async (
   req: Request,
@@ -14,7 +14,9 @@ const getProfileController = async (
     res
       .status(StatusCodes.OK)
       .json(new SuccessAPIResponse('Get restaurant profile data successfully', {
-        data: result,
+        data: {
+          userId: result,
+        },
       }));
   } catch (error: any) {
     next(error);
@@ -32,7 +34,29 @@ const updateProfileController = async (
     res
       .status(StatusCodes.OK)
       .json(new SuccessAPIResponse('Update restaurant profile data successfully', {
-        data: result,
+        data: {
+          userId: result,
+        },
+      }));
+  } catch (error: any) {
+    next(error);
+  }
+};
+
+const setupProfileController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const result = await setupProfile(req);
+
+    res
+      .status(StatusCodes.OK)
+      .json(new SuccessAPIResponse('Update restaurant profile data successfully', {
+        data: {
+          userId: result,
+        },
       }));
   } catch (error: any) {
     next(error);
@@ -42,4 +66,5 @@ const updateProfileController = async (
 export {
   getProfileController,
   updateProfileController,
+  setupProfileController,
 };
