@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/services/mongoose/location/regency.ts</title>
+    <title>Code coverage report for src/services/mongoose/resto/account.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../../../prettify.css" />
     <link rel="stylesheet" href="../../../../base.css" />
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../../../index.html">All files</a> / <a href="index.html">src/services/mongoose/location</a> regency.ts</h1>
+        <h1><a href="../../../../index.html">All files</a> / <a href="index.html">src/services/mongoose/resto</a> account.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>14/14</span>
+                <span class='fraction'>15/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>2/2</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>3/3</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>12/12</span>
+                <span class='fraction'>14/14</span>
             </div>
         
             
@@ -98,75 +98,78 @@
 <a name='L33'></a><a href='#L33'>33</a>
 <a name='L34'></a><a href='#L34'>34</a>
 <a name='L35'></a><a href='#L35'>35</a>
-<a name='L36'></a><a href='#L36'>36</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">27x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { BadRequest, NotFound } from '../../../errors';
-import Regency, { IRegency } from '../../../models/Regency';
-import { Request } from 'express';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Request } from 'express';
+import { z } from 'zod';
 &nbsp;
-export interface IRegencyDTO {
-  id: string;
-  provinceId: string;
-  regency: string;
-}
+import Restaurant from '../../../models/Restaurant';
+import createRestaurantEmailVerification from '../../../utils/createRestaurantEmailVerification';
 &nbsp;
-const getRegency = async (req: Request): Promise&lt;IRegencyDTO[]&gt; =&gt; {
-  const { province } = req.query;
+const createReEmailVerificationRequest = async (req: Request): Promise&lt;void | Error&gt; =&gt; {
+  const createReEmailVerificationRequestBody = z.object({
+    email: z.string().email().nonempty(),
+  });
 &nbsp;
-  if(!province) {
-    throw new BadRequest(`Invalid Request. Please check your input.`);
+  type CreateReEmailVerificationRequestBody = z.infer&lt;typeof createReEmailVerificationRequestBody&gt;;
+&nbsp;
+  try {
+    const body: CreateReEmailVerificationRequestBody =
+      createReEmailVerificationRequestBody.parse(req.body);
+&nbsp;
+    const { email } = body;
+&nbsp;
+    const accountWithEmailIsNotVerifiedExist = await Restaurant.findOne({
+      email,
+      isVerified: false,
+    });
+&nbsp;
+    if (accountWithEmailIsNotVerifiedExist) {
+      const { _id: restaurantId, email: restaurantEmail } = accountWithEmailIsNotVerifiedExist;
+      await createRestaurantEmailVerification({ restaurantId, restaurantEmail });
+    }
+  } catch (error: any) {
+    throw error;
   }
-&nbsp;
-  const result = await Regency.find({ provinceId: province });
-&nbsp;
-  if(result.length === 0) {
-    throw new NotFound(`Resource not found. Province id ${province} is not exist`);
-  }
-&nbsp;
-  const resultDTO: IRegencyDTO[] = result.map((regency) =&gt; ({
-    id: regency.id,
-    provinceId: regency.provinceId,
-    regency: regency.regency,
-  }));
-&nbsp;
-  return resultDTO;
 };
 &nbsp;
 export {
-  getRegency,
+  createReEmailVerificationRequest,
 };
 &nbsp;</pre></td></tr></table></pre>
 
