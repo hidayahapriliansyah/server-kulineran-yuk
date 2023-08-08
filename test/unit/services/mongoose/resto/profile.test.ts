@@ -5,7 +5,7 @@ import { getProfile, RestaurantProfileDTO, updateProfile, setupProfile, updateCu
 import { Request } from 'express';
 import { Unauthenticated } from '../../../../../src/errors';
 import RestaurantAddress from '../../../../../src/models/RestaurantAddress';
-import { UnknownKeysParam, ZodError } from 'zod';
+import { ZodError } from 'zod';
 
 // getProfile
 describe('getProfile', () => {

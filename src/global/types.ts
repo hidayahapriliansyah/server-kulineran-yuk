@@ -14,7 +14,7 @@ abstract class APIResponse {
 }
 
 export class SuccessAPIResponse extends APIResponse {
-  constructor(message: string, public readonly data: {} | []) {
+  constructor(message: string, public readonly data?: {} | []) {
     super(true, message);
   }
 }

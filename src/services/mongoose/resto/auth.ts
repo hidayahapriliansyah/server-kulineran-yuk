@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
 import db from '../../../db';
 import { BadRequest, Unauthorized } from '../../../errors';
+import createRestaurantEmailVerification from '../../../utils/createRestaurantEmailVerification';
 
 const signupBodyForm = z.object({
   name: z.string().regex(/^[a-zA-Z0-9.,_\s-]+$/).min(3).max(50).nonempty(),
@@ -31,16 +32,8 @@ const signupForm = async (req: Request): Promise<IRestaurant['_id'] | Error> => 
     const result = await Restaurant.create(payload);
 
     const { _id: restaurantId, email: restaurantEmail } = result;
-    const now = moment();
-    const expiredAt = now.add(10, 'minutes').utc().format();
-    const uniqueString = uuidv4();
 
-    await RestaurantVerification.create({
-      restaurantId: restaurantId,
-      email: restaurantEmail,
-      uniqueString,
-      expiredAt,
-    });
+    await createRestaurantEmailVerification({ restaurantId, restaurantEmail });
 
     await session.commitTransaction();
     await session.endSession();
