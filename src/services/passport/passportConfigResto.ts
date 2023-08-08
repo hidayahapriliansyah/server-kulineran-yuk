@@ -22,6 +22,12 @@ const passportConfigResto = (passport: PassportStatic) => {
           const existingUser = await Restaurant.findOne({ email: profile.emails[0].value });
 
           if (existingUser) {
+            const { isVerified: existingUserIsVerified } = existingUser;
+            if (!existingUserIsVerified) {
+              const updatedExistingUser = 
+                await Restaurant.findByIdAndUpdate(existingUser._id, { isVerified: true });
+              return done(null, updatedExistingUser!);
+            }
             return done(null, existingUser);
           } else {
             type signupGooglePayload = {
