@@ -325,6 +325,12 @@ describe('testing createResetPasswordRequest', () => {
     });
     await createResetPasswordRequest(req);
     const result = await RestaurantResetPasswordRequest.findOne();
+    const comparingTime =
+    dayjs(result!.expiredAt).isSame(
+      dayjs(restaurant!.createdAt).add(10, 'minutes'),
+      'minutes',
+    );
+  expect(comparingTime).toBe(true);
     expect(result!.restaurantId).toStrictEqual(restaurant._id);
   });
 });

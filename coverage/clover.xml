@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1691478957050" clover="3.2.0">
-  <project timestamp="1691478957050" name="All files">
-    <metrics statements="719" coveredstatements="576" conditionals="252" coveredconditionals="207" methods="112" coveredmethods="61" elements="1083" coveredelements="844" complexity="0" loc="719" ncloc="719" packages="19" files="57" classes="57"/>
+<coverage generated="1691482011081" clover="3.2.0">
+  <project timestamp="1691482011081" name="All files">
+    <metrics statements="742" coveredstatements="594" conditionals="254" coveredconditionals="209" methods="116" coveredmethods="63" elements="1112" coveredelements="866" complexity="0" loc="742" ncloc="742" packages="19" files="57" classes="57"/>
     <package name="src">
       <metrics statements="15" coveredstatements="15" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
       <file name="app.ts" path="D:\backup-dell-latitude\Desktop\projects\kulineran-yuk\server\src\app.ts">
@@ -155,50 +155,59 @@
       </file>
     </package>
     <package name="src.api.v1.resto.account">
-      <metrics statements="38" coveredstatements="18" conditionals="0" coveredconditionals="0" methods="9" coveredmethods="0"/>
+      <metrics statements="47" coveredstatements="22" conditionals="0" coveredconditionals="0" methods="11" coveredmethods="0"/>
       <file name="controller.ts" path="D:\backup-dell-latitude\Desktop\projects\kulineran-yuk\server\src\api\v1\resto\account\controller.ts">
-        <metrics statements="30" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="8" coveredmethods="0"/>
+        <metrics statements="38" coveredstatements="13" conditionals="0" coveredconditionals="0" methods="10" coveredmethods="0"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
         <line num="4" count="1" type="stmt"/>
-        <line num="11" count="1" type="stmt"/>
-        <line num="15" count="0" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
         <line num="16" count="0" type="stmt"/>
         <line num="17" count="0" type="stmt"/>
         <line num="18" count="0" type="stmt"/>
-        <line num="22" count="0" type="stmt"/>
-        <line num="26" count="1" type="stmt"/>
-        <line num="30" count="0" type="stmt"/>
+        <line num="19" count="0" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="27" count="1" type="stmt"/>
         <line num="31" count="0" type="stmt"/>
         <line num="32" count="0" type="stmt"/>
         <line num="33" count="0" type="stmt"/>
-        <line num="37" count="0" type="stmt"/>
-        <line num="41" count="1" type="stmt"/>
-        <line num="45" count="0" type="stmt"/>
+        <line num="34" count="0" type="stmt"/>
+        <line num="38" count="0" type="stmt"/>
+        <line num="42" count="1" type="stmt"/>
         <line num="46" count="0" type="stmt"/>
         <line num="47" count="0" type="stmt"/>
         <line num="48" count="0" type="stmt"/>
-        <line num="52" count="0" type="stmt"/>
-        <line num="56" count="1" type="stmt"/>
-        <line num="60" count="0" type="stmt"/>
+        <line num="49" count="0" type="stmt"/>
+        <line num="53" count="0" type="stmt"/>
+        <line num="57" count="1" type="stmt"/>
         <line num="61" count="0" type="stmt"/>
         <line num="62" count="0" type="stmt"/>
         <line num="63" count="0" type="stmt"/>
-        <line num="67" count="0" type="stmt"/>
+        <line num="64" count="0" type="stmt"/>
+        <line num="68" count="0" type="stmt"/>
         <line num="72" count="1" type="stmt"/>
-        <line num="73" count="1" type="stmt"/>
-        <line num="74" count="1" type="stmt"/>
+        <line num="76" count="0" type="stmt"/>
+        <line num="77" count="0" type="stmt"/>
+        <line num="78" count="0" type="stmt"/>
+        <line num="79" count="0" type="stmt"/>
+        <line num="83" count="0" type="stmt"/>
+        <line num="88" count="1" type="stmt"/>
+        <line num="89" count="1" type="stmt"/>
+        <line num="90" count="1" type="stmt"/>
+        <line num="91" count="1" type="stmt"/>
+        <line num="92" count="1" type="stmt"/>
       </file>
       <file name="route.ts" path="D:\backup-dell-latitude\Desktop\projects\kulineran-yuk\server\src\api\v1\resto\account\route.ts">
-        <metrics statements="8" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <metrics statements="9" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
-        <line num="8" count="1" type="stmt"/>
-        <line num="11" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
         <line num="12" count="1" type="stmt"/>
         <line num="13" count="1" type="stmt"/>
         <line num="14" count="1" type="stmt"/>
+        <line num="15" count="1" type="stmt"/>
         <line num="16" count="1" type="stmt"/>
+        <line num="18" count="1" type="stmt"/>
       </file>
     </package>
     <package name="src.api.v1.resto.auth">
@@ -331,24 +340,24 @@
       </file>
       <file name="CustomAPIError.ts" path="D:\backup-dell-latitude\Desktop\projects\kulineran-yuk\server\src\errors\CustomAPIError.ts">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
-        <line num="7" count="31" type="stmt"/>
+        <line num="7" count="33" type="stmt"/>
         <line num="11" count="11" type="stmt"/>
       </file>
       <file name="InvalidToken.ts" path="D:\backup-dell-latitude\Desktop\projects\kulineran-yuk\server\src\errors\InvalidToken.ts">
         <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="2" count="2" type="stmt"/>
-        <line num="5" count="2" type="stmt"/>
-        <line num="7" count="2" type="stmt"/>
-        <line num="9" count="2" type="stmt"/>
+        <line num="5" count="3" type="stmt"/>
+        <line num="7" count="3" type="stmt"/>
+        <line num="9" count="3" type="stmt"/>
         <line num="13" count="2" type="stmt"/>
       </file>
       <file name="NotFound.ts" path="D:\backup-dell-latitude\Desktop\projects\kulineran-yuk\server\src\errors\NotFound.ts">
         <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="1" count="11" type="stmt"/>
         <line num="2" count="11" type="stmt"/>
-        <line num="5" count="5" type="stmt"/>
-        <line num="7" count="5" type="stmt"/>
-        <line num="9" count="5" type="stmt"/>
+        <line num="5" count="6" type="stmt"/>
+        <line num="7" count="6" type="stmt"/>
+        <line num="9" count="6" type="stmt"/>
         <line num="13" count="11" type="stmt"/>
       </file>
       <file name="Unauthenticated.ts" path="D:\backup-dell-latitude\Desktop\projects\kulineran-yuk\server\src\errors\Unauthenticated.ts">
@@ -561,15 +570,15 @@
         <line num="7" count="7" type="stmt"/>
         <line num="33" count="7" type="stmt"/>
         <line num="121" count="7" type="stmt"/>
-        <line num="122" count="54" type="stmt"/>
-        <line num="123" count="54" type="cond" truecount="1" falsecount="0"/>
-        <line num="124" count="40" type="stmt"/>
-        <line num="126" count="54" type="stmt"/>
+        <line num="122" count="57" type="stmt"/>
+        <line num="123" count="57" type="cond" truecount="1" falsecount="0"/>
+        <line num="124" count="43" type="stmt"/>
+        <line num="126" count="57" type="stmt"/>
         <line num="129" count="7" type="stmt"/>
-        <line num="130" count="6" type="stmt"/>
-        <line num="131" count="6" type="cond" truecount="1" falsecount="0"/>
-        <line num="132" count="1" type="stmt"/>
-        <line num="134" count="6" type="stmt"/>
+        <line num="130" count="7" type="stmt"/>
+        <line num="131" count="7" type="cond" truecount="1" falsecount="0"/>
+        <line num="132" count="2" type="stmt"/>
+        <line num="134" count="7" type="stmt"/>
         <line num="137" count="7" type="stmt"/>
         <line num="139" count="3" type="stmt"/>
         <line num="140" count="3" type="stmt"/>
@@ -670,9 +679,9 @@
       </file>
     </package>
     <package name="src.services.mongoose.resto">
-      <metrics statements="168" coveredstatements="164" conditionals="198" coveredconditionals="169" methods="20" coveredmethods="20"/>
+      <metrics statements="182" coveredstatements="178" conditionals="200" coveredconditionals="171" methods="22" coveredmethods="22"/>
       <file name="account.ts" path="D:\backup-dell-latitude\Desktop\projects\kulineran-yuk\server\src\services\mongoose\resto\account.ts">
-        <metrics statements="59" coveredstatements="59" conditionals="9" coveredconditionals="9" methods="8" coveredmethods="8"/>
+        <metrics statements="73" coveredstatements="73" conditionals="11" coveredconditionals="11" methods="10" coveredmethods="10"/>
         <line num="2" count="2" type="stmt"/>
         <line num="3" count="2" type="stmt"/>
         <line num="4" count="2" type="stmt"/>
@@ -728,10 +737,24 @@
         <line num="112" count="2" type="cond" truecount="1" falsecount="0"/>
         <line num="113" count="1" type="stmt"/>
         <line num="116" count="2" type="stmt"/>
-        <line num="121" count="2" type="stmt"/>
-        <line num="122" count="2" type="stmt"/>
-        <line num="123" count="2" type="stmt"/>
-        <line num="124" count="2" type="stmt"/>
+        <line num="120" count="6" type="stmt"/>
+        <line num="121" count="6" type="stmt"/>
+        <line num="127" count="6" type="stmt"/>
+        <line num="129" count="6" type="stmt"/>
+        <line num="131" count="3" type="stmt"/>
+        <line num="133" count="3" type="stmt"/>
+        <line num="134" count="3" type="cond" truecount="1" falsecount="0"/>
+        <line num="135" count="1" type="stmt"/>
+        <line num="138" count="2" type="stmt"/>
+        <line num="139" count="2" type="cond" truecount="1" falsecount="0"/>
+        <line num="140" count="1" type="stmt"/>
+        <line num="143" count="1" type="stmt"/>
+        <line num="148" count="5" type="stmt"/>
+        <line num="153" count="2" type="stmt"/>
+        <line num="154" count="2" type="stmt"/>
+        <line num="155" count="2" type="stmt"/>
+        <line num="156" count="2" type="stmt"/>
+        <line num="157" count="2" type="stmt"/>
       </file>
       <file name="auth.ts" path="D:\backup-dell-latitude\Desktop\projects\kulineran-yuk\server\src\services\mongoose\resto\auth.ts">
         <metrics statements="36" coveredstatements="34" conditionals="5" coveredconditionals="5" methods="4" coveredmethods="4"/>
@@ -833,7 +856,7 @@
         <line num="199" count="1" type="stmt"/>
         <line num="201" count="1" type="stmt"/>
         <line num="207" count="1" type="stmt"/>
-        <line num="209" count="13" type="stmt"/>
+        <line num="209" count="14" type="stmt"/>
         <line num="213" count="3" type="stmt"/>
         <line num="214" count="3" type="stmt"/>
         <line num="219" count="3" type="stmt"/>
