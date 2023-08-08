@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import config from '../../../../../src/config';
 import Restaurant from '../../../../../src/models/Restaurant';
 import RestaurantVerification from '../../../../../src/models/RestaurantVerification';
-import { checkingEmailVerification, createReEmailVerificationRequest, createResetPasswordRequest } from '../../../../../src/services/mongoose/resto/account';
+import { checkingEmailVerification, checkingResetPassword, createReEmailVerificationRequest, createResetPasswordRequest } from '../../../../../src/services/mongoose/resto/account';
 import { BadRequest, NotFound } from '../../../../../src/errors';
 import Conflict from '../../../../../src/errors/Conflict';
 import InvalidToken from '../../../../../src/errors/InvalidToken';
@@ -326,5 +326,110 @@ describe('testing createResetPasswordRequest', () => {
     await createResetPasswordRequest(req);
     const result = await RestaurantResetPasswordRequest.findOne();
     expect(result!.restaurantId).toStrictEqual(restaurant._id);
+  });
+});
+
+// testing checkingResetPassword
+describe('testing checkingResetPassword', () => {
+  const signupRestaurantData = {
+    username: 'warungmakanenak',
+    name: 'Warung Makan Enak',
+    email: 'warungmakanenak@gmail.com',
+    password: 'warungmakan12345',
+  };
+
+  beforeEach(async () => {
+    await mongoose.connect(config.urlDb);
+  });
+  afterEach(async () => {
+    await Restaurant.deleteMany({});
+    await RestaurantResetPasswordRequest.deleteMany({}); 
+    await mongoose.connection.close();
+  });
+  // error
+  // should throw BadRequest if no uniqueString params
+  it('should throw BadRequest if no uniqueString params', async () => {
+    const req = {
+      params: {},
+    } as unknown as Request;
+
+    try {
+      await checkingResetPassword(req);
+    } catch (error: any) {
+      expect(error).toBeInstanceOf(BadRequest);
+    }
+  });
+  // should throw NotFound if no mact uniqueString in data
+  it('should throw NotFound if no mact uniqueString in data', async () => {
+    const restaurant = await Restaurant.create({
+      ...signupRestaurantData,
+      isVerified: true,
+    });
+
+    await RestaurantResetPasswordRequest.create({
+      restaurantId: restaurant._id,
+      uniqueString: uuidv4(),
+      expiredAt: dayjs().add(10, 'minutes').toISOString(),
+    });
+
+    const req = {
+      params: {
+        uniqueString: uuidv4(),
+      },
+    } as unknown as Request;
+
+    try {
+      await checkingResetPassword(req);
+    } catch (error: any) {
+      expect(error).toBeInstanceOf(NotFound);
+    }
+  });
+  // should throw InvalidToekn if request is expired
+  it('should throw InvalidToekn if request is expired', async () => {
+    const restaurant = await Restaurant.create({
+      ...signupRestaurantData,
+      isVerified: true,
+    });
+
+    const resetPasswordRequest = await RestaurantResetPasswordRequest.create({
+      restaurantId: restaurant._id,
+      uniqueString: uuidv4(),
+      expiredAt: dayjs().toISOString(),
+    });
+
+    const req = {
+      params: {
+        uniqueString: resetPasswordRequest.uniqueString,
+      },
+    } as unknown as Request;
+
+    try {
+      await checkingResetPassword(req);
+    } catch (error: any) {
+      expect(error).toBeInstanceOf(InvalidToken);
+    }
+  });
+  // success
+  // should not throw error
+  it('should not throw error', async () => {
+    const restaurant = await Restaurant.create({
+      ...signupRestaurantData,
+      isVerified: true,
+    });
+
+    const resetPasswordRequest = await RestaurantResetPasswordRequest.create({
+      restaurantId: restaurant._id,
+      uniqueString: uuidv4(),
+      expiredAt: dayjs().add(10, 'minutes').toISOString(),
+    });
+
+    const req = {
+      params: {
+        uniqueString: resetPasswordRequest.uniqueString,
+      },
+    } as unknown as Request;
+
+    const result = await checkingResetPassword(req);
+    expect(result).toBe(undefined);
   });
 });

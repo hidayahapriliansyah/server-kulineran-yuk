@@ -67,7 +67,7 @@ const checkingEmailVerification = async (req: Request): Promise<void | Error> =>
   }
 };
 
-const createResetPasswordRequest = async (req: Request) => {
+const createResetPasswordRequest = async (req: Request): Promise<void | Error> => {
   const createResetPasswordRequestBody = z.object({
     email: z.string().email().nonempty(),
   });
@@ -94,8 +94,32 @@ const createResetPasswordRequest = async (req: Request) => {
   }
 };
 
+const checkingResetPassword = async (req: Request): Promise<void | Error> => {
+  const { uniqueString } = req.params;
+
+  if (!uniqueString) throw new BadRequest('Request not found. Please check your request id.');
+
+  try {
+    const resetPassswordRequest = await RestaurantResetPasswordRequest.findOne({
+      uniqueString,
+    });
+
+    if (!resetPassswordRequest) {
+      throw new NotFound('Request not found. Please check your request id.');
+    }
+
+    const isExpired = dayjs().isAfter(dayjs(resetPassswordRequest.expiredAt));
+    if (isExpired) {
+      throw new InvalidToken('Request Id is expired. Please make a new reset password request.');
+    }
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 export {
   createReEmailVerificationRequest,
   checkingEmailVerification,
   createResetPasswordRequest,
+  checkingResetPassword,
 };

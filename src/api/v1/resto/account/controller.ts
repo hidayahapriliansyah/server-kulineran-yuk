@@ -1,7 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { SuccessAPIResponse } from '../../../../global/types';
-import { checkingEmailVerification, createReEmailVerificationRequest, createResetPasswordRequest } from '../../../../services/mongoose/resto/account';
+import {
+  checkingEmailVerification,
+  checkingResetPassword,
+  createReEmailVerificationRequest,
+  createResetPasswordRequest
+} from '../../../../services/mongoose/resto/account';
 
 const createReEmailVerificationRequestController = async (
   req: Request,
@@ -43,6 +48,21 @@ const createResetPasswordRequestController = async (
     res
       .status(StatusCodes.OK)
       .json(new SuccessAPIResponse('Success sending reset password request to system'));
+  } catch (error: any) {
+    next(error);
+  }
+};
+
+const checkingResetPasswordController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    await checkingResetPassword(req);
+    res
+      .status(StatusCodes.OK)
+      .json(new SuccessAPIResponse('Request password is valid. Please continue to create the new password.'));
   } catch (error: any) {
     next(error);
   }
