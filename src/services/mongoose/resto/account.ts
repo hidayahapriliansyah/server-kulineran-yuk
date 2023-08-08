@@ -117,9 +117,42 @@ const checkingResetPassword = async (req: Request): Promise<void | Error> => {
   }
 };
 
+const createNewPasswordViaResetPassword = async (req: Request): Promise<void | Error> => {
+  const createNewPasswordViaResetPasswordBody = z.object({
+    password: z.string().min(6).nonempty(),
+    requestId: z.string(),
+  });
+
+  type CreateNewPasswordViaResetPasswordBody = z.infer<typeof createNewPasswordViaResetPasswordBody>;
+  try {
+    const body: CreateNewPasswordViaResetPasswordBody =
+      createNewPasswordViaResetPasswordBody.parse(req.body);
+
+    const { password, requestId: uniqueString } = body;
+
+    const resetPassswordRequest = await RestaurantResetPasswordRequest.findOne({ uniqueString });
+    if (!resetPassswordRequest) {
+      throw new NotFound('Request not found. Please check your request id.');
+    }
+
+    const isExpired = dayjs().isAfter(dayjs(resetPassswordRequest.expiredAt));
+    if (isExpired) {
+      throw new InvalidToken('Request Id is expired. Please make a new reset password request.');
+    }
+
+    await Restaurant.findOneAndUpdate({
+      _id: resetPassswordRequest.restaurantId,
+      password,
+    });
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 export {
   createReEmailVerificationRequest,
   checkingEmailVerification,
   createResetPasswordRequest,
   checkingResetPassword,
+  createNewPasswordViaResetPassword,
 };

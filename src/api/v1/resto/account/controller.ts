@@ -4,6 +4,7 @@ import { SuccessAPIResponse } from '../../../../global/types';
 import {
   checkingEmailVerification,
   checkingResetPassword,
+  createNewPasswordViaResetPassword,
   createReEmailVerificationRequest,
   createResetPasswordRequest
 } from '../../../../services/mongoose/resto/account';
@@ -68,8 +69,25 @@ const checkingResetPasswordController = async (
   }
 };
 
+const createNewPasswordViaResetPasswordController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    await createNewPasswordViaResetPassword(req);
+    res
+      .status(StatusCodes.OK)
+      .json(new SuccessAPIResponse('New password saved successfully. Please continue to sign in.'));
+  } catch (error: any) {
+    next(error);
+  }
+};
+
 export {
   createReEmailVerificationRequestController,
   checkingEmailVerificationController,
   createResetPasswordRequestController,
+  checkingResetPasswordController,
+  createNewPasswordViaResetPasswordController,
 };

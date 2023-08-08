@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import config from '../../../../../src/config';
 import Restaurant from '../../../../../src/models/Restaurant';
 import RestaurantVerification from '../../../../../src/models/RestaurantVerification';
-import { checkingEmailVerification, checkingResetPassword, createReEmailVerificationRequest, createResetPasswordRequest } from '../../../../../src/services/mongoose/resto/account';
+import { checkingEmailVerification, checkingResetPassword, createNewPasswordViaResetPassword, createReEmailVerificationRequest, createResetPasswordRequest } from '../../../../../src/services/mongoose/resto/account';
 import { BadRequest, NotFound } from '../../../../../src/errors';
 import Conflict from '../../../../../src/errors/Conflict';
 import InvalidToken from '../../../../../src/errors/InvalidToken';
@@ -431,5 +431,154 @@ describe('testing checkingResetPassword', () => {
 
     const result = await checkingResetPassword(req);
     expect(result).toBe(undefined);
+  });
+});
+
+// testing createNewPasswordViaResetPassword
+describe('testing createNewPasswordViaResetPassword', () => {
+  const signupRestaurantData = {
+    username: 'warungmakanenak',
+    name: 'Warung Makan Enak',
+    email: 'warungmakanenak@gmail.com',
+    password: 'warungmakan12345',
+  };
+
+  beforeEach(async () => {
+    await mongoose.connect(config.urlDb);
+  });
+  afterEach(async () => {
+    await Restaurant.deleteMany({});
+    await RestaurantResetPasswordRequest.deleteMany({}); 
+    await mongoose.connection.close();
+  });
+
+  // error
+  // should throw zod error if password body property is undefined
+  it('should throw zod error if password body property is undefined', async () => {
+    const req = {
+      body: {
+        requestId: uuidv4(),
+      },
+    } as unknown as Request;
+
+    try {
+      await createNewPasswordViaResetPassword(req);
+    } catch (error: any) {
+      expect(error).toBeInstanceOf(ZodError);
+      expect(error.errors[0].path[0]).toBe('password');
+      expect(error.errors[0].message).toBe('Required');
+    }
+  });
+  // should throw zod error if password body property is less than 6 character
+  it('should throw zod error if password body property is less than 6 character', async () => {
+    const req = {
+      body: {
+        password: '12345',
+        requestId: uuidv4(),
+      },
+    } as unknown as Request;
+
+    try {
+      await createNewPasswordViaResetPassword(req);
+    } catch (error: any) {
+      expect(error).toBeInstanceOf(ZodError);
+      expect(error.errors[0].path[0]).toBe('password');
+      expect(error.errors[0].message).toBe('String must contain at least 6 character(s)');
+    }
+  });
+  // should throw zod error if requestId body property is undefined
+  it('should throw zod error if requestId body property is undefined', async () => {
+    const req = {
+      body: {
+        password: '123456789',
+      },
+    } as unknown as Request;
+
+    try {
+      await createNewPasswordViaResetPassword(req);
+    } catch (error: any) {
+      expect(error).toBeInstanceOf(ZodError);
+      expect(error.errors[0].path[0]).toBe('requestId');
+      expect(error.errors[0].message).toBe('Required');
+    }
+  });
+  // should throw NotFound if requestId is not match with any data
+  it('should throw NotFound if requestId is not match with any data', async () => {
+    const restaurant = await Restaurant.create({
+      ...signupRestaurantData,
+      isVerified: true,
+    });
+
+    await RestaurantResetPasswordRequest.create({
+      restaurantId: restaurant._id,
+      uniqueString: uuidv4(),
+      expiredAt: dayjs().add(10, 'minutes').toISOString(),
+    });
+
+    const req = {
+      body: {
+        password: '123456789',
+        requestId: uuidv4(),
+      },
+    } as unknown as Request;
+
+    try {
+      await createNewPasswordViaResetPassword(req);
+    } catch (error: any) {
+      expect(error).toBeInstanceOf(NotFound);
+    }
+  });
+  // should throw InvalidTokenif requestId (uniqueString) is expired
+  it('should throw InvalidTokenif requestId (uniqueString) is expired', async () => {
+    const restaurant = await Restaurant.create({
+      ...signupRestaurantData,
+      isVerified: true,
+    });
+
+    const resetPassswordRequest = await RestaurantResetPasswordRequest.create({
+      restaurantId: restaurant._id,
+      uniqueString: uuidv4(),
+      expiredAt: dayjs().toISOString(),
+    });
+
+    const req = {
+      body: {
+        password: '123456789',
+        requestId: resetPassswordRequest.uniqueString,
+      },
+    } as unknown as Request;
+
+    try {
+      await createNewPasswordViaResetPassword(req);
+    } catch (error: any) {
+      expect(error).toBeInstanceOf(InvalidToken);
+    }
+  });
+  // success
+  // should create new password and different than before
+  it('should create new password and different than before', async () => {
+    const restaurant = await Restaurant.create({
+      ...signupRestaurantData,
+      isVerified: true,
+    });
+
+    const resetPassswordRequest = await RestaurantResetPasswordRequest.create({
+      restaurantId: restaurant._id,
+      uniqueString: uuidv4(),
+      expiredAt: dayjs().add(10, 'minutes').toISOString(),
+    });
+
+    const req = {
+      body: {
+        password: '123456789',
+        requestId: resetPassswordRequest.uniqueString,
+      },
+    } as unknown as Request;
+
+    const result = await createNewPasswordViaResetPassword(req);
+    const restaurantWithNewPassword = await Restaurant.findById(restaurant._id);
+
+    expect(result).toBeUndefined();
+    expect(restaurantWithNewPassword!.password).not.toBe(restaurant.password);
   });
 });
