@@ -7,10 +7,11 @@ import { v4 as uuidv4 } from 'uuid';
 import config from '../../../../../src/config';
 import Restaurant from '../../../../../src/models/Restaurant';
 import RestaurantVerification from '../../../../../src/models/RestaurantVerification';
-import { checkingEmailVerification, createReEmailVerificationRequest } from '../../../../../src/services/mongoose/resto/account';
+import { checkingEmailVerification, createReEmailVerificationRequest, createResetPasswordRequest } from '../../../../../src/services/mongoose/resto/account';
 import { BadRequest, NotFound } from '../../../../../src/errors';
 import Conflict from '../../../../../src/errors/Conflict';
 import InvalidToken from '../../../../../src/errors/InvalidToken';
+import RestaurantResetPasswordRequest from '../../../../../src/models/RestauranResetPasswordRequest';
 
 // testing createReEmailVerificationRequest
 describe('testing createReEmailVerificationRequest', () => {
@@ -243,5 +244,87 @@ describe('testing checkingEmailVerification', () => {
     await checkingEmailVerification(req);
     const verifiedRestaurant = await Restaurant.findById(restaurant._id);
     expect(verifiedRestaurant!.isVerified).toBe(true);
+  });
+});
+
+// testing createResetPasswordRequest
+describe('testing createResetPasswordRequest', () => {
+  const signupRestaurantData = {
+    username: 'warungmakanenak',
+    name: 'Warung Makan Enak',
+    email: 'warungmakanenak@gmail.com',
+    password: 'warungmakan12345',
+  };
+
+  beforeEach(async () => {
+    await mongoose.connect(config.urlDb);
+  });
+  afterEach(async () => {
+    await Restaurant.deleteMany({});
+    await RestaurantResetPasswordRequest.deleteMany({}); 
+    await mongoose.connection.close();
+  });
+  // error
+  // should throw error if email body property is not exist
+  it('should throw error if email body property is not exist', async () => {
+    const req = {
+      body: {},
+    } as unknown as Request;
+
+    try {
+      await createResetPasswordRequest(req);
+    } catch (error: any) {
+      expect(error).toBeInstanceOf(ZodError);
+      expect(error.errors[0].path[0]).toBe('email');
+      expect(error.errors[0].message).toBe('Required');
+    }
+  });
+  // should throw error if email value is not valid as email (Zod)
+  it('should throw error if email value is not valid as email (Zod)', async () => {
+    const req = {
+      body: {
+        email: 'hellohidayah@co'
+      },
+    } as unknown as Request;
+
+    try {
+      await createResetPasswordRequest(req);
+    } catch (error: any) {
+      expect(error).toBeInstanceOf(ZodError);
+      expect(error.errors[0].path[0]).toBe('email');
+      expect(error.errors[0].message).toBe('Invalid email');
+    }
+  });
+  // should not create reset password if no match account with email
+  it('should not create reset password if no match account with email', async () => {
+    const req = {
+      body: {
+        email: 'warungmakanenak@gmail.co'
+      },
+    } as unknown as Request;
+
+    await Restaurant.create({
+      ...signupRestaurantData,
+    });
+    await createResetPasswordRequest(req);
+    const result = await RestaurantResetPasswordRequest.findOne();
+    expect(result).toBeNull();
+  });
+  // success
+  // should create reset password request with valid email account
+  it('should not create reset password if no match account with email', async () => {
+    const req = {
+      body: {
+        email: signupRestaurantData.email,
+      },
+    } as unknown as Request;
+
+    const restaurant = await Restaurant.create({
+      ...signupRestaurantData,
+      isVerified: true,
+    });
+    await createResetPasswordRequest(req);
+    const result = await RestaurantResetPasswordRequest.findOne();
+    expect(result!.restaurantId).toStrictEqual(restaurant._id);
   });
 });

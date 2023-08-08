@@ -1,13 +1,15 @@
 import { Request } from 'express';
 import { z } from 'zod';
+import { v4 as uuidv4 } from 'uuid';
+import dayjs from 'dayjs';
 
 import Restaurant from '../../../models/Restaurant';
 import createRestaurantEmailVerification from '../../../utils/createRestaurantEmailVerification';
 import RestaurantVerification from '../../../models/RestaurantVerification';
 import { BadRequest, NotFound } from '../../../errors';
-import dayjs from 'dayjs';
 import InvalidToken from '../../../errors/InvalidToken';
 import Conflict from '../../../errors/Conflict';
+import RestaurantResetPasswordRequest from '../../../models/RestauranResetPasswordRequest';
 
 const createReEmailVerificationRequest = async (req: Request): Promise<void | Error> => {
   const createReEmailVerificationRequestBody = z.object({
@@ -65,7 +67,35 @@ const checkingEmailVerification = async (req: Request): Promise<void | Error> =>
   }
 };
 
+const createResetPasswordRequest = async (req: Request) => {
+  const createResetPasswordRequestBody = z.object({
+    email: z.string().email().nonempty(),
+  });
+
+  type CreateResetPasswordRequestBody = z.infer<typeof createResetPasswordRequestBody>;
+
+  try {
+    const body: CreateResetPasswordRequestBody =
+      createResetPasswordRequestBody.parse(req.body);
+
+    const { email } = body;
+
+    const restaurant = await Restaurant.findOne({ email });
+
+    if (restaurant) {
+      await RestaurantResetPasswordRequest.create({
+        restaurantId: restaurant._id,
+        uniqueString: uuidv4(),
+        expiredAt: dayjs().add(10, 'minutes').toISOString(),
+      });
+    }
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 export {
   createReEmailVerificationRequest,
   checkingEmailVerification,
+  createResetPasswordRequest,
 };
