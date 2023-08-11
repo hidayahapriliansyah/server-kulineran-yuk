@@ -2,7 +2,7 @@ import { Schema, Model, model, models } from 'mongoose';
 import { TimestampsDocument } from '../global/types';
 import { IMenu } from './Menu';
 
-interface IMenuSpicyLevel extends TimestampsDocument {
+export interface IMenuSpicyLevel extends TimestampsDocument {
   menuId: IMenu['_id'];
   maxSpicy: number;
 }
@@ -22,6 +22,6 @@ const menuSpicyLevelSchema = new Schema<IMenuSpicyLevel>(
   { timestamps: true }
 );
 
-const MenuSpicyLevel: Model<IMenu> = models.MenuSpicyLevel || model('MenuSpicyLevel', menuSpicyLevelSchema);
+const MenuSpicyLevel: Model<IMenuSpicyLevel> = models.MenuSpicyLevel || model('MenuSpicyLevel', menuSpicyLevelSchema);
 
 export default MenuSpicyLevel;

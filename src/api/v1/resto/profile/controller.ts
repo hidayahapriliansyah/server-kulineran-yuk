@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { SuccessAPIResponse } from '../../../../global/types';
 import { StatusCodes } from 'http-status-codes';
 import {
+  RestaurantProfileDTO,
   getProfile,
   setupProfile,
   updateCustomerPaymentType,
@@ -14,15 +15,11 @@ const getProfileController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const result = await getProfile(req);
+    const result = await getProfile(req) as RestaurantProfileDTO;
 
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Get restaurant profile data successfully', {
-        data: {
-          userId: result,
-        },
-      }));
+      .json(new SuccessAPIResponse('Get restaurant profile data successfully', result ));
   } catch (error: any) {
     next(error);
   }
@@ -38,11 +35,7 @@ const updateProfileController = async (
 
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Update restaurant profile data successfully', {
-        data: {
-          userId: result,
-        },
-      }));
+      .json(new SuccessAPIResponse('Update restaurant profile data successfully', { userId: result }));
   } catch (error: any) {
     next(error);
   }
@@ -58,11 +51,7 @@ const setupProfileController = async (
 
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Update restaurant profile data successfully', {
-        data: {
-          userId: result,
-        },
-      }));
+      .json(new SuccessAPIResponse('Update restaurant profile data successfully', { userId: result }));
   } catch (error: any) {
     next(error);
   }
@@ -78,11 +67,12 @@ const updateCustomerPaymentTypeController = async (
 
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Update restaurant customer payment type successfully', {
-        data: {
-          userId: result,
-        },
-      }));
+      .json(
+        new SuccessAPIResponse(
+          'Update restaurant customer payment type successfully', 
+          { userId: result }
+        )
+      );
   } catch (error: any) {
     next(error);
   }

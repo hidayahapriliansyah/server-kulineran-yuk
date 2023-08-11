@@ -8,7 +8,7 @@ export interface IMenu extends TimestampsDocument {
   name: string;
   isBungkusAble: boolean;
   slug: string;
-  descripttion: string;
+  description: string;
   price: number;
   stock: number;
   isActive: boolean;
@@ -42,11 +42,11 @@ const menuSchema = new Schema<IMenu>(
       unique: true,
       required: [true, 'Slug is required']
     },
-    descripttion: {
+    description: {
       type: String,
       required: [true, 'Deskripsi menu harus diisi'],
-      minlength: [50, 'Deskripsi menu minimal memiliki 50 karakter'],
-      maxlength: [999, 'Deskripsi menu maksimal memiliki 999 karakter'],
+      minlength: [1, 'Deskripsi menu minimal memiliki 1 karakter'],
+      maxlength: [3000, 'Deskripsi menu maksimal memiliki 3000 karakter'],
     },
     price: {
       type: Number,
@@ -66,15 +66,19 @@ const menuSchema = new Schema<IMenu>(
     },
     image2: {
       type: String,
+      default: '',
     },
     image3: {
       type: String,
+      default: '',
     },
     image4: {
       type: String,
+      default: '',
     },
     image5: {
       type: String,
+      default: '',
     },
     etalaseId: {
       type: Schema.Types.ObjectId,

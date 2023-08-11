@@ -4,7 +4,8 @@ import { TimestampsDocument } from '../global/types';
 
 export interface IEtalase extends TimestampsDocument {
   restaurantId: IRestaurant['_id'];
-  name: String;
+  name: string;
+  totalItem: number;
 }
 
 const etalaseSchema = new Schema<IEtalase>(
@@ -17,7 +18,9 @@ const etalaseSchema = new Schema<IEtalase>(
     name: {
       type: String,
       required: true,
-    },
+      minlength: [1, 'Nama minimal memiliki 1 karakter'],
+      maxlength: [20, 'Nama etalase maksimal memiliki 20 karakater'],
+    }
   },
   { timestamps: true }
 );
