@@ -234,7 +234,10 @@ describe('testing getAllRestaurantMenu', () => {
       const menuPayload = {
         restaurantId,
         ...mockValidMenuPedas,
-        ...(convertImageGallery(mockValidMenuPedas.images)),
+        ...(convertImageGallery({
+          arrayOfImageUrl: mockValidMenuPedas.images,
+          maxImage: 5,
+        })),
         name: `${mockValidMenuPedas.name} ${i}`,
         etalaseId: etalasePedasId,
         slug: slugify(`${mockValidMenuPedas.name} ${i}}`) + nanoid(10),
@@ -249,7 +252,10 @@ describe('testing getAllRestaurantMenu', () => {
       const menuPayload = {
         restaurantId,
         ...mockValidMenuMinuman,
-        ...(convertImageGallery(mockValidMenuMinuman.images)),
+        ...(convertImageGallery({
+          arrayOfImageUrl: mockValidMenuMinuman.images,
+          maxImage: 5,
+        })),
         etalaseId: etalaseMinumanId,
         name: `${mockValidMenuMinuman.name} ${i}`,
         slug: slugify(`${mockValidMenuMinuman.name} ${i}}`) + nanoid(10),
@@ -282,7 +288,10 @@ describe('testing getAllRestaurantMenu', () => {
       const menuPayload = {
         restaurantId,
         ...mockValidMenuPedas,
-        ...(convertImageGallery(mockValidMenuPedas.images)),
+        ...(convertImageGallery({
+          arrayOfImageUrl: mockValidMenuPedas.images,
+          maxImage: 5,
+        })),
         name: `${mockValidMenuPedas.name} ${i}`,
         etalaseId: etalasePedasId,
         slug: slugify(`${mockValidMenuPedas.name} ${i}}`) + nanoid(10),
@@ -297,7 +306,10 @@ describe('testing getAllRestaurantMenu', () => {
       const menuPayload = {
         restaurantId,
         ...mockValidMenuMinuman,
-        ...(convertImageGallery(mockValidMenuMinuman.images)),
+        ...(convertImageGallery({
+          arrayOfImageUrl: mockValidMenuMinuman.images,
+          maxImage: 5,
+        })),
         etalaseId: etalaseMinumanId,
         name: `${mockValidMenuMinuman.name} ${i}`,
         slug: slugify(`${mockValidMenuMinuman.name} ${i}}`) + nanoid(10),
@@ -841,7 +853,10 @@ describe('testing getRestaurantMenuBySlug', () => {
     const menuPayload = {
       restaurantId,
       ...mockValidMenuPedas,
-      ...(convertImageGallery(mockValidMenuPedas.images)),
+      ...(convertImageGallery({
+        arrayOfImageUrl: mockValidMenuPedas.images,
+        maxImage: 5,
+      })),
       name: 'mockValidMenuPedas.nam',
       etalaseId: etalasePedasId,
       slug: slugify(mockValidMenuPedas.name) + nanoid(10),

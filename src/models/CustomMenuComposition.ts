@@ -1,8 +1,10 @@
 import { Schema, Model, model, models } from 'mongoose';
 import { TimestampsDocument } from '../global/types';
 import { ICustomMenuCategory } from './CustomMenuCategory';
+import { IRestaurant } from './Restaurant';
 
 export interface ICustomMenuComposition extends TimestampsDocument {
+  restaurantId: IRestaurant['_id'];
   customMenuCategoryId: ICustomMenuCategory['_id'];
   name: string;
   description: string;
@@ -14,6 +16,11 @@ export interface ICustomMenuComposition extends TimestampsDocument {
 
 const customMenuCompositionSchema = new Schema<ICustomMenuComposition>(
   {
+    restaurantId: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: 'Restaurant',
+    },
     customMenuCategoryId: {
       type: Schema.Types.ObjectId,
       required: true,
@@ -28,8 +35,8 @@ const customMenuCompositionSchema = new Schema<ICustomMenuComposition>(
     description: {
       type: String,
       required: [true, 'Deskripsi menu harus diisi'],
-      minlength: [10, 'Deskripsi menu minimal memiliki 10 karakter'],
-      maxlength: [999, 'Deskripsi menu maksimal memiliki 999 karakter'],
+      minlength: [1, 'Deskripsi menu minimal memiliki 1 karakter'],
+      maxlength: [1000, 'Deskripsi menu maksimal memiliki 1000 karakter'],
     },
     stock: {
       type: Number,
@@ -45,6 +52,7 @@ const customMenuCompositionSchema = new Schema<ICustomMenuComposition>(
     },
     image2: {
       type: String,
+      default: '',
     },
   },
   { timestamps: true }

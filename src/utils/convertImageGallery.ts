@@ -2,16 +2,22 @@ interface ImageObject {
   [key: string]: string;
 }
 
-const convertImageGallery = (imageGallery: string[]): ImageObject => {
-  const imageObject: ImageObject = {};
-
-  for (let i = 0; i < 5; i++) {
-    const key = `image${i + 1}`;
-    const value = imageGallery[i] || '';
-    imageObject[key] = value;
-  }
-
-  return imageObject;
+type ConvertImageGalleryParameter = {
+  arrayOfImageUrl: string[],
+  maxImage: number,
 };
+
+const convertImageGallery = ({ arrayOfImageUrl, maxImage }: ConvertImageGalleryParameter)
+  : ImageObject => {
+    const imageObject: ImageObject = {};
+
+    for (let i = 0; i < maxImage; i++) {
+      const key = `image${i + 1}`;
+      const value = arrayOfImageUrl[i] || '';
+      imageObject[key] = value;
+    }
+
+    return imageObject;
+  };
 
 export default convertImageGallery;

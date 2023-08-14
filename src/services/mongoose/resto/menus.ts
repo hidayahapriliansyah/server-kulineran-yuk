@@ -24,13 +24,13 @@ export type EtalaseBodyDTO = z.infer<typeof etalaseBodyDTOSchema>;
 
 const restaurantMenuBodyDTOSchema = z.object({
   name: z.string().nonempty().min(1).max(80).regex(/^[a-zA-Z0-9.'\s-]+$/),
-  isBungkusAble: z.boolean().optional(),
+  isBungkusAble: z.boolean().default(false).optional(),
   description: z.string().min(1).max(3000),
   etalaseId: z.string(),
   price: z.number().positive(),
   stock: z.number().optional(),
   images: z.array(z.string()).min(1).max(5),
-  maxSpicy: z.number().optional(),
+  maxSpicy: z.number().nullable().default(null).optional(),
 });
 
 export type RestaurantMenuBodyDTO = z.infer<typeof restaurantMenuBodyDTOSchema>;
@@ -49,11 +49,7 @@ const getAllRestaurantMenu = async (req: Request): Promise<GetMenusWithPaginated
     limit?: string | number;
     page?: string | number;
     isActive?: string | undefined
-  } = req.query as {
-    limit?: string;
-    page?: string;
-    isActive?: string | undefined
-  };
+  } = req.query;
   limit = +limit;
   page = +page;
   if (isNaN(limit) || isNaN(page)) {
@@ -112,7 +108,10 @@ const createRestaurantMenu = async (req: Request): Promise<IMenu['_id'] | Error>
     } = body;
 
     const slug = slugify(name + `-${nanoid(10)}`);
-    const imageList = convertImageGallery(images);
+    const imageList = convertImageGallery({
+      arrayOfImageUrl: images,
+      maxImage: 5,
+    });
 
     const etalaseExist = await Etalase.findById(etalaseId);
     if (!etalaseExist) {
@@ -152,7 +151,9 @@ const getRestaurantMenuBySlug = async (req: Request): Promise<RestaurantMenuResp
       throw new NotFound('Menu slug not found. Please input valid menu slug.');
     }
     const menuSpicyLevel = await MenuSpicyLevel.findOne({ menuId: menu._id });
-    const maxSpicy = menuSpicyLevel?.maxSpicy as number ?? null;
+    const maxSpicy = menuSpicyLevel
+      ? menuSpicyLevel.maxSpicy
+      : null;
     const result: RestaurantMenuResponseDTO = {
       _id: menu._id,
       name: menu.name,
@@ -201,7 +202,10 @@ const updateRestaurantMenu = async (req: Request): Promise<IMenu['_id'] | Error>
     } = body;
 
     const slug = slugify(name + `-${nanoid(10)}`);
-    const imageList = convertImageGallery(images);
+    const imageList = convertImageGallery({
+      arrayOfImageUrl: images,
+      maxImage: 5,
+    });
 
     const etalaseExist = await Etalase.findById(etalaseId);
     if (!etalaseExist) {
