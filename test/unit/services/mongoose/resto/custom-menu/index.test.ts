@@ -2048,13 +2048,12 @@ describe('testing Custom Menu Composition Functionality', () => {
 
         const payloadBody = {
           ...composition.withSpicy.telurAyam,
-          customMenuCategoryId: categoryId.toString,
+          customMenuCategoryId: categoryId.toString(),
         };
         req.body = payloadBody;
         await expect(() => updateCustomMenuComposition(req)).rejects.toThrow(NotFound);
       });
     });
-
     // success
     describe('success', () => { 
       // should return _id of updated composition
