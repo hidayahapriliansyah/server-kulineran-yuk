@@ -198,7 +198,7 @@ const getAllCustomMenuComposition = async (req: Request):
     }
     let filter = {};
     if (category) {
-      filter = { ...filter, category };
+      filter = { ...filter, customMenuCategoryId: category };
     }
     if (name) {
       filter = {

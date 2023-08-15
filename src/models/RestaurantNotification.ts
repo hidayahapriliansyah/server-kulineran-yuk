@@ -2,7 +2,7 @@ import { Schema, Model, model, models } from 'mongoose';
 import { TimestampsDocument } from '../global/types';
 import { IRestaurant } from './Restaurant';
 
-interface IRestaurantNotification extends TimestampsDocument {
+export interface IRestaurantNotification extends TimestampsDocument {
   restaurantId: IRestaurant['_id'];
   redirectLink: string;
   title: string;

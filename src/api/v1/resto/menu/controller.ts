@@ -3,9 +3,6 @@ import { SuccessAPIResponse } from '../../../../global/types';
 import { StatusCodes } from 'http-status-codes';
 import { IEtalase } from '../../../../models/Etalase';
 import {
-  GetMenusWithPaginated,
-  RestaurantMenuListDTO,
-  RestaurantMenuResponseDTO,
   createEtalase,
   createRestaurantMenu,
   deleteEtalase,
@@ -17,6 +14,8 @@ import {
   updateRestaurantMenu
 } from '../../../../services/mongoose/resto/menus';
 import { IMenu } from '../../../../models/Menu';
+
+import * as DTO from '../../../../services/mongoose/resto/menus/types';
 
 const getAllEtalaseController = async (
   req: Request,
@@ -84,7 +83,7 @@ const getAllRestaurantMenuController = async (
   next: NextFunction,
 ) => {
   try {
-    const result = await getAllRestaurantMenu(req) as GetMenusWithPaginated;
+    const result = await getAllRestaurantMenu(req) as DTO.GetMenusWithPaginated;
 
     res
       .status(StatusCodes.OK)
@@ -120,7 +119,7 @@ const getRestaurantMenuBySlugController = async (
   next: NextFunction,
 ) => {
   try {
-    const result = await getRestaurantMenuBySlug(req) as RestaurantMenuResponseDTO;
+    const result = await getRestaurantMenuBySlug(req) as DTO.RestaurantMenuResponse;
     res
       .status(StatusCodes.OK)
       .json(new SuccessAPIResponse('Success to get menu data', result));

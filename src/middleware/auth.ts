@@ -20,7 +20,6 @@ const authenticationAdminRestoAccount = (
     }
     const payload = isAccessTokenValid({ token, userType: 'resto' }) as IPayloadDataAccessToken;
 
-    console.log('authenticationAdminRestoAccount payload =>>>', payload);
     req.user = {
       _id: payload._id,
       email: payload.email,
