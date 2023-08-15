@@ -1,49 +1,18 @@
 import { Request } from 'express';
-import mongoose, { ObjectId } from 'mongoose';
-import z from 'zod';
+import { ObjectId } from 'mongoose';
 import slugify from 'slugify';
 import { nanoid } from 'nanoid';
 
-import Menu, { IMenu } from '../../../models/Menu';
-import { IRestaurant } from '../../../models/Restaurant';
-import Etalase, { IEtalase } from '../../../models/Etalase';
-import { BadRequest, NotFound } from '../../../errors';
-import MenuSpicyLevel, { IMenuSpicyLevel } from '../../../models/MenuSpicyLevel';
-import convertImageGallery from '../../../utils/convertImageGallery';
+import Menu, { IMenu } from '../../../../models/Menu';
+import { IRestaurant } from '../../../../models/Restaurant';
+import Etalase, { IEtalase } from '../../../../models/Etalase';
+import { BadRequest, NotFound } from '../../../../errors';
+import MenuSpicyLevel from '../../../../models/MenuSpicyLevel';
+import convertImageGallery from '../../../../utils/convertImageGallery';
 
-export type EtalaseResponseDTO = {
-  _id: ObjectId;
-  name: string;
-}
+import * as DTO from './types';
 
-const etalaseBodyDTOSchema = z.object({
-  name: z.string().nonempty().max(20),
-});
-
-export type EtalaseBodyDTO = z.infer<typeof etalaseBodyDTOSchema>;
-
-const restaurantMenuBodyDTOSchema = z.object({
-  name: z.string().nonempty().min(1).max(80).regex(/^[a-zA-Z0-9.'\s-]+$/),
-  isBungkusAble: z.boolean().default(false).optional(),
-  description: z.string().min(1).max(3000),
-  etalaseId: z.string(),
-  price: z.number().positive(),
-  stock: z.number().optional(),
-  images: z.array(z.string()).min(1).max(5),
-  maxSpicy: z.number().nullable().default(null).optional(),
-});
-
-export type RestaurantMenuBodyDTO = z.infer<typeof restaurantMenuBodyDTOSchema>;
-export type RestaurantMenuResponseDTO = RestaurantMenuBodyDTO & { _id: IMenu['_id'] };
-export type RestaurantMenuListDTO = {
-  _id: IMenu['_id'];
-  name: IMenu['name'];
-  isActive: IMenu['isActive'];
-  price: IMenu['price'];
-}[];
-export type GetMenusWithPaginated = { menus: RestaurantMenuListDTO, pages: number, total: number };
-
-const getAllRestaurantMenu = async (req: Request): Promise<GetMenusWithPaginated | Error> => {
+const getAllRestaurantMenu = async (req: Request): Promise<DTO.GetMenusWithPaginated | Error> => {
   const { _id: restaurantId } = req.user as { _id: IRestaurant['_id']};
   let { limit = '10', page = '1', isActive }: {
     limit?: string | number;
@@ -73,7 +42,7 @@ const getAllRestaurantMenu = async (req: Request): Promise<GetMenusWithPaginated
       .skip(limit * (page - 1));
     const count = await Menu.countDocuments({ restaurantId, ...filter });
 
-    const result: GetMenusWithPaginated = {
+    const result: DTO.GetMenusWithPaginated = {
       menus: menus.map((menu) => ({
         _id: menu._id,
         name: menu.name,
@@ -93,8 +62,8 @@ const getAllRestaurantMenu = async (req: Request): Promise<GetMenusWithPaginated
 const createRestaurantMenu = async (req: Request): Promise<IMenu['_id'] | Error> => {
   const { _id: restaurantId } = req.user as { _id: ObjectId };
   try {
-    const body: RestaurantMenuBodyDTO =
-      restaurantMenuBodyDTOSchema.parse(req.body);
+    const body: DTO.RestaurantMenuBody =
+      DTO.restaurantMenuBodySchema.parse(req.body);
 
     const {
       name,
@@ -141,7 +110,7 @@ const createRestaurantMenu = async (req: Request): Promise<IMenu['_id'] | Error>
   }
 };
 
-const getRestaurantMenuBySlug = async (req: Request): Promise<RestaurantMenuResponseDTO | Error> => {
+const getRestaurantMenuBySlug = async (req: Request): Promise<DTO.RestaurantMenuResponse | Error> => {
   const { slug } = req.params;
   const { _id: restaurantId } = req.user as { _id: IRestaurant['_id'] };
 
@@ -154,7 +123,7 @@ const getRestaurantMenuBySlug = async (req: Request): Promise<RestaurantMenuResp
     const maxSpicy = menuSpicyLevel
       ? menuSpicyLevel.maxSpicy
       : null;
-    const result: RestaurantMenuResponseDTO = {
+    const result: DTO.RestaurantMenuResponse = {
       _id: menu._id,
       name: menu.name,
       description: menu.description,
@@ -186,9 +155,8 @@ const updateRestaurantMenu = async (req: Request): Promise<IMenu['_id'] | Error>
   }
 
   try {
-    // todo do not create menu spicy level if it has one, edit it
-    const body: RestaurantMenuBodyDTO =
-      restaurantMenuBodyDTOSchema.parse(req.body);
+    const body: DTO.RestaurantMenuBody =
+      DTO.restaurantMenuBodySchema.parse(req.body);
 
     const {
       name,
@@ -279,14 +247,14 @@ const deleteRestaurantMenu = async (req: Request): Promise<IMenu['_id'] | Error>
   }
 };
 
-const getAllEtalase = async (req: Request): Promise<EtalaseResponseDTO[] | Error> => {
+const getAllEtalase = async (req: Request): Promise<DTO.EtalaseResponse[] | Error> => {
   const { _id: restaurantId } = req.user as { _id: IRestaurant['_id'] };
   try {
     const result = await Etalase.find({ restaurantId });
     return result.map((item) => ({
       _id: item._id,
       name: item.name,
-    })) as EtalaseResponseDTO[];
+    })) as DTO.EtalaseResponse[];
   } catch (error: any) {
     throw error;
   }
@@ -295,8 +263,8 @@ const getAllEtalase = async (req: Request): Promise<EtalaseResponseDTO[] | Error
 const createEtalase = async (req: Request): Promise<IEtalase['_id'] | Error> => {
   const { _id: restaurantId } = req.user as { _id: IRestaurant['_id'] };
   try {
-    const body: EtalaseBodyDTO =
-      etalaseBodyDTOSchema.parse(req.body);
+    const body: DTO.EtalaseBody =
+    DTO.etalaseBodySchema.parse(req.body);
     const { name } = body;
     const result = await Etalase.create({ restaurantId, name });
     return result._id;
@@ -312,8 +280,8 @@ const updateEtalase = async (req: Request): Promise<IEtalase['_id'] | Error> => 
     throw new BadRequest('Invalid Request. Please check your input data.');
   }
   try {
-    const body: EtalaseBodyDTO =
-      etalaseBodyDTOSchema.parse(req.body);
+    const body: DTO.EtalaseBody =
+    DTO.etalaseBodySchema.parse(req.body);
     const { name } = body;
     const result = await Etalase.findOneAndUpdate({ _id: etalaseId, restaurantId }, { name });
     if (!result) {

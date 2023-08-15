@@ -2,13 +2,13 @@ import { Request } from 'express';
 import mongoose from 'mongoose';
 import { ZodError } from 'zod';
 
-import { signinForm, signupForm } from '../../../../../src/services/mongoose/resto/auth';
-import config from '../../../../../src/config';
-import Restaurant, { IRestaurant } from '../../../../../src/models/Restaurant';
+import { signinForm, signupForm } from '../../../../../../src/services/mongoose/resto/auth';
+import config from '../../../../../../src/config';
+import Restaurant, { IRestaurant } from '../../../../../../src/models/Restaurant';
 import { MongoServerError } from 'mongodb';
-import RestaurantVerification from '../../../../../src/models/RestaurantVerification';
+import RestaurantVerification from '../../../../../../src/models/RestaurantVerification';
 import moment from 'moment';
-import { BadRequest, Unauthorized } from '../../../../../src/errors';
+import { BadRequest, Unauthorized } from '../../../../../../src/errors';
 
 describe('signupForm Resto', () => {
   describe('validation error input field scenario', () => {

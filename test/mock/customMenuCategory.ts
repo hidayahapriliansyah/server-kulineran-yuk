@@ -1,12 +1,12 @@
-import { CustomMenuCategoryBodyDTO } from '../../src/services/mongoose/resto/custom-menu';
+import { CustomMenuCategoryBody } from '../../src/services/mongoose/resto/custom-menu/types';
 
-const withSpicy: CustomMenuCategoryBodyDTO = {
+const withSpicy: CustomMenuCategoryBody = {
   name: 'Serba Pedas',
   isBungkusAble: true,
   maxSpicy: 10,
 };
 
-const withoutSpicy: CustomMenuCategoryBodyDTO = {
+const withoutSpicy: CustomMenuCategoryBody = {
   name: 'Minuman Segar',
   isBungkusAble: false,
 };

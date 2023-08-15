@@ -1,13 +1,13 @@
-import { CustomMenuCompositionBodyDTO } from '../../src/services/mongoose/resto/custom-menu';
+import { CustomMenuCompositionBody } from '../../src/services/mongoose/resto/custom-menu/types';
 
-const withSpicy: Record<string, CustomMenuCompositionBodyDTO> = {
+const withSpicy: Record<string, CustomMenuCompositionBody> = {
   kerupukKakap: {
     customMenuCategoryId: 'nanti',
     name: 'Kerupuk Kakap',
     description: 'Kerupuk kakap adalah bahan seblak',
     price: 500,
     stock: 10,
-    images: ['http://image.com/image1', 'http://image.com/image2', 'http://image.com/image3'],
+    images: ['http://image.com/image1', 'http://image.com/image2'],
   },
   telurAyam: {
     customMenuCategoryId: 'nanti',
@@ -27,7 +27,7 @@ const withSpicy: Record<string, CustomMenuCompositionBodyDTO> = {
   },
 };
 
-const withoutSpicy: Record<string, CustomMenuCompositionBodyDTO> = {
+const withoutSpicy: Record<string, CustomMenuCompositionBody> = {
   coklatBatangan: {
     customMenuCategoryId: 'nanti',
     name: 'Cokelat Batangan',

@@ -6,7 +6,7 @@ import {
   checkingResetPassword,
   createNewPasswordViaResetPassword,
   createReEmailVerificationRequest,
-  createResetPasswordRequest
+  createResetPasswordRequest,
 } from '../../../../services/mongoose/resto/account';
 
 const createReEmailVerificationRequestController = async (

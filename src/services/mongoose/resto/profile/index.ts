@@ -1,39 +1,19 @@
 import { Request } from 'express';
-import Restaurant, { IRestaurant } from '../../../models/Restaurant';
-import { Unauthenticated } from '../../../errors';
-import RestaurantAddress, { IRestaurantAddress } from '../../../models/RestaurantAddress';
-import Village, { IVillage } from '../../../models/Village';
-import District, { IDistrict } from '../../../models/District';
-import Regency, { IRegency } from '../../../models/Regency';
-import Province, { IProvince } from '../../../models/Province';
+import Restaurant, { IRestaurant } from '../../../../models/Restaurant';
+import { Unauthenticated } from '../../../../errors';
+import RestaurantAddress, { IRestaurantAddress } from '../../../../models/RestaurantAddress';
+import Village, { IVillage } from '../../../../models/Village';
+import District, { IDistrict } from '../../../../models/District';
+import Regency, { IRegency } from '../../../../models/Regency';
+import Province, { IProvince } from '../../../../models/Province';
 import { z } from 'zod';
-import db from '../../../db';
+import db from '../../../../db';
 import { ObjectId, Schema } from 'mongoose';
-import convertImageGallery from '../../../utils/convertImageGallery';
+import convertImageGallery from '../../../../utils/convertImageGallery';
 
-export type RestaurantProfileDTO = {
-  avatar: string;
-  username: string;
-  name: string;
-  address: {
-    provinceId: string | null;
-    regencyId: string | null;
-    districtId: string | null;
-    villageId: string | null;
-    locationLink: string | null;
-    detail: string | null;
-  } | null,
-  contact: string | null;
-  imageGallery: string[] | [];
-  bussinessHours: {
-    openingHours: string | null;
-    closingHours: string | null;
-    daysOff: string[] | null;
-  };
-  fasilities: string[] | [];
-}
+import * as DTO from './types';
 
-const getProfile = async (req: Request): Promise<RestaurantProfileDTO | Error> => {
+const getProfile = async (req: Request): Promise<DTO.ProfileResponse | Error> => {
   const { _id: id } = req.user as { _id: string };
 
   if (!id) {
@@ -52,7 +32,7 @@ const getProfile = async (req: Request): Promise<RestaurantProfileDTO | Error> =
     const regency = await Regency.findOne({ id: district?.regencyId });
     const province = await Province.findOne({ id: regency?.provinceId });
 
-    const restAddrSummary: RestaurantProfileDTO['address'] = {
+    const restAddrSummary: DTO.ProfileResponse['address'] = {
       provinceId: province?.id ?? null,
       regencyId: regency?.id ?? null,
       districtId: district?.id ?? null,
@@ -61,7 +41,7 @@ const getProfile = async (req: Request): Promise<RestaurantProfileDTO | Error> =
       locationLink: restaurant.locationLink ?? null,
     };
 
-    const result: RestaurantProfileDTO = {
+    const result: DTO.ProfileResponse = {
       avatar: restaurant?.avatar,
       username: restaurant?.username,
       name: restaurant?.name,
@@ -90,36 +70,11 @@ const getProfile = async (req: Request): Promise<RestaurantProfileDTO | Error> =
 
 
 const updateProfile = async (req: Request): Promise<IRestaurant['_id'] | Error> => {
-  const updateProfileBody = z.object({
-    avatar: z.string().optional(),
-    username: z.string().regex(/^[a-z0-9._']+$/).min(3).max(30).optional(),
-    name: z.string().regex(/^[a-zA-Z0-9.,_\s-]+$/).min(3).max(50).optional(),
-    villageId: z.string().optional(),
-    locationLink: z.string().optional(),
-    detail: z.string().max(200).optional(),
-    contact: z.string().max(14).optional(),
-    imageGallery: z.array(z.string()).optional(),
-    openingHour: z.string().length(5).optional(),
-    closingHour: z.string().length(5).optional(),
-    daysOff: z.array(z.enum(['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'])).optional(),
-    fasilities: z.array(z.string().max(100)).optional(),
-  });
-  type UpdateProfileBody = z.infer<typeof updateProfileBody>;
-  type UpdateRestaurantPayload = Omit<UpdateProfileBody, 'villageId' | 'detail' | 'imageGallery'> & {
-    image1: string;
-    image2: string;
-    image3: string;
-    image4: string;
-    image5: string;
-  };
-  type UpdateRestaurantAddressPayload = Pick<UpdateProfileBody, 'villageId' | 'detail'>;
-
   const { _id: restaurantId } = req.user as { _id: ObjectId };
   const session = await db.startSession();
   try {
     session.startTransaction();
-    
-    const body: UpdateProfileBody = updateProfileBody.parse(req.body);
+    const body: DTO.ProfileBody = DTO.profileBodySchema.parse(req.body);
     const {
       avatar,
       name,
@@ -135,7 +90,10 @@ const updateProfile = async (req: Request): Promise<IRestaurant['_id'] | Error> 
       villageId,
     } = body;
 
-    const imageGalleryObject = convertImageGallery(imageGallery!);
+    const imageGalleryObject = convertImageGallery({
+      arrayOfImageUrl: imageGallery!,
+      maxImage: 5,
+    });
 
     await Restaurant.findOneAndUpdate({ _id: restaurantId }, {
       avatar,
@@ -148,7 +106,7 @@ const updateProfile = async (req: Request): Promise<IRestaurant['_id'] | Error> 
       contact,
       locationLink,
       ...imageGalleryObject,
-    } as UpdateRestaurantPayload);
+    } as DTO.UpdateRestaurantPayload);
 
     const restaurantAddressExist = await RestaurantAddress.findOne({ restaurantId });
     const village = await Village.findOne({ id: villageId });
@@ -159,7 +117,7 @@ const updateProfile = async (req: Request): Promise<IRestaurant['_id'] | Error> 
     if (restaurantAddressExist) {
       await RestaurantAddress.findOneAndUpdate(
         { restaurantId },
-        { detail, villageId } as UpdateRestaurantAddressPayload
+        { detail, villageId } as DTO.UpdateRestaurantAddressPayload
       );
     } else {
       await RestaurantAddress.create({

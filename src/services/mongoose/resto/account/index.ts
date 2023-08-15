@@ -3,24 +3,20 @@ import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 
-import Restaurant from '../../../models/Restaurant';
-import createRestaurantEmailVerification from '../../../utils/createRestaurantEmailVerification';
-import RestaurantVerification from '../../../models/RestaurantVerification';
-import { BadRequest, NotFound } from '../../../errors';
-import InvalidToken from '../../../errors/InvalidToken';
-import Conflict from '../../../errors/Conflict';
-import RestaurantResetPasswordRequest from '../../../models/RestauranResetPasswordRequest';
+import Restaurant from '../../../../models/Restaurant';
+import createRestaurantEmailVerification from '../../../../utils/createRestaurantEmailVerification';
+import RestaurantVerification from '../../../../models/RestaurantVerification';
+import { BadRequest, NotFound } from '../../../../errors';
+import InvalidToken from '../../../../errors/InvalidToken';
+import Conflict from '../../../../errors/Conflict';
+import RestaurantResetPasswordRequest from '../../../../models/RestauranResetPasswordRequest';
+
+import * as DTO from './types';
 
 const createReEmailVerificationRequest = async (req: Request): Promise<void | Error> => {
-  const createReEmailVerificationRequestBody = z.object({
-    email: z.string().email().nonempty(),
-  });
-
-  type CreateReEmailVerificationRequestBody = z.infer<typeof createReEmailVerificationRequestBody>;
-
   try {
-    const body: CreateReEmailVerificationRequestBody =
-      createReEmailVerificationRequestBody.parse(req.body);
+    const body: DTO.ReEmailVerificationRequestBody =
+      DTO.reEmailVerificationRequestBody.parse(req.body);
 
     const { email } = body;
 
@@ -68,15 +64,9 @@ const checkingEmailVerification = async (req: Request): Promise<void | Error> =>
 };
 
 const createResetPasswordRequest = async (req: Request): Promise<void | Error> => {
-  const createResetPasswordRequestBody = z.object({
-    email: z.string().email().nonempty(),
-  });
-
-  type CreateResetPasswordRequestBody = z.infer<typeof createResetPasswordRequestBody>;
-
   try {
-    const body: CreateResetPasswordRequestBody =
-      createResetPasswordRequestBody.parse(req.body);
+    const body: DTO.ResetPasswordRequestBody =
+      DTO.resetPasswordRequestBody.parse(req.body);
 
     const { email } = body;
 
@@ -118,15 +108,9 @@ const checkingResetPassword = async (req: Request): Promise<void | Error> => {
 };
 
 const createNewPasswordViaResetPassword = async (req: Request): Promise<void | Error> => {
-  const createNewPasswordViaResetPasswordBody = z.object({
-    password: z.string().min(6).nonempty(),
-    requestId: z.string(),
-  });
-
-  type CreateNewPasswordViaResetPasswordBody = z.infer<typeof createNewPasswordViaResetPasswordBody>;
   try {
-    const body: CreateNewPasswordViaResetPasswordBody =
-      createNewPasswordViaResetPasswordBody.parse(req.body);
+    const body: DTO.NewPasswordViaResetPasswordBody =
+      DTO.newPasswordViaResetPasswordBody.parse(req.body);
 
     const { password, requestId: uniqueString } = body;
 

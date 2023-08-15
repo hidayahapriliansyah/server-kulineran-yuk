@@ -4,14 +4,14 @@ import { ZodError } from 'zod';
 import dayjs from 'dayjs';
 import { v4 as uuidv4 } from 'uuid';
 
-import config from '../../../../../src/config';
-import Restaurant from '../../../../../src/models/Restaurant';
-import RestaurantVerification from '../../../../../src/models/RestaurantVerification';
-import { checkingEmailVerification, checkingResetPassword, createNewPasswordViaResetPassword, createReEmailVerificationRequest, createResetPasswordRequest } from '../../../../../src/services/mongoose/resto/account';
-import { BadRequest, NotFound } from '../../../../../src/errors';
-import Conflict from '../../../../../src/errors/Conflict';
-import InvalidToken from '../../../../../src/errors/InvalidToken';
-import RestaurantResetPasswordRequest from '../../../../../src/models/RestauranResetPasswordRequest';
+import config from '../../../../../../src/config';
+import Restaurant from '../../../../../../src/models/Restaurant';
+import RestaurantVerification from '../../../../../../src/models/RestaurantVerification';
+import { checkingEmailVerification, checkingResetPassword, createNewPasswordViaResetPassword, createReEmailVerificationRequest, createResetPasswordRequest } from '../../../../../../src/services/mongoose/resto/account';
+import { BadRequest, NotFound } from '../../../../../../src/errors';
+import Conflict from '../../../../../../src/errors/Conflict';
+import InvalidToken from '../../../../../../src/errors/InvalidToken';
+import RestaurantResetPasswordRequest from '../../../../../../src/models/RestauranResetPasswordRequest';
 
 // testing createReEmailVerificationRequest
 describe('testing createReEmailVerificationRequest', () => {

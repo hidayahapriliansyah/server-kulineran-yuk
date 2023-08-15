@@ -4,30 +4,26 @@ import { ZodError } from 'zod';
 import slugify from 'slugify';
 import { nanoid } from 'nanoid';
 
-import config from '../../../../../src/config';
-import Restaurant, { IRestaurant } from '../../../../../src/models/Restaurant';
-import MenuSpicyLevel from '../../../../../src/models/MenuSpicyLevel';
-import Menu, { IMenu } from '../../../../../src/models/Menu';
-import Etalase, { IEtalase } from '../../../../../src/models/Etalase';
+import config from '../../../../../../src/config';
+import Restaurant, { IRestaurant } from '../../../../../../src/models/Restaurant';
+import MenuSpicyLevel from '../../../../../../src/models/MenuSpicyLevel';
+import Menu, { IMenu } from '../../../../../../src/models/Menu';
+import Etalase, { IEtalase } from '../../../../../../src/models/Etalase';
 import {
-  EtalaseBodyDTO,
-  EtalaseResponseDTO,
-  GetMenusWithPaginated,
-  RestaurantMenuBodyDTO, 
-  RestaurantMenuResponseDTO, 
   createEtalase, 
   createRestaurantMenu, 
   deleteEtalase, 
   deleteRestaurantMenu, 
-  getAllEtalase, 
+  getAllEtalase,
   getAllRestaurantMenu, 
   getRestaurantMenuBySlug,
   updateEtalase,
   updateRestaurantMenu,
-} from '../../../../../src/services/mongoose/resto/menus';
-import { BadRequest, NotFound } from '../../../../../src/errors';
-import convertImageGallery from '../../../../../src/utils/convertImageGallery';
-import { ObjectId } from 'mongodb';
+} from '../../../../../../src/services/mongoose/resto/menus';
+import { BadRequest, NotFound } from '../../../../../../src/errors';
+import convertImageGallery from '../../../../../../src/utils/convertImageGallery';
+
+import * as DTO from '../../../../../../src/services/mongoose/resto/menus/types';
 
 const mockAdminRestoUser = {
   username: 'rumahmakanenak',
@@ -36,15 +32,15 @@ const mockAdminRestoUser = {
   password: 'rumahmakanenak@gmail.com',
 };
 
-const mockValidEtalasePedas: EtalaseBodyDTO = {
+const mockValidEtalasePedas: DTO.EtalaseBody = {
   name: 'Pedas',
 };
 
-const mockValidEtalaseMinuman: EtalaseBodyDTO = {
+const mockValidEtalaseMinuman: DTO.EtalaseBody = {
   name: 'Minuman',
 };
 
-const mockValidMenuPedas: RestaurantMenuBodyDTO = {
+const mockValidMenuPedas: DTO.RestaurantMenuBody = {
   name: 'Seblak Ceker Kuah',
   description: `
     Seblak Ceker Kuah adalah makanan khas Sunda yang terbuat dari kerupuk aci, ceker ayam, dan kuah kaldu yang pedas. Seblak Ceker Kuah ini sangat cocok untuk disantap saat cuaca dingin.
@@ -93,7 +89,7 @@ const mockValidMenuPedas: RestaurantMenuBodyDTO = {
   stock: 20,
 };
 
-const mockValidMenuMinuman: RestaurantMenuBodyDTO = {
+const mockValidMenuMinuman: DTO.RestaurantMenuBody = {
   name: 'Jus Alpukat Coklat Hangat',
   description: `
     Jus Alpukat Coklat Hangat
@@ -210,7 +206,7 @@ describe('testing getAllRestaurantMenu', () => {
     };
 
     req.query = {};
-    const result = await getAllRestaurantMenu(req) as GetMenusWithPaginated;
+    const result = await getAllRestaurantMenu(req) as DTO.GetMenusWithPaginated;
     expect(result.menus).toHaveLength(10);
     expect(result.menus[0].name).toBe(mockValidMenuPedas.name + ' 1');
     expect(result.pages).toBe(2);
@@ -265,7 +261,7 @@ describe('testing getAllRestaurantMenu', () => {
     };
 
     req.query = { limit: '15', page: '2' };
-    const result = await getAllRestaurantMenu(req) as GetMenusWithPaginated;
+    const result = await getAllRestaurantMenu(req) as DTO.GetMenusWithPaginated;
     expect(result.menus).toHaveLength(5);
     expect(result.menus[result.menus.length - 1].name).toBe(mockValidMenuMinuman.name + ' 10');
     expect(result.pages).toBe(2);
@@ -319,7 +315,7 @@ describe('testing getAllRestaurantMenu', () => {
     };
 
     req.query = { limit: '3', page: '2', isActive: '0' };
-    const result = await getAllRestaurantMenu(req) as GetMenusWithPaginated;
+    const result = await getAllRestaurantMenu(req) as DTO.GetMenusWithPaginated;
     expect(result.menus).toHaveLength(2);
     expect(result.menus[result.menus.length - 1].name).toBe(mockValidMenuMinuman.name + ' 5');
     expect(result.pages).toBe(2);
@@ -887,7 +883,7 @@ describe('testing getRestaurantMenuBySlug', () => {
         slug: menuMinumanSlug,
       },
     } as unknown as Request;
-    const findMenu = await getRestaurantMenuBySlug(req) as RestaurantMenuResponseDTO;
+    const findMenu = await getRestaurantMenuBySlug(req) as DTO.RestaurantMenuResponse;
     expect(findMenu.name).toBe(mockValidMenuMinuman.name);
     expect(findMenu.description).toBe(mockValidMenuMinuman.description);
     expect(mongoose.Types.ObjectId.isValid(findMenu.etalaseId))
@@ -913,7 +909,7 @@ describe('testing getRestaurantMenuBySlug', () => {
         slug: menuPedasSlug,
       },
     } as unknown as Request;
-    const findMenu = await getRestaurantMenuBySlug(req) as RestaurantMenuResponseDTO;
+    const findMenu = await getRestaurantMenuBySlug(req) as DTO.RestaurantMenuResponse;
     expect(findMenu.name).toBe(mockValidMenuPedas.name);
     expect(findMenu.description).toBe(mockValidMenuPedas.description);
     expect(mongoose.Types.ObjectId.isValid(findMenu.etalaseId)).toBe(true);
@@ -983,8 +979,8 @@ describe('testing updateRestaurantMenu', () => {
       body: {},
     } as unknown as Request;
 
-    const foundMenu = await getRestaurantMenuBySlug(req) as RestaurantMenuResponseDTO;
-    const updatedMenuBody: Omit<RestaurantMenuBodyDTO, 'name'> = {
+    const foundMenu = await getRestaurantMenuBySlug(req) as DTO.RestaurantMenuResponse;
+    const updatedMenuBody: Omit<DTO.RestaurantMenuBody, 'name'> = {
       description: foundMenu.description,
       etalaseId: foundMenu.etalaseId,
       images: foundMenu.images,
@@ -1018,8 +1014,8 @@ describe('testing updateRestaurantMenu', () => {
       body: {},
     } as unknown as Request;
 
-    const foundMenu = await getRestaurantMenuBySlug(req) as RestaurantMenuResponseDTO;
-    const updatedMenuBody: Omit<RestaurantMenuBodyDTO, 'name'> = {
+    const foundMenu = await getRestaurantMenuBySlug(req) as DTO.RestaurantMenuResponse;
+    const updatedMenuBody: Omit<DTO.RestaurantMenuBody, 'name'> = {
       description: foundMenu.description,
       etalaseId: foundMenu.etalaseId,
       images: foundMenu.images,
@@ -1054,8 +1050,8 @@ describe('testing updateRestaurantMenu', () => {
       body: {},
     } as unknown as Request;
 
-    const foundMenu = await getRestaurantMenuBySlug(req) as RestaurantMenuResponseDTO;
-    const updatedMenuBody: RestaurantMenuBodyDTO = {
+    const foundMenu = await getRestaurantMenuBySlug(req) as DTO.RestaurantMenuResponse;
+    const updatedMenuBody: DTO.RestaurantMenuBody = {
       name: foundMenu.name + ',',
       description: foundMenu.description,
       etalaseId: foundMenu.etalaseId,
@@ -1091,8 +1087,8 @@ describe('testing updateRestaurantMenu', () => {
       body: {},
     } as unknown as Request;
 
-    const foundMenu = await getRestaurantMenuBySlug(req) as RestaurantMenuResponseDTO;
-    const updatedMenuBody: RestaurantMenuBodyDTO = {
+    const foundMenu = await getRestaurantMenuBySlug(req) as DTO.RestaurantMenuResponse;
+    const updatedMenuBody: DTO.RestaurantMenuBody = {
       name: '',
       description: foundMenu.description,
       etalaseId: foundMenu.etalaseId,
@@ -1128,8 +1124,8 @@ describe('testing updateRestaurantMenu', () => {
       body: {},
     } as unknown as Request;
 
-    const foundMenu = await getRestaurantMenuBySlug(req) as RestaurantMenuResponseDTO;
-    const updatedMenuBody: RestaurantMenuBodyDTO = {
+    const foundMenu = await getRestaurantMenuBySlug(req) as DTO.RestaurantMenuResponse;
+    const updatedMenuBody: DTO.RestaurantMenuBody = {
       name: foundMenu.description,
       description: foundMenu.description,
       etalaseId: foundMenu.etalaseId,
@@ -1165,8 +1161,8 @@ describe('testing updateRestaurantMenu', () => {
       body: {},
     } as unknown as Request;
 
-    const foundMenu = await getRestaurantMenuBySlug(req) as RestaurantMenuResponseDTO;
-    const updatedMenuBody: Omit<RestaurantMenuBodyDTO, 'description'> = {
+    const foundMenu = await getRestaurantMenuBySlug(req) as DTO.RestaurantMenuResponse;
+    const updatedMenuBody: Omit<DTO.RestaurantMenuBody, 'description'> = {
       name: foundMenu.name,
       etalaseId: foundMenu.etalaseId,
       images: foundMenu.images,
@@ -1201,8 +1197,8 @@ describe('testing updateRestaurantMenu', () => {
       body: {},
     } as unknown as Request;
 
-    const foundMenu = await getRestaurantMenuBySlug(req) as RestaurantMenuResponseDTO;
-    const updatedMenuBody: RestaurantMenuBodyDTO = {
+    const foundMenu = await getRestaurantMenuBySlug(req) as DTO.RestaurantMenuResponse;
+    const updatedMenuBody: DTO.RestaurantMenuBody = {
       description: '',
       name: foundMenu.name,
       etalaseId: foundMenu.etalaseId,
@@ -1238,8 +1234,8 @@ describe('testing updateRestaurantMenu', () => {
       body: {},
     } as unknown as Request;
 
-    const foundMenu = await getRestaurantMenuBySlug(req) as RestaurantMenuResponseDTO;
-    const updatedMenuBody: RestaurantMenuBodyDTO = {
+    const foundMenu = await getRestaurantMenuBySlug(req) as DTO.RestaurantMenuResponse;
+    const updatedMenuBody: DTO.RestaurantMenuBody = {
       description: foundMenu.description + foundMenu.description,
       name: foundMenu.name,
       etalaseId: foundMenu.etalaseId,
@@ -1275,8 +1271,8 @@ describe('testing updateRestaurantMenu', () => {
       body: {},
     } as unknown as Request;
 
-    const foundMenu = await getRestaurantMenuBySlug(req) as RestaurantMenuResponseDTO;
-    const updatedMenuBody: Omit<RestaurantMenuBodyDTO, 'etalaseId'> = {
+    const foundMenu = await getRestaurantMenuBySlug(req) as DTO.RestaurantMenuResponse;
+    const updatedMenuBody: Omit<DTO.RestaurantMenuBody, 'etalaseId'> = {
       description: foundMenu.description,
       name: foundMenu.name,
       images: foundMenu.images,
@@ -1311,8 +1307,8 @@ describe('testing updateRestaurantMenu', () => {
       body: {},
     } as unknown as Request;
 
-    const foundMenu = await getRestaurantMenuBySlug(req) as RestaurantMenuResponseDTO;
-    const updatedMenuBody: RestaurantMenuBodyDTO = {
+    const foundMenu = await getRestaurantMenuBySlug(req) as DTO.RestaurantMenuResponse;
+    const updatedMenuBody: DTO.RestaurantMenuBody = {
       description: foundMenu.description,
       name: foundMenu.name,
       etalaseId: 'sdfsdfsdfsdsdsdf',
@@ -1346,8 +1342,8 @@ describe('testing updateRestaurantMenu', () => {
       body: {},
     } as unknown as Request;
 
-    const foundMenu = await getRestaurantMenuBySlug(req) as RestaurantMenuResponseDTO;
-    const updatedMenuBody: Omit<RestaurantMenuBodyDTO, 'price'> = {
+    const foundMenu = await getRestaurantMenuBySlug(req) as DTO.RestaurantMenuResponse;
+    const updatedMenuBody: Omit<DTO.RestaurantMenuBody, 'price'> = {
       description: foundMenu.description,
       name: foundMenu.name,
       etalaseId: foundMenu.etalaseId,
@@ -1382,8 +1378,8 @@ describe('testing updateRestaurantMenu', () => {
       body: {},
     } as unknown as Request;
 
-    const foundMenu = await getRestaurantMenuBySlug(req) as RestaurantMenuResponseDTO;
-    const updatedMenuBody: RestaurantMenuBodyDTO = {
+    const foundMenu = await getRestaurantMenuBySlug(req) as DTO.RestaurantMenuResponse;
+    const updatedMenuBody: DTO.RestaurantMenuBody = {
       description: foundMenu.description,
       name: foundMenu.name,
       etalaseId: foundMenu.etalaseId,
@@ -1420,8 +1416,8 @@ describe('testing updateRestaurantMenu', () => {
       body: {},
     } as unknown as Request;
 
-    const foundMenu = await getRestaurantMenuBySlug(req) as RestaurantMenuResponseDTO;
-    const updatedMenuBody: Omit<RestaurantMenuBodyDTO, 'images'> = {
+    const foundMenu = await getRestaurantMenuBySlug(req) as DTO.RestaurantMenuResponse;
+    const updatedMenuBody: Omit<DTO.RestaurantMenuBody, 'images'> = {
       name: foundMenu.name,
       etalaseId: foundMenu.etalaseId,
       description: foundMenu.description,
@@ -1456,8 +1452,8 @@ describe('testing updateRestaurantMenu', () => {
       body: {},
     } as unknown as Request;
 
-    const foundMenu = await getRestaurantMenuBySlug(req) as RestaurantMenuResponseDTO;
-    const updatedMenuBody: RestaurantMenuBodyDTO = {
+    const foundMenu = await getRestaurantMenuBySlug(req) as DTO.RestaurantMenuResponse;
+    const updatedMenuBody: DTO.RestaurantMenuBody = {
       name: foundMenu.name,
       etalaseId: foundMenu.etalaseId,
       description: foundMenu.description,
@@ -1493,8 +1489,8 @@ describe('testing updateRestaurantMenu', () => {
       body: {},
     } as unknown as Request;
 
-    const foundMenu = await getRestaurantMenuBySlug(req) as RestaurantMenuResponseDTO;
-    const updatedMenuBody: RestaurantMenuBodyDTO = {
+    const foundMenu = await getRestaurantMenuBySlug(req) as DTO.RestaurantMenuResponse;
+    const updatedMenuBody: DTO.RestaurantMenuBody = {
       name: foundMenu.name,
       etalaseId: foundMenu.etalaseId,
       description: foundMenu.description,
@@ -1540,8 +1536,8 @@ describe('testing updateRestaurantMenu', () => {
       body: {},
     } as unknown as Request;
 
-    const foundMenuMinuman = await getRestaurantMenuBySlug(req) as RestaurantMenuResponseDTO;
-    const updatedMenuBody: RestaurantMenuBodyDTO = {
+    const foundMenuMinuman = await getRestaurantMenuBySlug(req) as DTO.RestaurantMenuResponse;
+    const updatedMenuBody: DTO.RestaurantMenuBody = {
       name: foundMenuMinuman.name,
       description: foundMenuMinuman.description,
       etalaseId: foundMenuMinuman.etalaseId,
@@ -1669,26 +1665,26 @@ describe('testing getAllEtalase', () => {
   // error
     // 
   // success
-  // should response array (EtalaseResponseDTO[]) with value
-  it('should response array (EtalaseResponseDTO[]) with value', async () => {
+  // should response array (DTO.EtalaseResponse[]) with value
+  it('should response array (DTO.EtalaseResponse[]) with value', async () => {
     const { _id: restaurantId } = await Restaurant.findOne() as IRestaurant;
     const req = {
       user: { _id: restaurantId },
     } as unknown as Request;
 
-    const etalases = await getAllEtalase(req) as EtalaseResponseDTO[];
+    const etalases = await getAllEtalase(req) as DTO.EtalaseResponse[];
     expect(etalases).toHaveLength(2);
     expect(etalases[0].name).toBe(mockValidEtalasePedas.name);
   });
-  // should response empty array (EtalaseResponseDTO[])
-  it('should response empty array (EtalaseResponseDTO[])', async () => {
+  // should response empty array (DTO.EtalaseResponse[])
+  it('should response empty array (DTO.EtalaseResponse[])', async () => {
     const { _id: restaurantId } = await Restaurant.findOne() as IRestaurant;
     await Etalase.deleteMany({});
     const req = {
       user: { _id: restaurantId },
     } as unknown as Request;
 
-    const etalases = await getAllEtalase(req) as EtalaseResponseDTO[];
+    const etalases = await getAllEtalase(req) as DTO.EtalaseResponse[];
     expect(etalases).toHaveLength(0);
   });
 });

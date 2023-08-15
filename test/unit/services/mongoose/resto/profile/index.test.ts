@@ -1,11 +1,13 @@
-import mongoose, { ObjectId, mongo } from 'mongoose';
-import config from '../../../../../src/config';
-import Restaurant, { IRestaurant } from '../../../../../src/models/Restaurant';
-import { getProfile, RestaurantProfileDTO, updateProfile, setupProfile, updateCustomerPaymentType } from '../../../../../src/services/mongoose/resto/profile';
+import mongoose from 'mongoose';
+import config from '../../../../../../src/config';
+import Restaurant, { IRestaurant } from '../../../../../../src/models/Restaurant';
+import { getProfile, updateProfile, setupProfile, updateCustomerPaymentType } from '../../../../../../src/services/mongoose/resto/profile';
 import { Request } from 'express';
-import { Unauthenticated } from '../../../../../src/errors';
-import RestaurantAddress from '../../../../../src/models/RestaurantAddress';
+import { Unauthenticated } from '../../../../../../src/errors';
+import RestaurantAddress from '../../../../../../src/models/RestaurantAddress';
 import { ZodError } from 'zod';
+
+import * as DTO from '../../../../../../src/services/mongoose/resto/profile/types';
 
 // getProfile
 describe('getProfile', () => {
@@ -34,7 +36,7 @@ describe('getProfile', () => {
       user: { _id }
     } as unknown as Request;
 
-    const result = await getProfile(req) as RestaurantProfileDTO;
+    const result = await getProfile(req) as DTO.ProfileResponse;
     expect(result.username).toBe(restaurantData.username);
     expect(result.name).toBe(restaurantData.name);
     expect(result.address).toBeDefined();
@@ -90,7 +92,7 @@ describe('getProfile', () => {
       user: { _id }
     } as unknown as Request;
 
-    const result = await getProfile(req) as RestaurantProfileDTO;
+    const result = await getProfile(req) as DTO.ProfileResponse;
 
     expect(result.username).toBe(restaurantData.username);
     expect(result.name).toBe(restaurantData.name);
