@@ -27,12 +27,17 @@ import moreThan3000chars from '../../../../../mock/randomString';
 import * as DTO from '../../../../../../src/services/mongoose/resto/custom-menu/types';
 
 describe('testing Custom Menu Category Functionality', () => {
+  beforeAll(async () => {
+    await mongoose.connect(config.urlDb);
+  });
+  afterAll(async () => {
+    await mongoose.connection.close();
+  });
   // test getAllCustomMenuCategory
   describe('test getAllCustomMenuCategory', () => {
     // success
     describe('success test', () => { 
       beforeEach(async () => {
-        await mongoose.connect(config.urlDb);
         const restaurant = await Restaurant.create({
           username: mockAdminRestoUser.username,
           name: mockAdminRestoUser.name,
@@ -52,7 +57,6 @@ describe('testing Custom Menu Category Functionality', () => {
         await Restaurant.deleteMany({});
         await CustomMenuCategory.deleteMany({});
         await CustomMenuCategorySpicyLevel.deleteMany({});
-        await mongoose.connection.close();
       });
       // should return array of DTO.CustomMenuCategoryResponse with id and name
       it('should return array of DTO.CustomMenuCategoryResponse with id and name', async () => {
@@ -85,7 +89,6 @@ describe('testing Custom Menu Category Functionality', () => {
     // error
     describe('error test', () => {
       beforeEach(async () => {
-        await mongoose.connect(config.urlDb);
         await Restaurant.create({
           username: mockAdminRestoUser.username,
           name: mockAdminRestoUser.name,
@@ -97,7 +100,6 @@ describe('testing Custom Menu Category Functionality', () => {
         await Restaurant.deleteMany({});
         await CustomMenuCategory.deleteMany({});
         await CustomMenuCategorySpicyLevel.deleteMany({});
-        await mongoose.connection.close();
       });
       // should throw error Zod Error if 'name' is missing in the request body
       it('should throw error Zod Error if \'name\' is missing in the request body', async () =>{
@@ -147,7 +149,6 @@ describe('testing Custom Menu Category Functionality', () => {
     });
     describe('success test', () => {
       beforeEach(async () => {
-        await mongoose.connect(config.urlDb);
         await Restaurant.create({
           username: mockAdminRestoUser.username,
           name: mockAdminRestoUser.name,
@@ -159,7 +160,6 @@ describe('testing Custom Menu Category Functionality', () => {
         await Restaurant.deleteMany({});
         await CustomMenuCategory.deleteMany({});
         await CustomMenuCategorySpicyLevel.deleteMany({});
-        await mongoose.connection.close();
       });
       // should return _id of valid created custom menu category (with spicy level)
       it('should return _id of valid created custom menu category (with spicy level)', async () =>{
@@ -211,7 +211,6 @@ describe('testing Custom Menu Category Functionality', () => {
     // error
     describe('error tset', () => {
       beforeEach(async () => {
-        await mongoose.connect(config.urlDb);
         const restaurant = await Restaurant.create({
           username: mockAdminRestoUser.username,
           name: mockAdminRestoUser.name,
@@ -229,7 +228,6 @@ describe('testing Custom Menu Category Functionality', () => {
         await Restaurant.deleteMany({});
         await CustomMenuCategory.deleteMany({});
         await CustomMenuCategorySpicyLevel.deleteMany({});
-        await mongoose.connection.close();
       });
       // should throw error NotFound if custom menu category with id (objectid) is not found
       it('should throw error NotFound if custom menu category with id (objectid) is not found', async () => {
@@ -267,7 +265,6 @@ describe('testing Custom Menu Category Functionality', () => {
     // success
     describe('success test', () => {
       beforeEach(async () => {
-        await mongoose.connect(config.urlDb);
         const restaurant = await Restaurant.create({
           username: mockAdminRestoUser.username,
           name: mockAdminRestoUser.name,
@@ -287,7 +284,6 @@ describe('testing Custom Menu Category Functionality', () => {
         await Restaurant.deleteMany({});
         await CustomMenuCategory.deleteMany({});
         await CustomMenuCategorySpicyLevel.deleteMany({});
-        await mongoose.connection.close();
       });
       // should return DTO.CustomMenuCategoryResponse with maxSpicy has value
       it('should return DTO.CustomMenuCategoryResponse with maxSpicy has value', async () => {
@@ -340,7 +336,6 @@ describe('testing Custom Menu Category Functionality', () => {
     // error
     describe('error test', () => {       
       beforeEach(async () => {
-        await mongoose.connect(config.urlDb);
         const restaurant = await Restaurant.create({
           username: mockAdminRestoUser.username,
           name: mockAdminRestoUser.name,
@@ -360,7 +355,6 @@ describe('testing Custom Menu Category Functionality', () => {
         await Restaurant.deleteMany({});
         await CustomMenuCategory.deleteMany({});
         await CustomMenuCategorySpicyLevel.deleteMany({});
-        await mongoose.connection.close();
       });
       // should throw error BadRequest if 'categoryId' params is missing
       it('should throw error BadRequest if \'categoryId\' params is missing', async () => {
@@ -440,7 +434,6 @@ describe('testing Custom Menu Category Functionality', () => {
     // success
     describe('success test', () => {
       beforeEach(async () => {
-        await mongoose.connect(config.urlDb);
         const restaurant = await Restaurant.create({
           username: mockAdminRestoUser.username,
           name: mockAdminRestoUser.name,
@@ -460,7 +453,6 @@ describe('testing Custom Menu Category Functionality', () => {
         await Restaurant.deleteMany({});
         await CustomMenuCategory.deleteMany({});
         await CustomMenuCategorySpicyLevel.deleteMany({});
-        await mongoose.connection.close();
       });
       // should return _id (update category from no spicy level to have spicy level)
       it('should return _id (update category from no spicy level to have spicy level)', async () => {
@@ -532,7 +524,6 @@ describe('testing Custom Menu Category Functionality', () => {
     // error
     describe('error test', () => {
       beforeEach(async () => {
-        await mongoose.connect(config.urlDb);
         const restaurant = await Restaurant.create({
           username: mockAdminRestoUser.username,
           name: mockAdminRestoUser.name,
@@ -557,7 +548,6 @@ describe('testing Custom Menu Category Functionality', () => {
         await CustomMenuComposition.deleteMany({});
         await CustomMenuCategory.deleteMany({});
         await CustomMenuCategorySpicyLevel.deleteMany({});
-        await mongoose.connection.close();
       });
       // should throw error BadRequest if 'categoryId' params i missing
       it('should throw error BadRequest if \'categoryId\' params is missing', async () => {
@@ -608,7 +598,6 @@ describe('testing Custom Menu Category Functionality', () => {
     // succcess
     describe('success test', () => {
       beforeEach(async () => {
-        await mongoose.connect(config.urlDb);
         const restaurant = await Restaurant.create({
           username: mockAdminRestoUser.username,
           name: mockAdminRestoUser.name,
@@ -627,7 +616,6 @@ describe('testing Custom Menu Category Functionality', () => {
         await CustomMenuComposition.deleteMany({});
         await CustomMenuCategory.deleteMany({});
         await CustomMenuCategorySpicyLevel.deleteMany({});
-        await mongoose.connection.close();
       });
       // should return _id and custom menu category deleted
       it('should return _id and custom menu category deleted', async () => {
@@ -651,11 +639,16 @@ describe('testing Custom Menu Category Functionality', () => {
 });
 
 describe('testing Custom Menu Composition Functionality', () => {
+  beforeAll(async () => {
+    await mongoose.connect(config.urlDb);
+  });
+  afterAll(async () => {
+    await mongoose.connection.close();
+  });
   // test getAllCustomMenuComposition
   describe('test getAllCustomMenuComposition', () => { 
     // error
     beforeEach(async () => {
-      await mongoose.connect(config.urlDb);
       const restaurant = await Restaurant.create({
         username: mockAdminRestoUser.username,
         name: mockAdminRestoUser.name,
@@ -714,7 +707,6 @@ describe('testing Custom Menu Composition Functionality', () => {
       await CustomMenuComposition.deleteMany({});
       await CustomMenuCategory.deleteMany({});
       await CustomMenuCategorySpicyLevel.deleteMany({});
-      await mongoose.connection.close();
     });
     describe('error test', () => {
       // should throw error BadRequest if list query is not number
@@ -844,7 +836,6 @@ describe('testing Custom Menu Composition Functionality', () => {
   // test createCustomMenuComposition
   describe('test createCustomMenuComposition', () => {
     beforeEach(async () => {
-      await mongoose.connect(config.urlDb);
       const restaurant = await Restaurant.create({
         username: mockAdminRestoUser.username,
         name: mockAdminRestoUser.name,
@@ -865,7 +856,6 @@ describe('testing Custom Menu Composition Functionality', () => {
       await CustomMenuComposition.deleteMany({});
       await CustomMenuCategory.deleteMany({});
       await CustomMenuCategorySpicyLevel.deleteMany({});
-      await mongoose.connection.close();
     });
     // error
     describe('error test', () => { 
@@ -1373,7 +1363,6 @@ describe('testing Custom Menu Composition Functionality', () => {
   // test getSpecificCustomMenuComposition
   describe('test getSpecificCustomMenuComposition', () => {
     beforeEach(async () => {
-      await mongoose.connect(config.urlDb);
       const restaurant = await Restaurant.create({
         username: mockAdminRestoUser.username,
         name: mockAdminRestoUser.name,
@@ -1398,7 +1387,6 @@ describe('testing Custom Menu Composition Functionality', () => {
       await CustomMenuComposition.deleteMany({});
       await CustomMenuCategory.deleteMany({});
       await CustomMenuCategorySpicyLevel.deleteMany({});
-      await mongoose.connection.close();
     });
     // error
     describe('error test', () => { 
@@ -1456,7 +1444,6 @@ describe('testing Custom Menu Composition Functionality', () => {
   // test updateCustomMenuComposition
   describe('test updateCustomMenuComposition', () => {
     beforeEach(async () => {
-      await mongoose.connect(config.urlDb);
       const restaurant = await Restaurant.create({
         username: mockAdminRestoUser.username,
         name: mockAdminRestoUser.name,
@@ -1481,7 +1468,6 @@ describe('testing Custom Menu Composition Functionality', () => {
       await CustomMenuComposition.deleteMany({});
       await CustomMenuCategory.deleteMany({});
       await CustomMenuCategorySpicyLevel.deleteMany({});
-      await mongoose.connection.close();
     });
     // error
     describe('error test', () => {
@@ -2088,7 +2074,6 @@ describe('testing Custom Menu Composition Functionality', () => {
   // test deleteCustomMenuComposition
   describe('test deleteCustomMenuComposition', () => {
     beforeEach(async () => {
-      await mongoose.connect(config.urlDb);
       const restaurant = await Restaurant.create({
         username: mockAdminRestoUser.username,
         name: mockAdminRestoUser.name,
@@ -2113,7 +2098,6 @@ describe('testing Custom Menu Composition Functionality', () => {
       await CustomMenuComposition.deleteMany({});
       await CustomMenuCategory.deleteMany({});
       await CustomMenuCategorySpicyLevel.deleteMany({});
-      await mongoose.connection.close();
     });
     // error
     describe('error', () => { 
