@@ -1,4 +1,5 @@
 import { Schema, Model, model, models } from 'mongoose';
+import bcrypt from 'bcryptjs';
 import { TimestampsDocument } from '../global/types';
 
 enum joinBotramSetting {
@@ -15,6 +16,7 @@ export interface ICustomer extends TimestampsDocument {
   avatar: string;
   isVerified: boolean;
   joinBotram: joinBotramSetting;
+  comparePassword(inputtedPassword: string): Promise<boolean>;
 }
 
 const customerSchema = new Schema<ICustomer>(
@@ -57,6 +59,28 @@ const customerSchema = new Schema<ICustomer>(
   },
   { timestamps: true }
 );
+
+customerSchema.pre('save', async function(next) {
+  const Restaurant = this as ICustomer;
+  if (Restaurant.isModified('password')) {
+    Restaurant.password = await bcrypt.hash(Restaurant.password, 12);
+  }
+  next();
+});
+
+customerSchema.pre('findOneAndUpdate', async function(next) {
+  const update = this.getUpdate() as { password: string };
+  if (update!.password) {
+    update.password = await bcrypt.hash(update.password, 12);
+  }
+  next();
+});
+
+customerSchema.methods.comparePassword = 
+  async function(inputtedPassword: string): Promise<boolean> {
+    const isMatch = await bcrypt.compare(inputtedPassword, this.password);
+    return isMatch;
+  };
 
 const Customer: Model<ICustomer> =
   models.Customer || model('Customer', customerSchema);

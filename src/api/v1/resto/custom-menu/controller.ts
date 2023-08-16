@@ -3,9 +3,6 @@ import { StatusCodes } from 'http-status-codes';
 import { SuccessAPIResponse } from '../../../../global/types';
 import { ICustomMenuCategory } from '../../../../models/CustomMenuCategory';
 import {
-  CustomMenuCategoryResponseDTO,
-  CustomMenuCompositionResponseDTO,
-  GetCustomMenuCompositionsWithPaginated,
   createCustomMenuCategory,
   createCustomMenuComposition,
   deleteCustomMenuCategory,
@@ -17,6 +14,8 @@ import {
   updateCustomMenuCategory,
   updateCustomMenuComposition,
 } from '../../../../services/mongoose/resto/custom-menu';
+
+import * as DTO from '../../../../services/mongoose/resto/custom-menu/types';
 
 const createCustomMenuCategoryController = async (
   req: Request,
@@ -42,7 +41,7 @@ const getAllCustomMenuCategoryController = async (
 ): Promise<void> => {
   try {
     const result =
-      await getAllCustomMenuCategory(req) as Pick<CustomMenuCategoryResponseDTO, '_id' | 'name'>[];
+      await getAllCustomMenuCategory(req) as Pick<DTO.CustomMenuCategoryResponse, '_id' | 'name'>[];
 
     res
       .status(StatusCodes.OK)
@@ -58,7 +57,7 @@ const getSpecificCustomMenuCategoryController = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const result = await getSpecificCustomMenuCategory(req) as CustomMenuCategoryResponseDTO;
+    const result = await getSpecificCustomMenuCategory(req) as DTO.CustomMenuCategoryResponse;
 
     res 
       .status(StatusCodes.OK)
@@ -74,7 +73,7 @@ const updateCustomMenuCategoryController = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const result = await updateCustomMenuCategory(req) as CustomMenuCategoryResponseDTO['_id'];
+    const result = await updateCustomMenuCategory(req) as DTO.CustomMenuCategoryResponse['_id'];
 
     res 
       .status(StatusCodes.OK)
@@ -92,7 +91,7 @@ const deleteCustomMenuCategoryController = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const result = await deleteCustomMenuCategory(req) as CustomMenuCategoryResponseDTO['_id'];
+    const result = await deleteCustomMenuCategory(req) as DTO.CustomMenuCategoryResponse['_id'];
 
     res 
       .status(StatusCodes.OK)
@@ -111,7 +110,7 @@ const getAllCustomMenuCompositionController = async (
 ): Promise<void> => {
   try {
     const result =
-      await getAllCustomMenuComposition(req) as GetCustomMenuCompositionsWithPaginated;
+      await getAllCustomMenuComposition(req) as DTO.GetCustomMenuCompositionsWithPaginated;
 
     res
       .status(StatusCodes.OK)
@@ -132,7 +131,7 @@ const createCustomMenuCompositionController = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const result = await createCustomMenuComposition(req) as CustomMenuCompositionResponseDTO['_id'];
+    const result = await createCustomMenuComposition(req) as DTO.CustomMenuCompositionResponse['_id'];
 
     res
       .status(StatusCodes.CREATED)
@@ -151,7 +150,7 @@ const getSpecificCustomMenuCompositionController = async (
 ): Promise<void> => {
   try {
     const result =
-      await getSpecificCustomMenuComposition(req) as CustomMenuCompositionResponseDTO;
+      await getSpecificCustomMenuComposition(req) as DTO.CustomMenuCompositionResponse;
 
     res
       .status(StatusCodes.OK)
@@ -167,7 +166,7 @@ const updateCustomMenuCompositionController = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const result = await updateCustomMenuComposition(req) as CustomMenuCompositionResponseDTO['_id'];
+    const result = await updateCustomMenuComposition(req) as DTO.CustomMenuCompositionResponse['_id'];
 
     res
       .status(StatusCodes.OK)
@@ -185,7 +184,7 @@ const deleteCustomMenuCompositionController = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const result = await deleteCustomMenuComposition(req) as CustomMenuCompositionResponseDTO['_id'];
+    const result = await deleteCustomMenuComposition(req) as DTO.CustomMenuCompositionResponse['_id'];
 
     res
       .status(StatusCodes.OK)

@@ -2,12 +2,13 @@ import { Request, Response, NextFunction } from 'express';
 import { SuccessAPIResponse } from '../../../../global/types';
 import { StatusCodes } from 'http-status-codes';
 import {
-  RestaurantProfileDTO,
   getProfile,
   setupProfile,
   updateCustomerPaymentType,
   updateProfile 
 } from '../../../../services/mongoose/resto/profile';
+
+import * as DTO from '../../../../services/mongoose/resto/profile/types';
 
 const getProfileController = async (
   req: Request,
@@ -15,7 +16,7 @@ const getProfileController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const result = await getProfile(req) as RestaurantProfileDTO;
+    const result = await getProfile(req) as DTO.ProfileResponse;
 
     res
       .status(StatusCodes.OK)

@@ -10,8 +10,7 @@ const createAccessToken = ({
   payload: IPayloadDataAccessToken;
   userType: 'resto' | 'customer';
 }): string => {
-  const jwtSecret =
-  userType === 'resto'
+  const jwtSecret = userType === 'resto'
     ? config.restoJWTSecretAccessToken
     : config.customerJWTSecretAccessToken;
 

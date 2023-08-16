@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { signInUpOAuthController, signinFormController, signupFormController } from './controller';
 import passport from 'passport';
-import passportConfigResto from '../../../../services/passport/passportConfigResto';
+import { resto as passportConfigResto } from '../../../../services/passport/passportConfig';
 
 passportConfigResto(passport);
 // route /api/v1/resto/auth
