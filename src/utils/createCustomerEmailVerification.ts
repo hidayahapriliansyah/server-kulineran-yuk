@@ -5,10 +5,10 @@ import CustomerVerification from '../models/CustomerVerification';
 
 const createCustomerEmailVerification = async ({
   customerId,
-  restaurantEmail,
+  customerEmail,
 }: {
   customerId: ICustomer['_id'],
-  restaurantEmail: ICustomer['email']
+  customerEmail: ICustomer['email']
 }): Promise<void> => {
   const now = dayjs();
   const expiredAt = now.add(10, 'minutes').toISOString();
@@ -16,7 +16,7 @@ const createCustomerEmailVerification = async ({
 
   await CustomerVerification.create({
     customerId: customerId,
-    email: restaurantEmail,
+    email: customerEmail,
     uniqueString,
     expiredAt,
   });

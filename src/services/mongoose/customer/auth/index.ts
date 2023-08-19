@@ -17,8 +17,8 @@ const signupForm = async (req: Request): Promise<ICustomer['_id'] | Error> => {
   try {
     session.startTransaction();
     const result = await Customer.create(payload);
-    const { _id: customerId, email: restaurantEmail } = result;
-    await createCustomerEmailVerification({ customerId, restaurantEmail });
+    const { _id: customerId, email: customerEmail } = result;
+    await createCustomerEmailVerification({ customerId, customerEmail  });
     await session.commitTransaction();
     await session.endSession();
     return result._id;

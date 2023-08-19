@@ -2,8 +2,8 @@ import { z } from 'zod';
 
 const profileBodySchema = z.object({
   avatar: z.string().optional(),
-  username: z.string().regex(/^[a-z0-9._']+$/).min(3).max(30).optional(),
-  name: z.string().regex(/^[a-zA-Z0-9.,_\s-]+$/).min(3).max(50).optional(),
+  username: z.string().regex(/^[a-z0-9._]+$/).min(3).max(30).optional(),
+  name: z.string().regex(/^[a-zA-Z0-9.,\s-']+$/).min(3).max(50).optional(),
   villageId: z.string().optional(),
   locationLink: z.string().optional(),
   detail: z.string().max(200).optional(),
