@@ -74,10 +74,12 @@ const restaurantSchema = new Schema<IRestaurant>(
     },
     locationLink: {
       type: String,
+      default: null,
     },
     contact: {
       type: String,
       maxlength: [14, 'Nomor kontak maksimal memiliki 14 karakter'],
+      default: null,
     },
     image1: {
       type: String,
@@ -101,9 +103,11 @@ const restaurantSchema = new Schema<IRestaurant>(
     },
     openingHour: {
       type: String,
+      default: null,
     },
     closingHour: {
       type: String,
+      default: null,
     },
     daysOff: {
       type: [String],

@@ -4,7 +4,7 @@ import { ICustomer } from './Customer';
 import { IRestaurant } from './Restaurant';
 
 export interface IRestaurantReview extends TimestampsDocument {
-  customerId: ICustomer['_id'];
+  customerId: ICustomer['_id'] | ICustomer;
   restaurantId: IRestaurant['_id'];
   hasCustomerBeenShoppingHere: boolean;
   reviewDescription: string;
@@ -30,7 +30,7 @@ const restaurantReviewSchema = new Schema<IRestaurantReview>(
     },
     reviewDescription: {
       type: String,
-      maxlength: [200, 'Ulasan maksimal memiliki 200 karakter'],
+      maxlength: [250, 'Ulasan maksimal memiliki 250 karakter'],
     },
     rating: {
       type: Number,

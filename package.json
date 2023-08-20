@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "change-case": "^4.1.2",
     "cookie-parser": "^1.4.6",
     "dayjs": "^1.11.9",
     "dotenv": "^16.3.1",

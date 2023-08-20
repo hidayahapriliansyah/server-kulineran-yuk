@@ -9,9 +9,10 @@ const profileBodySchema = z.object({
   detail: z.string().max(200).optional(),
   contact: z.string().max(14).optional(),
   imageGallery: z.array(z.string()).optional(),
-  openingHour: z.string().length(5).optional(),
-  closingHour: z.string().length(5).optional(),
-  daysOff: z.array(z.enum(['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'])).optional(),
+  openingHour: z.string().length(5).nullable().optional(),
+  closingHour: z.string().length(5).nullable().optional(),
+  daysOff: z.array(z.enum(['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']))
+    .nullable().optional(),
   fasilities: z.array(z.string().max(100)).optional(),
 });
 type ProfileBody = z.infer<typeof profileBodySchema>;

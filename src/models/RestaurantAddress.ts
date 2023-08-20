@@ -9,8 +9,6 @@ import { IProvince } from './Province';
 import { TimestampsDocument } from '../global/types';
 
 export interface IRestaurantAddress extends TimestampsDocument {
-  createdAt: Date;
-  updatedAt: Date;
   restaurantId: IRestaurant['_id'];
   villageId: IVillage['id'];
   villageName: IVillage['village'];

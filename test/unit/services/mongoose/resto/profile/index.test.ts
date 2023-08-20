@@ -324,7 +324,7 @@ describe('testing updateProfile', () => {
       const nameValidationError = error.issues.filter(
         (issue: { path: string[] }) => issue.path[0] === 'daysOff'
       )[0];
-      expect(nameValidationError.message).toContain('Invalid enum value. Expected \'Sunday\' | \'Monday\' | \'Tuesday\' | \'Wednesday\' | \'Thursday\' | \'Friday\' | \'Saturday\', received');
+      expect(nameValidationError.message).toContain('Invalid enum value. Expected \'sunday\' | \'monday\' | \'tuesday\' | \'wednesday\' | \'thursday\' | \'friday\' | \'saturday\', received');
     }
   });
   // fasilities
@@ -374,7 +374,7 @@ describe('testing updateProfile', () => {
       ],
       openingHour: '08:00',
       closingHour: '21:00',
-      daysOff: ['Wednesday'],
+      daysOff: ['wednesday'],
       fasilities: ['Free wifi', 'Area bebas rokok'],
     };
 
