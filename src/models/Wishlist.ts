@@ -3,9 +3,9 @@ import { TimestampsDocument } from '../global/types';
 import { ICustomer } from './Customer';
 import { IMenu } from './Menu';
 
-interface IWishlist extends TimestampsDocument {
-  customerId: ICustomer['_id'];
-  menuId: IMenu['_id'];
+export interface IWishlist extends TimestampsDocument {
+  customerId: ICustomer['_id'] | ICustomer;
+  menuId: IMenu['_id'] | IMenu;
 }
 
 const wishlistSchema = new Schema<IWishlist>(

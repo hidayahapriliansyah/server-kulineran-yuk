@@ -4,7 +4,7 @@ import { IRestaurant } from './Restaurant';
 import { IEtalase } from './Etalase';
 
 export interface IMenu extends TimestampsDocument {
-  restaurantId: IRestaurant['_id'];
+  restaurantId: IRestaurant['_id'] | IRestaurant;
   name: string;
   isBungkusAble: boolean;
   slug: string;

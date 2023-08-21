@@ -42,8 +42,8 @@ const isEmailCustomerVerified = async (
     if (!customer) {
       throw new Unauthenticated('Access denied. Please authenticate to access this resource.');
     }
-    if (customer!.isVerified) {
-      res.locals.isEmailVerified = false;
+    if (!customer!.isVerified) {
+      throw new Unauthorized('Access denied. Please verify your email.');
     }
     next();
   } catch (error) {
