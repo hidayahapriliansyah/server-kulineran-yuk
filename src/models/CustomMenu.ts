@@ -6,8 +6,8 @@ import { ICustomMenuCategory } from './CustomMenuCategory';
 
 export interface ICustomMenu extends TimestampsDocument {
   customerId: ICustomer['_id'];
-  restaurantId: IRestaurant['_id'];
-  customMenuCategorId: ICustomMenuCategory['_id'];
+  restaurantId: IRestaurant['_id'] | IRestaurant;
+  customMenuCategoryId: ICustomMenuCategory['_id'] | ICustomMenuCategory;
   name: string;
   price: number;
 }
@@ -19,7 +19,7 @@ const customMenuSchema = new Schema<ICustomMenu>(
       required: true,
       ref: 'Customer',
     },
-    customMenuCategorId: {
+    customMenuCategoryId: {
       type: Schema.Types.ObjectId,
       required: true,
       ref: 'CustomMenuCategory',

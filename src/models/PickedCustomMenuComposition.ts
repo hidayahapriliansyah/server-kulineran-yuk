@@ -3,9 +3,9 @@ import { TimestampsDocument } from '../global/types';
 import { ICustomMenu } from './CustomMenu';
 import { ICustomMenuComposition } from './CustomMenuComposition';
 
-interface IPickedCustomMenuCompositions extends TimestampsDocument {
+export interface IPickedCustomMenuCompositions extends TimestampsDocument {
   customMenuId: ICustomMenu['_id'];
-  customMenuCompositionId: ICustomMenuComposition['_id'];
+  customMenuCompositionId: ICustomMenuComposition['_id'] | ICustomMenuComposition;
   qty: number;
 }
 

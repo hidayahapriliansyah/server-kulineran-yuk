@@ -25,6 +25,7 @@ const withSpicy: Record<string, CustomMenuCompositionBody> = {
     stock: 10,
     images: ['http://image.com/image2', 'http://image.com/image3'],
   },
+  
 };
 
 const withoutSpicy: Record<string, CustomMenuCompositionBody> = {
