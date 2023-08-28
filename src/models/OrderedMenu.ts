@@ -5,7 +5,7 @@ import { IMenu } from './Menu';
 
 export interface IOrderedMenu extends TimestampsDocument {
   orderId: IOrder['_id'];
-  menuId: IMenu['_id'];
+  menuId: IMenu['_id'] | IMenu;
   menuName: string;
   menuPrice: number;
   quantity: number;

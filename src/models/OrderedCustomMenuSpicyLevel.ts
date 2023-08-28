@@ -2,7 +2,7 @@ import { Schema, Model, model, models } from 'mongoose';
 import { TimestampsDocument } from '../global/types';
 import { IOrderedCustomMenu } from './OrderedCustomMenu';
 
-interface IOrdereCustomMenuSpicyLevel extends TimestampsDocument {
+export interface IOrdereCustomMenuSpicyLevel extends TimestampsDocument {
   orderedCustomMenuId: IOrderedCustomMenu['_id'];
   level: number;
 }

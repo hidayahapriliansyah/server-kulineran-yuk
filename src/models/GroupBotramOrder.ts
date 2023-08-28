@@ -3,8 +3,7 @@ import { TimestampsDocument } from '../global/types';
 import { IGroupBotram } from './GroupBotram';
 import { IRestaurant } from './Restaurant';
 
-enum GroupBotramOrderStatus {
-  ORDERING = 'ordering',
+export enum GroupBotramOrderStatus {
   READYTOORDER = 'readytoorder',
   ACCEPTED = 'accepted',
   PROCESSED = 'processed',
@@ -12,7 +11,7 @@ enum GroupBotramOrderStatus {
   CANCEL = 'cancel',
 }
 
-interface IGroupBotramOrder extends TimestampsDocument {
+export interface IGroupBotramOrder extends TimestampsDocument {
   groupBotramId: IGroupBotram['_id'];
   restaurantId: IRestaurant['_id'];
   totalAmount: number;
@@ -39,7 +38,7 @@ const groupBotramOrderSchema = new Schema<IGroupBotramOrder>(
     status: {
       type: String,
       enum: Object.values(GroupBotramOrderStatus),
-      default: GroupBotramOrderStatus.ORDERING,
+      default: GroupBotramOrderStatus.READYTOORDER,
     },
     isPaid: {
       type: Boolean,
@@ -53,4 +52,3 @@ const GroupBotramOrder: Model<IGroupBotramOrder> =
   models.GroupBotramOrder || model('GroupBotramOrder', groupBotramOrderSchema);
 
 export default GroupBotramOrder;
-

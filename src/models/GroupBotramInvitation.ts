@@ -9,8 +9,8 @@ enum GroupBotramInvitationStatus {
   REJECTED = 'rejected',
 }
 
-interface IGroupBotramInvitation extends TimestampsDocument {
-  groupBotramId: IGroupBotram['_id'];
+export interface IGroupBotramInvitation extends TimestampsDocument {
+  groupBotramId: IGroupBotram['_id'] | IGroupBotram;
   customerId: ICustomer['_id'];
   status: GroupBotramInvitationStatus;
   isActive: boolean;

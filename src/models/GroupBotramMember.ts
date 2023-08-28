@@ -3,7 +3,7 @@ import { TimestampsDocument } from '../global/types';
 import { IGroupBotram } from './GroupBotram';
 import { ICustomer } from './Customer';
 
-enum GroupBotramMemberStatus {
+export enum GroupBotramMemberStatus {
   NOTJOINYET = 'notjoinyet',
   ORDERING = 'ordering',
   ORDERREADY = 'orderready',
@@ -12,8 +12,8 @@ enum GroupBotramMemberStatus {
 }
 
 export interface IGroupBotramMember extends TimestampsDocument {
-  groupBotramId: IGroupBotram['_id'];
-  customerId: ICustomer['_id'];
+  groupBotramId: IGroupBotram['_id'] | IGroupBotram;
+  customerId: ICustomer['_id'] | ICustomer;
   status: GroupBotramMemberStatus;
 }
 

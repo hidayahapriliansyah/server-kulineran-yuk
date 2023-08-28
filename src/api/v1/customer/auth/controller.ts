@@ -4,7 +4,7 @@ import { StatusCodes } from 'http-status-codes';
 import { SuccessAPIResponse } from '../../../../global/types';
 import { createCookieCustomerAccessToken, createCookieRestoAccessToken } from '../../../../utils/createCookie';
 
-import * as customerAuthService from '../../../../services/mongoose/customer/auth/index';
+import * as authService from '../../../../services/mongoose/customer/auth/index';
 import { ICustomer } from '../../../../models/Customer';
 
 const signupForm = async (
@@ -13,7 +13,7 @@ const signupForm = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const result = await customerAuthService.signupForm(req) as ICustomer['_id'];
+    const result = await authService.signupForm(req) as ICustomer['_id'];
     res
       .status(StatusCodes.CREATED)
       .json(new SuccessAPIResponse('Signup successfully', {
@@ -30,7 +30,7 @@ const signinForm = async (
   next: NextFunction,
 ) => {
   try {
-    const result = await customerAuthService.signinForm(req) as ICustomer;
+    const result = await authService.signinForm(req) as ICustomer;
     createCookieCustomerAccessToken(res, result);
     res
       .status(StatusCodes.OK)

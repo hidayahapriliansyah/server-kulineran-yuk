@@ -2,7 +2,7 @@ import { Schema, Model, model, models } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { TimestampsDocument } from '../global/types';
 
-enum joinBotramSetting {
+export enum joinBotramSetting {
   DIRECTLY = 'directly',
   INVITATION = 'invitation',
   BYSELF = 'byself',

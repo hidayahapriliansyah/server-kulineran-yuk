@@ -10,8 +10,8 @@ enum GroupBotramStatus {
 }
 
 export interface IGroupBotram extends TimestampsDocument {
-  creatorCustomerId: ICustomer['_id'];
-  restaurantId: IRestaurant['_id'];
+  creatorCustomerId: ICustomer['_id'] | ICustomer;
+  restaurantId: IRestaurant['_id'] | IRestaurant;
   name: string;
   openMembership: boolean;
   status: GroupBotramStatus;
@@ -24,10 +24,15 @@ const groupBotramSchema = new Schema<IGroupBotram>(
       required: true,
       ref: 'Customer',
     },
+    restaurantId: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: 'Restaurant',
+    },
     name: {
       type: String,
       required: [true, 'Nama group botram harus diiisi'],
-      minlength: [3, 'Nama group botram minimal memiliki 3 karakter'],
+      minlength: [1, 'Nama group botram minimal memiliki 1 karakter'],
       maxlength: [30, 'Nama group botram maximal memiliki 30 karakter'],
     },
     openMembership: {
@@ -43,7 +48,7 @@ const groupBotramSchema = new Schema<IGroupBotram>(
   { timestamps: true }
 );
 
-const GroupBotram =
+const GroupBotram: Model<IGroupBotram> =
   models.GroupBotram || model('GroupBotram', groupBotramSchema);
 
 export default GroupBotram;

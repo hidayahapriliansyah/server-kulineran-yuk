@@ -4,7 +4,7 @@ import { ICustomer } from './Customer';
 import { IRestaurant } from './Restaurant';
 
 enum OrderStatus {
-  READYTORDER = 'readytoorder',
+  READYTOORDER = 'readytoorder',
   ACCEPTED = 'accepted',
   PROCESSED = 'processed',
   DONE = 'done',
@@ -44,7 +44,7 @@ const orderSchema = new Schema<IOrder>({
   status: {
     type: String,
     enum: Object.values(OrderStatus),
-    default: OrderStatus.READYTORDER,
+    default: OrderStatus.READYTOORDER,
   },
   isAcceptedByCustomer: {
     type: Boolean,
