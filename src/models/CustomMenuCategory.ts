@@ -20,8 +20,8 @@ const customMenuCategorySchema = new Schema<ICustomMenuCategory>(
       required: [true, 'Nama kategori custom menu harus diisi'],
       minlength: [1, 'Nama kategori custom menu minimal memiliki 1 karakter'],
       maxlength: [
-        3000,
-        'Nama kategori custom menu maksimal memiliki 3000 karakter',
+        50,
+        'Nama kategori custom menu maksimal memiliki 50 karakter',
       ],
     },
     isBungkusAble: {

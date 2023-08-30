@@ -1,0 +1,611 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Province {
+  id        String    @id @default(uuid()) @db.VarChar(36)
+  codeId    String    @unique @db.VarChar(12)
+  province  String    @db.VarChar(50)
+  regencies Regency[]
+}
+
+model Regency {
+  id         String     @id @default(uuid()) @db.VarChar(36)
+  codeId     String     @unique @db.VarChar(12)
+  province   Province   @relation(fields: [provinceId], references: [codeId])
+  provinceId String     @db.VarChar(36)
+  regency    String     @db.VarChar(50)
+  districts  District[]
+}
+
+model District {
+  id        String    @id @default(uuid()) @db.VarChar(36)
+  codeId    String    @unique @db.VarChar(12)
+  regency   Regency   @relation(fields: [regencyId], references: [codeId])
+  regencyId String    @db.VarChar(36)
+  district  String    @db.VarChar(50)
+  villages  Village[]
+}
+
+model Village {
+  id                  String              @id @default(uuid()) @db.VarChar(36)
+  codeId              String              @unique @db.VarChar(12)
+  districtId          String              @db.VarChar(36)
+  village             String              @db.VarChar(50)
+  District            District            @relation(fields: [districtId], references: [codeId])
+  restaurantAddresses RestaurantAddress[]
+}
+
+model Restaurant {
+  id                        String                           @id @default(uuid()) @db.VarChar(36)
+  createdAt                 DateTime                         @default(now())
+  updatedAt                 DateTime                         @updatedAt
+  name                      String                           @db.VarChar(50)
+  username                  String                           @unique @db.VarChar(30)
+  email                     String                           @unique @db.VarChar(254)
+  password                  String                           @unique @db.VarChar(255)
+  passMinimumProfileSetting Boolean                          @default(false)
+  avatar                    String
+  isVerified                Boolean                          @default(false)
+  customerPayment           RestaurantCustomerPayment        @default(AFTER_ORDER)
+  locationLink              String?
+  contact                   String?                          @db.VarChar(14)
+  image1                    String?
+  image2                    String?
+  image3                    String?
+  image4                    String?
+  image5                    String?
+  openingHour               String?                          @db.VarChar(5)
+  closingHour               String?                          @db.VarChar(5)
+  dayOff                    String?
+  fasilities                String?
+  resetPasswordRequests     RestaurantResetPasswordRequest[]
+  emailVerifications        RestaurantVerification[]
+  address                   RestaurantAddress?
+  etalasess                 Etalase[]
+  menus                     Menu[]
+  customMenuCategories      CustomMenuCategory[]
+  customMenuCompositions    CustomMenuComposition[]
+  reviews                   RestaurantReview[]
+  menuCarts                 MenuCart[]
+  customMenus               CustomMenu[]
+  customMenuCarts           CustomMenuCart[]
+  orders                    Order[]
+  botramGroups              BotramGroup[]
+  botramGroupOrders         BotramGroupOrder[]
+  notifications             RestaurantNotification[]
+}
+
+enum RestaurantCustomerPayment {
+  AFTER_ORDER
+  BEFORE_ORDER
+}
+
+model RestaurantResetPasswordRequest {
+  id           String     @id @default(uuid()) @db.VarChar(36)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId String     @db.VarChar(36)
+  uniqueString String
+  expiredAt    DateTime
+}
+
+model RestaurantVerification {
+  id           String     @id @default(uuid()) @db.VarChar(36)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId String     @db.VarChar(36)
+  uniqueString String
+  expiredAt    DateTime
+}
+
+model RestaurantAddress {
+  id           String     @id @default(uuid()) @db.VarChar(36)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId String     @unique
+  village      Village    @relation(fields: [villageId], references: [id])
+  villageId    String     @db.VarChar(36)
+  villageName  String     @db.VarChar(50)
+  districtName String     @db.VarChar(50)
+  regencyName  String     @db.VarChar(50)
+  provinceName String     @db.VarChar(50)
+  detail       String?    @db.VarChar(200)
+}
+
+model Etalase {
+  id           String     @id @default(uuid()) @db.VarChar(36)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  name         String     @db.VarChar(20)
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId String     @db.VarChar(36)
+  menus        Menu[]
+}
+
+model Menu {
+  id                   String                @id @default(uuid()) @db.VarChar(36)
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  restaurant           Restaurant            @relation(fields: [restaurantId], references: [id])
+  restaurantId         String                @db.VarChar(36)
+  name                 String                @db.VarChar(80)
+  isBungkusAble        Boolean               @default(false)
+  slug                 String
+  description          String
+  price                Int
+  stock                Int                   @default(0)
+  isActive             Boolean               @default(true)
+  image1               String
+  image2               String?
+  image3               String?
+  image4               String?
+  image5               String?
+  etalase              Etalase               @relation(fields: [etalaseId], references: [id])
+  etalaseId            String                @db.VarChar(36)
+  MenuSpicyLevel       MenuSpicyLevel?
+  wishlist             Wishlist[]
+  menuCarts            MenuCart[]
+  orderedMenus         OrderedMenu[]
+  botramGroupMenuCarts BotramGroupMenuCart[]
+}
+
+model MenuSpicyLevel {
+  id        String   @id @default(uuid()) @db.VarChar(36)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  menu      Menu     @relation(fields: [menuId], references: [id])
+  menuId    String   @unique @db.VarChar(36)
+}
+
+model CustomMenuCategory {
+  id                           String                        @id @default(uuid()) @db.VarChar(36)
+  createdAt                    DateTime                      @default(now())
+  updatedAt                    DateTime                      @updatedAt
+  restaurant                   Restaurant                    @relation(fields: [restaurantId], references: [id])
+  restaurantId                 String                        @db.VarChar(36)
+  name                         String                        @db.VarChar(50)
+  isBungkusAble                Boolean                       @default(false)
+  CustomMenuCategorySpicyLevel CustomMenuCategorySpicyLevel?
+  customMenuCompositions       CustomMenuComposition[]
+  customMenus                  CustomMenu[]
+}
+
+model CustomMenuCategorySpicyLevel {
+  id                   String             @id @default(uuid()) @db.VarChar(36)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  customMenuCategory   CustomMenuCategory @relation(fields: [customMenuCategoryId], references: [id])
+  customMenuCategoryId String             @unique @db.VarChar(36)
+  maxSpicy             Int
+}
+
+model CustomMenuComposition {
+  id                           String                        @id @default(uuid()) @db.VarChar(36)
+  createdAt                    DateTime                      @default(now())
+  updatedAt                    DateTime                      @updatedAt
+  restaurant                   Restaurant                    @relation(fields: [restaurantId], references: [id])
+  restaurantId                 String                        @db.VarChar(36)
+  customMenuCategory           CustomMenuCategory            @relation(fields: [customMenuCategoryId], references: [id])
+  customMenuCategoryId         String                        @db.VarChar(36)
+  name                         String                        @db.VarChar(80)
+  description                  String
+  stock                        Int                           @default(0)
+  price                        Int
+  image1                       String
+  image2                       String?
+  pickedCustomMenuCompositions PickedCustomMenuComposition[]
+}
+
+model Customer {
+  id                    String                         @id @default(uuid()) @db.VarChar(36)
+  createdAt             DateTime                       @default(now())
+  updatedAt             DateTime                       @updatedAt
+  name                  String                         @db.VarChar(30)
+  username              String                         @unique @db.VarChar(30)
+  email                 String                         @unique @db.VarChar(254)
+  password              String
+  avatar                String
+  isVerified            Boolean                        @default(false)
+  joinBotram            CustomerJoinBotramSetting      @default(INVITATION)
+  resetPasswordRequests CustomerResetPasswordRequest[]
+  emailVerifications    CustomerVerification[]
+  wishlists             Wishlist[]
+  reviews               RestaurantReview[]
+  menuCarts             MenuCart[]
+  customMenus           CustomMenu[]
+  customMenuCarts       CustomMenuCart[]
+  orders                Order[]
+  creatorOfBotramGroup  BotramGroup[]
+  botramGroupMembers    BotramGroupMember[]
+  notifications         CustomerNotification[]
+}
+
+enum CustomerJoinBotramSetting {
+  DIRECTLY
+  INVITATION
+  BYSELF
+}
+
+model CustomerResetPasswordRequest {
+  id           String   @id @default(uuid()) @db.VarChar(36)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  uniqueString String
+  expiredAt    DateTime
+  Customer     Customer @relation(fields: [customerId], references: [id])
+  customerId   String   @db.VarChar(36)
+}
+
+model CustomerVerification {
+  id           String   @id @default(uuid()) @db.VarChar(36)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  uniqueString String
+  expiredAt    DateTime
+  Customer     Customer @relation(fields: [customerId], references: [id])
+  customerId   String   @db.VarChar(36)
+}
+
+model Wishlist {
+  id         String   @id @default(uuid()) @db.VarChar(36)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  Customer   Customer @relation(fields: [customerId], references: [id])
+  customerId String   @db.VarChar(36)
+  Menu       Menu     @relation(fields: [menuId], references: [id])
+  menuId     String   @db.VarChar(36)
+}
+
+model RestaurantReview {
+  id                          String                    @id @default(uuid()) @db.VarChar(36)
+  createdAt                   DateTime                  @default(now())
+  updatedAt                   DateTime                  @updatedAt
+  customer                    Customer                  @relation(fields: [customerId], references: [id])
+  customerId                  String                    @db.VarChar(36)
+  restaurant                  Restaurant                @relation(fields: [restaurantId], references: [id])
+  restaurantId                String                    @db.VarChar(36)
+  hasCustomerBeenShoppingHere Boolean                   @default(false)
+  reviewDescription           String                    @db.VarChar(250)
+  rating                      Int                       @db.SmallInt
+  isReplied                   Boolean                   @default(false)
+  response                    RestaurantReviewResponse?
+}
+
+model RestaurantReviewResponse {
+  id                  String           @id @default(uuid()) @db.VarChar(36)
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  restaurantReview    RestaurantReview @relation(fields: [restaurantReviewId], references: [id])
+  restaurantReviewId  String           @unique @db.VarChar(36)
+  responseDescription String           @db.VarChar(250)
+}
+
+model MenuCart {
+  id                   String              @id @default(uuid()) @db.VarChar(36)
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  customer             Customer            @relation(fields: [customerId], references: [id])
+  customerId           String              @db.VarChar(36)
+  menu                 Menu                @relation(fields: [menuId], references: [id])
+  menuId               String              @db.VarChar(36)
+  restaurant           Restaurant          @relation(fields: [restaurantId], references: [id])
+  restaurantId         String              @db.VarChar(36)
+  quantity             Int                 @db.SmallInt
+  isDibungkus          Boolean             @default(false)
+  menuCartSpicyLevel   MenuCartSpicyLevel?
+  menuCartSpicyLevelId String?             @unique @db.VarChar(36)
+
+  @@unique([customerId, menuId, quantity, isDibungkus, menuCartSpicyLevelId])
+}
+
+model MenuCartSpicyLevel {
+  id         String   @id @default(uuid()) @db.VarChar(36)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  menuCart   MenuCart @relation(fields: [menuCartId], references: [id])
+  menuCartId String   @unique @db.VarChar(36)
+  level      Int      @db.SmallInt
+}
+
+model CustomMenu {
+  id                           String                        @id @default(uuid()) @db.VarChar(36)
+  createdAt                    DateTime                      @default(now())
+  updatedAt                    DateTime                      @updatedAt
+  customer                     Customer                      @relation(fields: [customerId], references: [id])
+  customerId                   String                        @db.VarChar(36)
+  customMenuCategory           CustomMenuCategory            @relation(fields: [customMenuCategoryId], references: [id])
+  customMenuCategoryId         String                        @db.VarChar(36)
+  restaurant                   Restaurant                    @relation(fields: [restaurantId], references: [id])
+  restaurantId                 String                        @db.VarChar(36)
+  name                         String                        @db.VarChar(80)
+  price                        Int
+  pickedCustomMenuCompositions PickedCustomMenuComposition[]
+  customMenuCarts              CustomMenuCart[]
+  orderedCustomMenus           OrderedCustomMenu[]
+  botramGroupCustomMenuCarts   BotramGroupCustomMenuCart[]
+}
+
+model PickedCustomMenuComposition {
+  id                      String                @id @default(uuid()) @db.VarChar(36)
+  createdAt               DateTime              @default(now())
+  updatedAt               DateTime              @updatedAt
+  customMenu              CustomMenu            @relation(fields: [customMenuId], references: [id])
+  customMenuId            String                @db.VarChar(36)
+  customMenuComposition   CustomMenuComposition @relation(fields: [customMenuCompositionId], references: [id])
+  customMenuCompositionId String                @db.VarChar(36)
+  qty                     Int                   @db.SmallInt
+
+  @@unique([customMenuId, customMenuCompositionId])
+}
+
+model CustomMenuCart {
+  id                         String                    @id @default(uuid()) @db.VarChar(36)
+  createdAt                  DateTime                  @default(now())
+  updatedAt                  DateTime                  @updatedAt
+  customer                   Customer                  @relation(fields: [customerId], references: [id])
+  customerId                 String                    @db.VarChar(36)
+  customMenu                 CustomMenu                @relation(fields: [customMenuId], references: [id])
+  customMenuId               String                    @db.VarChar(36)
+  restaurant                 Restaurant                @relation(fields: [restaurantId], references: [id])
+  restaurantId               String                    @db.VarChar(36)
+  quantity                   Int                       @db.SmallInt
+  isDibungkus                Boolean                   @default(false)
+  customMenuCartSpicyLevel   CustomMenuCartSpicyLevel?
+  customMenuCartSpicyLevelId String?                   @unique @db.VarChar(36)
+
+  @@unique([customerId, customMenuId, quantity, isDibungkus, customMenuCartSpicyLevelId])
+}
+
+model CustomMenuCartSpicyLevel {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  customMenuCart   CustomMenuCart @relation(fields: [customMenuCartId], references: [id])
+  customMenuCartId String         @unique @db.VarChar(36)
+  level            Int            @db.SmallInt
+}
+
+model Order {
+  id                   String              @id @default(uuid()) @db.VarChar(36)
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  customer             Customer            @relation(fields: [customerId], references: [id])
+  customerId           String              @db.VarChar(36)
+  restaurant           Restaurant          @relation(fields: [restaurantId], references: [id])
+  restaurantId         String              @db.VarChar(36)
+  isGroup              Boolean             @default(false)
+  total                Int
+  status               OrderStatus         @default(READY_TO_ORDER)
+  isPaid               Boolean             @default(false)
+  isAcceptedByCustomer Boolean             @default(false)
+  customerNote         String              @db.VarChar(150)
+  orderedMenus         OrderedMenu[]
+  orderedCustomMenus   OrderedCustomMenu[]
+}
+
+enum OrderStatus {
+  READY_TO_ORDER
+  ACCEPTED
+  PROCESSED
+  DONE
+  CANCEL
+}
+
+model OrderedMenu {
+  id                      String                 @id @default(uuid()) @db.VarChar(36)
+  createdAt               DateTime               @default(now())
+  updatedAt               DateTime               @updatedAt
+  order                   Order                  @relation(fields: [orderId], references: [id])
+  orderId                 String                 @db.VarChar(36)
+  menu                    Menu                   @relation(fields: [menuId], references: [id])
+  menuId                  String                 @db.VarChar(36)
+  menuName                String                 @db.VarChar(80)
+  menuPrice               Int
+  quantity                Int                    @db.SmallInt
+  totalPrice              Int
+  isDibungkus             Boolean
+  orderedMenuSpicyLevel   OrderedMenuSpicyLevel?
+  orderedMenuSpicyLevelId String?                @unique @db.VarChar(36)
+
+  @@unique([orderId, menuId, quantity, isDibungkus, orderedMenuSpicyLevelId])
+}
+
+model OrderedMenuSpicyLevel {
+  id            String      @id @default(uuid()) @db.VarChar(36)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  orderedMenu   OrderedMenu @relation(fields: [orderedMenuId], references: [id])
+  orderedMenuId String      @unique @db.VarChar(36)
+  level         Int         @db.SmallInt
+}
+
+model OrderedCustomMenu {
+  id                            String                       @id @default(uuid()) @db.VarChar(36)
+  createdAt                     DateTime                     @default(now())
+  updatedAt                     DateTime                     @updatedAt
+  order                         Order                        @relation(fields: [orderId], references: [id])
+  orderId                       String                       @db.VarChar(36)
+  customMenu                    CustomMenu                   @relation(fields: [customMenuId], references: [id])
+  customMenuId                  String                       @db.VarChar(36)
+  customMenuName                String                       @db.VarChar(80)
+  customMenuPrice               Int
+  quantity                      Int                          @db.SmallInt
+  totalPrice                    Int
+  isDibungkus                   Boolean
+  orderedCustomMenuSpicyLevel   OrderedCustomMenuSpicyLevel?
+  orderedCustomMenuSpicyLevelId String?                      @unique @db.VarChar(36)
+}
+
+model OrderedCustomMenuSpicyLevel {
+  id                  String            @id @default(uuid()) @db.VarChar(36)
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  orderedCustomMenu   OrderedCustomMenu @relation(fields: [orderedCustomMenuId], references: [id])
+  orderedCustomMenuId String            @unique @db.VarChar(36)
+  level               Int               @db.SmallInt
+}
+
+model BotramGroup {
+  id                          String                      @id @default(uuid()) @db.VarChar(36)
+  createdAt                   DateTime                    @default(now())
+  updatedAt                   DateTime                    @updatedAt
+  creatorCustomer             Customer                    @relation(fields: [creatorCustomerId], references: [id])
+  creatorCustomerId           String                      @db.VarChar(36)
+  restaurant                  Restaurant                  @relation(fields: [restaurantId], references: [id])
+  restaurantId                String                      @db.VarChar(36)
+  name                        String                      @db.VarChar(30)
+  openMembership              Boolean                     @default(true)
+  status                      BotramGroupStatus           @default(ORDERING)
+  members                     BotramGroupMember[]
+  orders                      BotramGroupOrder[]
+  botramGroupMenuCarts        BotramGroupMenuCart[]
+  botramGroupCustomeMenuCarts BotramGroupCustomMenuCart[]
+}
+
+enum BotramGroupStatus {
+  ORDERING
+  ALL_READY_ORDER
+  DONE
+}
+
+model BotramGroupMember {
+  id                         String                      @id @default(uuid()) @db.VarChar(36)
+  createdAt                  DateTime                    @default(now())
+  updatedAt                  DateTime                    @updatedAt
+  botramGroup                BotramGroup                 @relation(fields: [botramGroupId], references: [id])
+  botramGroupId              String                      @db.VarChar(36)
+  customer                   Customer                    @relation(fields: [customerId], references: [id])
+  customerId                 String                      @db.VarChar(36)
+  status                     BotramGroupMemberStatus
+  memberOrder                BotramGroupMemberOrder?
+  botramGroupMenuCarts       BotramGroupMenuCart[]
+  botramGroupCustomMenuCarts BotramGroupCustomMenuCart[]
+}
+
+enum BotramGroupMemberStatus {
+  NOT_JOIN_YET
+  ORDERING
+  ORDER_READY
+  EXIT
+  EXPELLED
+}
+
+model BotramGroupOrder {
+  id            String                 @id @default(uuid()) @db.VarChar(36)
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+  botramGroup   BotramGroup            @relation(fields: [botramGroupId], references: [id])
+  botramGroupId String                 @db.VarChar(36)
+  restaurant    Restaurant             @relation(fields: [restaurantId], references: [id])
+  restaurantId  String                 @db.VarChar(36)
+  totalAmount   Int
+  status        BotramGroupOrderStatus @default(READY_TO_ORDER)
+  isPaid        Boolean                @default(false)
+}
+
+enum BotramGroupOrderStatus {
+  READY_TO_ORDER
+  ACCEPTED
+  PROCESSED
+  DONE
+  CANCEL
+}
+
+model BotramGroupMemberOrder {
+  id                  String            @id @default(uuid()) @db.VarChar(36)
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  botramGroupMember   BotramGroupMember @relation(fields: [botramGroupMemberId], references: [id])
+  botramGroupMemberId String            @unique @db.VarChar(36)
+  orderId             String            @db.VarChar(36)
+}
+
+model BotramGroupMenuCart {
+  id                         String                    @id @default(uuid()) @db.VarChar(36)
+  createdAt                  DateTime                  @default(now())
+  updatedAt                  DateTime                  @updatedAt
+  botramGroup                BotramGroup               @relation(fields: [botramGroupId], references: [id])
+  botramGroupId              String                    @unique @db.VarChar(36)
+  botramGroupMember          BotramGroupMember         @relation(fields: [botramGroupMemberId], references: [id])
+  botramGroupMemberId        String                    @unique @db.VarChar(36)
+  menu                       Menu                      @relation(fields: [menuId], references: [id])
+  menuId                     String                    @unique @db.VarChar(36)
+  quantity                   Int                       @db.SmallInt
+  isDibungkus                Boolean                   @default(false)
+  botramMenuCartSpicyLevel   BotramMenuCartSpicyLevel?
+  botramMenuCartSpicyLevelId String?                   @db.VarChar(36)
+
+  @@unique([botramGroupMemberId, menuId, quantity, isDibungkus, botramMenuCartSpicyLevelId])
+}
+
+model BotramMenuCartSpicyLevel {
+  id                    String              @id @default(uuid()) @db.VarChar(36)
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+  botramGroupMenuCart   BotramGroupMenuCart @relation(fields: [botramGroupMenuCartId], references: [id])
+  botramGroupMenuCartId String              @unique @db.VarChar(36)
+  level                 Int                 @db.SmallInt
+}
+
+model BotramGroupCustomMenuCart {
+  id                               String                          @id @default(uuid()) @db.VarChar(36)
+  createdAt                        DateTime                        @default(now())
+  updatedAt                        DateTime                        @updatedAt
+  botramGroup                      BotramGroup                     @relation(fields: [botramGroupId], references: [id])
+  botramGroupId                    String                          @unique @db.VarChar(36)
+  botramGroupMember                BotramGroupMember               @relation(fields: [botramGroupMemberId], references: [id])
+  botramGroupMemberId              String                          @unique @db.VarChar(36)
+  customMenu                       CustomMenu                      @relation(fields: [customMenuId], references: [id])
+  customMenuId                     String                          @unique @db.VarChar(36)
+  quantity                         Int                             @db.SmallInt
+  isDibungkus                      Boolean                         @default(false)
+  botramCustomMenuCartSpicyLevel   BotramCustomMenuCartSpicyLevel?
+  botramCustomMenuCartSpicyLevelId String?                         @db.VarChar(36)
+
+  @@unique([botramGroupMemberId, customMenuId, quantity, isDibungkus, botramCustomMenuCartSpicyLevelId])
+}
+
+model BotramCustomMenuCartSpicyLevel {
+  id                          String                    @id @default(uuid()) @db.VarChar(36)
+  createdAt                   DateTime                  @default(now())
+  updatedAt                   DateTime                  @updatedAt
+  botramGroupCustomMenuCart   BotramGroupCustomMenuCart @relation(fields: [botramGroupCustomMenuCartId], references: [id])
+  botramGroupCustomMenuCartId String                    @unique @db.VarChar(36)
+  level                       Int                       @db.SmallInt
+}
+
+model RestaurantNotification {
+  id           String     @id @default(uuid()) @db.VarChar(36)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId String     @db.VarChar(36)
+  title        String     @db.VarChar(50)
+  description  String     @db.VarChar(250)
+  redirectLink String
+  isRead       Boolean    @default(false)
+}
+
+model CustomerNotification {
+  id           String   @id @default(uuid()) @db.VarChar(36)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  customer     Customer @relation(fields: [customerId], references: [id])
+  customerId   String   @db.VarChar(36)
+  title        String   @db.VarChar(50)
+  description  String   @db.VarChar(250)
+  redirectLink String
+  isRead       Boolean  @default(false)
+}
