@@ -1,9 +1,10 @@
 import { Router } from 'express';
-import { getRegencyController } from './controller';
+
+import * as locationController from './controller';
 
 // route: /api/v1/location/regency
 const locationRegencyRouter = Router();
 
-locationRegencyRouter.get('/', getRegencyController);
+locationRegencyRouter.get('/', locationController.getRegency);
 
 export default locationRegencyRouter;

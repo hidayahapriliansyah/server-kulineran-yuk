@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { getDistrictController } from './controller';
+import * as districtController from './controller';
 
 // route: /api/v1/location/district
 const locationDistrictRouter = Router();
 
-locationDistrictRouter.get('/', getDistrictController);
+locationDistrictRouter.get('/', districtController.getDistrictController);
 
 export default locationDistrictRouter;

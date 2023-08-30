@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { getAllProvinces } from '../../../../services/mongoose/location/province';
 import { StatusCodes } from 'http-status-codes';
 import { SuccessAPIResponse } from '../../../../global/types';
+import * as provinceService from '../../../../services/prisma/location/province';
 
 const getProvinceController = async (
   req: Request,
@@ -9,7 +9,7 @@ const getProvinceController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const result = await getAllProvinces();
+    const result = await provinceService.getAllProvinces();
 
     res
       .status(StatusCodes.OK)

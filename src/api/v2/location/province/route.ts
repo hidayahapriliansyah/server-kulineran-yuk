@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { getProvinceController } from './controller';
+import * as provinceContoller from './controller';
 
 // route: /api/v1/location/province
 const locationProvinceRouter = Router();
 
-locationProvinceRouter.get('/', getProvinceController);
+locationProvinceRouter.get('/', provinceContoller.getProvinceController);
 
 export default locationProvinceRouter;

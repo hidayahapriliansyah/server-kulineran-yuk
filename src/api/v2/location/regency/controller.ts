@@ -1,15 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { getRegency } from '../../../../services/mongoose/location/regency';
-import { SuccessAPIResponse } from '../../../../global/types';
 
-const getRegencyController = async (
+import { SuccessAPIResponse } from '../../../../global/types';
+import * as regencyService from '../../../../services/prisma/location/regency';
+
+const getRegency = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
-    const result = await getRegency(req);
+    const result = await regencyService.getRegency(req);
     res
       .status(StatusCodes.OK)
       .json(
@@ -20,4 +21,4 @@ const getRegencyController = async (
   }
 };
 
-export { getRegencyController };
+export { getRegency };

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { getDistrict } from '../../../../services/mongoose/location/district';
 import { SuccessAPIResponse } from '../../../../global/types';
+import * as districtService from '../../../../services/prisma/location/district';
 
 const getDistrictController = async (
   req: Request,
@@ -9,7 +9,7 @@ const getDistrictController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const result = await getDistrict(req);
+    const result = await districtService.getDistrict(req);
     res
       .status(StatusCodes.OK)
       .json(
