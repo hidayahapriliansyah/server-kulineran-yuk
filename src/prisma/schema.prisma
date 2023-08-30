@@ -11,41 +11,41 @@ datasource db {
 }
 
 model Province {
-  id        String    @id @default(uuid()) @db.VarChar(36)
+  id        String    @id @default(uuid()) @db.Uuid
   codeId    String    @unique @db.VarChar(12)
   province  String    @db.VarChar(50)
   regencies Regency[]
 }
 
 model Regency {
-  id         String     @id @default(uuid()) @db.VarChar(36)
+  id         String     @id @default(uuid()) @db.Uuid
   codeId     String     @unique @db.VarChar(12)
   province   Province   @relation(fields: [provinceId], references: [codeId])
-  provinceId String     @db.VarChar(36)
+  provinceId String     @db.VarChar(12)
   regency    String     @db.VarChar(50)
   districts  District[]
 }
 
 model District {
-  id        String    @id @default(uuid()) @db.VarChar(36)
+  id        String    @id @default(uuid()) @db.Uuid
   codeId    String    @unique @db.VarChar(12)
   regency   Regency   @relation(fields: [regencyId], references: [codeId])
-  regencyId String    @db.VarChar(36)
+  regencyId String    @db.VarChar(12)
   district  String    @db.VarChar(50)
   villages  Village[]
 }
 
 model Village {
-  id                  String              @id @default(uuid()) @db.VarChar(36)
+  id                  String              @id @default(uuid()) @db.Uuid
   codeId              String              @unique @db.VarChar(12)
-  districtId          String              @db.VarChar(36)
+  districtId          String              @db.VarChar(12)
   village             String              @db.VarChar(50)
   District            District            @relation(fields: [districtId], references: [codeId])
   restaurantAddresses RestaurantAddress[]
 }
 
 model Restaurant {
-  id                        String                           @id @default(uuid()) @db.VarChar(36)
+  id                        String                           @id @default(uuid()) @db.Uuid
   createdAt                 DateTime                         @default(now())
   updatedAt                 DateTime                         @updatedAt
   name                      String                           @db.VarChar(50)
@@ -90,33 +90,33 @@ enum RestaurantCustomerPayment {
 }
 
 model RestaurantResetPasswordRequest {
-  id           String     @id @default(uuid()) @db.VarChar(36)
+  id           String     @id @default(uuid()) @db.Uuid
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
-  restaurantId String     @db.VarChar(36)
+  restaurantId String     @db.Uuid
   uniqueString String
   expiredAt    DateTime
 }
 
 model RestaurantVerification {
-  id           String     @id @default(uuid()) @db.VarChar(36)
+  id           String     @id @default(uuid()) @db.Uuid
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
-  restaurantId String     @db.VarChar(36)
+  restaurantId String     @db.Uuid
   uniqueString String
   expiredAt    DateTime
 }
 
 model RestaurantAddress {
-  id           String     @id @default(uuid()) @db.VarChar(36)
+  id           String     @id @default(uuid()) @db.Uuid
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
-  restaurantId String     @unique
-  village      Village    @relation(fields: [villageId], references: [id])
-  villageId    String     @db.VarChar(36)
+  restaurantId String     @unique @db.Uuid
+  village      Village    @relation(fields: [villageId], references: [codeId])
+  villageId    String     @db.VarChar(12)
   villageName  String     @db.VarChar(50)
   districtName String     @db.VarChar(50)
   regencyName  String     @db.VarChar(50)
@@ -125,21 +125,21 @@ model RestaurantAddress {
 }
 
 model Etalase {
-  id           String     @id @default(uuid()) @db.VarChar(36)
+  id           String     @id @default(uuid()) @db.Uuid
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   name         String     @db.VarChar(20)
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
-  restaurantId String     @db.VarChar(36)
+  restaurantId String     @db.Uuid
   menus        Menu[]
 }
 
 model Menu {
-  id                   String                @id @default(uuid()) @db.VarChar(36)
+  id                   String                @id @default(uuid()) @db.Uuid
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt
   restaurant           Restaurant            @relation(fields: [restaurantId], references: [id])
-  restaurantId         String                @db.VarChar(36)
+  restaurantId         String                @db.Uuid
   name                 String                @db.VarChar(80)
   isBungkusAble        Boolean               @default(false)
   slug                 String
@@ -153,7 +153,7 @@ model Menu {
   image4               String?
   image5               String?
   etalase              Etalase               @relation(fields: [etalaseId], references: [id])
-  etalaseId            String                @db.VarChar(36)
+  etalaseId            String                @db.Uuid
   MenuSpicyLevel       MenuSpicyLevel?
   wishlist             Wishlist[]
   menuCarts            MenuCart[]
@@ -162,19 +162,19 @@ model Menu {
 }
 
 model MenuSpicyLevel {
-  id        String   @id @default(uuid()) @db.VarChar(36)
+  id        String   @id @default(uuid()) @db.Uuid
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   menu      Menu     @relation(fields: [menuId], references: [id])
-  menuId    String   @unique @db.VarChar(36)
+  menuId    String   @unique @db.Uuid
 }
 
 model CustomMenuCategory {
-  id                           String                        @id @default(uuid()) @db.VarChar(36)
+  id                           String                        @id @default(uuid()) @db.Uuid
   createdAt                    DateTime                      @default(now())
   updatedAt                    DateTime                      @updatedAt
   restaurant                   Restaurant                    @relation(fields: [restaurantId], references: [id])
-  restaurantId                 String                        @db.VarChar(36)
+  restaurantId                 String                        @db.Uuid
   name                         String                        @db.VarChar(50)
   isBungkusAble                Boolean                       @default(false)
   CustomMenuCategorySpicyLevel CustomMenuCategorySpicyLevel?
@@ -183,22 +183,22 @@ model CustomMenuCategory {
 }
 
 model CustomMenuCategorySpicyLevel {
-  id                   String             @id @default(uuid()) @db.VarChar(36)
+  id                   String             @id @default(uuid()) @db.Uuid
   createdAt            DateTime           @default(now())
   updatedAt            DateTime           @updatedAt
   customMenuCategory   CustomMenuCategory @relation(fields: [customMenuCategoryId], references: [id])
-  customMenuCategoryId String             @unique @db.VarChar(36)
+  customMenuCategoryId String             @unique @db.Uuid
   maxSpicy             Int
 }
 
 model CustomMenuComposition {
-  id                           String                        @id @default(uuid()) @db.VarChar(36)
+  id                           String                        @id @default(uuid()) @db.Uuid
   createdAt                    DateTime                      @default(now())
   updatedAt                    DateTime                      @updatedAt
   restaurant                   Restaurant                    @relation(fields: [restaurantId], references: [id])
-  restaurantId                 String                        @db.VarChar(36)
+  restaurantId                 String                        @db.Uuid
   customMenuCategory           CustomMenuCategory            @relation(fields: [customMenuCategoryId], references: [id])
-  customMenuCategoryId         String                        @db.VarChar(36)
+  customMenuCategoryId         String                        @db.Uuid
   name                         String                        @db.VarChar(80)
   description                  String
   stock                        Int                           @default(0)
@@ -209,7 +209,7 @@ model CustomMenuComposition {
 }
 
 model Customer {
-  id                    String                         @id @default(uuid()) @db.VarChar(36)
+  id                    String                         @id @default(uuid()) @db.Uuid
   createdAt             DateTime                       @default(now())
   updatedAt             DateTime                       @updatedAt
   name                  String                         @db.VarChar(30)
@@ -239,43 +239,43 @@ enum CustomerJoinBotramSetting {
 }
 
 model CustomerResetPasswordRequest {
-  id           String   @id @default(uuid()) @db.VarChar(36)
+  id           String   @id @default(uuid()) @db.Uuid
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   uniqueString String
   expiredAt    DateTime
   Customer     Customer @relation(fields: [customerId], references: [id])
-  customerId   String   @db.VarChar(36)
+  customerId   String   @db.Uuid
 }
 
 model CustomerVerification {
-  id           String   @id @default(uuid()) @db.VarChar(36)
+  id           String   @id @default(uuid()) @db.Uuid
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   uniqueString String
   expiredAt    DateTime
   Customer     Customer @relation(fields: [customerId], references: [id])
-  customerId   String   @db.VarChar(36)
+  customerId   String   @db.Uuid
 }
 
 model Wishlist {
-  id         String   @id @default(uuid()) @db.VarChar(36)
+  id         String   @id @default(uuid()) @db.Uuid
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   Customer   Customer @relation(fields: [customerId], references: [id])
-  customerId String   @db.VarChar(36)
+  customerId String   @db.Uuid
   Menu       Menu     @relation(fields: [menuId], references: [id])
-  menuId     String   @db.VarChar(36)
+  menuId     String   @db.Uuid
 }
 
 model RestaurantReview {
-  id                          String                    @id @default(uuid()) @db.VarChar(36)
+  id                          String                    @id @default(uuid()) @db.Uuid
   createdAt                   DateTime                  @default(now())
   updatedAt                   DateTime                  @updatedAt
   customer                    Customer                  @relation(fields: [customerId], references: [id])
-  customerId                  String                    @db.VarChar(36)
+  customerId                  String                    @db.Uuid
   restaurant                  Restaurant                @relation(fields: [restaurantId], references: [id])
-  restaurantId                String                    @db.VarChar(36)
+  restaurantId                String                    @db.Uuid
   hasCustomerBeenShoppingHere Boolean                   @default(false)
   reviewDescription           String                    @db.VarChar(250)
   rating                      Int                       @db.SmallInt
@@ -284,51 +284,51 @@ model RestaurantReview {
 }
 
 model RestaurantReviewResponse {
-  id                  String           @id @default(uuid()) @db.VarChar(36)
+  id                  String           @id @default(uuid()) @db.Uuid
   createdAt           DateTime         @default(now())
   updatedAt           DateTime         @updatedAt
   restaurantReview    RestaurantReview @relation(fields: [restaurantReviewId], references: [id])
-  restaurantReviewId  String           @unique @db.VarChar(36)
+  restaurantReviewId  String           @unique @db.Uuid
   responseDescription String           @db.VarChar(250)
 }
 
 model MenuCart {
-  id                   String              @id @default(uuid()) @db.VarChar(36)
+  id                   String              @id @default(uuid()) @db.Uuid
   createdAt            DateTime            @default(now())
   updatedAt            DateTime            @updatedAt
   customer             Customer            @relation(fields: [customerId], references: [id])
-  customerId           String              @db.VarChar(36)
+  customerId           String              @db.Uuid
   menu                 Menu                @relation(fields: [menuId], references: [id])
-  menuId               String              @db.VarChar(36)
+  menuId               String              @db.Uuid
   restaurant           Restaurant          @relation(fields: [restaurantId], references: [id])
-  restaurantId         String              @db.VarChar(36)
+  restaurantId         String              @db.Uuid
   quantity             Int                 @db.SmallInt
   isDibungkus          Boolean             @default(false)
   menuCartSpicyLevel   MenuCartSpicyLevel?
-  menuCartSpicyLevelId String?             @unique @db.VarChar(36)
+  menuCartSpicyLevelId String?             @unique @db.Uuid
 
   @@unique([customerId, menuId, quantity, isDibungkus, menuCartSpicyLevelId])
 }
 
 model MenuCartSpicyLevel {
-  id         String   @id @default(uuid()) @db.VarChar(36)
+  id         String   @id @default(uuid()) @db.Uuid
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   menuCart   MenuCart @relation(fields: [menuCartId], references: [id])
-  menuCartId String   @unique @db.VarChar(36)
+  menuCartId String   @unique @db.Uuid
   level      Int      @db.SmallInt
 }
 
 model CustomMenu {
-  id                           String                        @id @default(uuid()) @db.VarChar(36)
+  id                           String                        @id @default(uuid()) @db.Uuid
   createdAt                    DateTime                      @default(now())
   updatedAt                    DateTime                      @updatedAt
   customer                     Customer                      @relation(fields: [customerId], references: [id])
-  customerId                   String                        @db.VarChar(36)
+  customerId                   String                        @db.Uuid
   customMenuCategory           CustomMenuCategory            @relation(fields: [customMenuCategoryId], references: [id])
-  customMenuCategoryId         String                        @db.VarChar(36)
+  customMenuCategoryId         String                        @db.Uuid
   restaurant                   Restaurant                    @relation(fields: [restaurantId], references: [id])
-  restaurantId                 String                        @db.VarChar(36)
+  restaurantId                 String                        @db.Uuid
   name                         String                        @db.VarChar(80)
   price                        Int
   pickedCustomMenuCompositions PickedCustomMenuComposition[]
@@ -338,53 +338,53 @@ model CustomMenu {
 }
 
 model PickedCustomMenuComposition {
-  id                      String                @id @default(uuid()) @db.VarChar(36)
+  id                      String                @id @default(uuid()) @db.Uuid
   createdAt               DateTime              @default(now())
   updatedAt               DateTime              @updatedAt
   customMenu              CustomMenu            @relation(fields: [customMenuId], references: [id])
-  customMenuId            String                @db.VarChar(36)
+  customMenuId            String                @db.Uuid
   customMenuComposition   CustomMenuComposition @relation(fields: [customMenuCompositionId], references: [id])
-  customMenuCompositionId String                @db.VarChar(36)
+  customMenuCompositionId String                @db.Uuid
   qty                     Int                   @db.SmallInt
 
   @@unique([customMenuId, customMenuCompositionId])
 }
 
 model CustomMenuCart {
-  id                         String                    @id @default(uuid()) @db.VarChar(36)
+  id                         String                    @id @default(uuid()) @db.Uuid
   createdAt                  DateTime                  @default(now())
   updatedAt                  DateTime                  @updatedAt
   customer                   Customer                  @relation(fields: [customerId], references: [id])
-  customerId                 String                    @db.VarChar(36)
+  customerId                 String                    @db.Uuid
   customMenu                 CustomMenu                @relation(fields: [customMenuId], references: [id])
-  customMenuId               String                    @db.VarChar(36)
+  customMenuId               String                    @db.Uuid
   restaurant                 Restaurant                @relation(fields: [restaurantId], references: [id])
-  restaurantId               String                    @db.VarChar(36)
+  restaurantId               String                    @db.Uuid
   quantity                   Int                       @db.SmallInt
   isDibungkus                Boolean                   @default(false)
   customMenuCartSpicyLevel   CustomMenuCartSpicyLevel?
-  customMenuCartSpicyLevelId String?                   @unique @db.VarChar(36)
+  customMenuCartSpicyLevelId String?                   @unique @db.Uuid
 
   @@unique([customerId, customMenuId, quantity, isDibungkus, customMenuCartSpicyLevelId])
 }
 
 model CustomMenuCartSpicyLevel {
-  id               String         @id @default(uuid()) @db.VarChar(36)
+  id               String         @id @default(uuid()) @db.Uuid
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   customMenuCart   CustomMenuCart @relation(fields: [customMenuCartId], references: [id])
-  customMenuCartId String         @unique @db.VarChar(36)
+  customMenuCartId String         @unique @db.Uuid
   level            Int            @db.SmallInt
 }
 
 model Order {
-  id                   String              @id @default(uuid()) @db.VarChar(36)
+  id                   String              @id @default(uuid()) @db.Uuid
   createdAt            DateTime            @default(now())
   updatedAt            DateTime            @updatedAt
   customer             Customer            @relation(fields: [customerId], references: [id])
-  customerId           String              @db.VarChar(36)
+  customerId           String              @db.Uuid
   restaurant           Restaurant          @relation(fields: [restaurantId], references: [id])
-  restaurantId         String              @db.VarChar(36)
+  restaurantId         String              @db.Uuid
   isGroup              Boolean             @default(false)
   total                Int
   status               OrderStatus         @default(READY_TO_ORDER)
@@ -404,67 +404,67 @@ enum OrderStatus {
 }
 
 model OrderedMenu {
-  id                      String                 @id @default(uuid()) @db.VarChar(36)
+  id                      String                 @id @default(uuid()) @db.Uuid
   createdAt               DateTime               @default(now())
   updatedAt               DateTime               @updatedAt
   order                   Order                  @relation(fields: [orderId], references: [id])
-  orderId                 String                 @db.VarChar(36)
+  orderId                 String                 @db.Uuid
   menu                    Menu                   @relation(fields: [menuId], references: [id])
-  menuId                  String                 @db.VarChar(36)
+  menuId                  String                 @db.Uuid
   menuName                String                 @db.VarChar(80)
   menuPrice               Int
   quantity                Int                    @db.SmallInt
   totalPrice              Int
   isDibungkus             Boolean
   orderedMenuSpicyLevel   OrderedMenuSpicyLevel?
-  orderedMenuSpicyLevelId String?                @unique @db.VarChar(36)
+  orderedMenuSpicyLevelId String?                @unique @db.Uuid
 
   @@unique([orderId, menuId, quantity, isDibungkus, orderedMenuSpicyLevelId])
 }
 
 model OrderedMenuSpicyLevel {
-  id            String      @id @default(uuid()) @db.VarChar(36)
+  id            String      @id @default(uuid()) @db.Uuid
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   orderedMenu   OrderedMenu @relation(fields: [orderedMenuId], references: [id])
-  orderedMenuId String      @unique @db.VarChar(36)
+  orderedMenuId String      @unique @db.Uuid
   level         Int         @db.SmallInt
 }
 
 model OrderedCustomMenu {
-  id                            String                       @id @default(uuid()) @db.VarChar(36)
+  id                            String                       @id @default(uuid()) @db.Uuid
   createdAt                     DateTime                     @default(now())
   updatedAt                     DateTime                     @updatedAt
   order                         Order                        @relation(fields: [orderId], references: [id])
-  orderId                       String                       @db.VarChar(36)
+  orderId                       String                       @db.Uuid
   customMenu                    CustomMenu                   @relation(fields: [customMenuId], references: [id])
-  customMenuId                  String                       @db.VarChar(36)
+  customMenuId                  String                       @db.Uuid
   customMenuName                String                       @db.VarChar(80)
   customMenuPrice               Int
   quantity                      Int                          @db.SmallInt
   totalPrice                    Int
   isDibungkus                   Boolean
   orderedCustomMenuSpicyLevel   OrderedCustomMenuSpicyLevel?
-  orderedCustomMenuSpicyLevelId String?                      @unique @db.VarChar(36)
+  orderedCustomMenuSpicyLevelId String?                      @unique @db.Uuid
 }
 
 model OrderedCustomMenuSpicyLevel {
-  id                  String            @id @default(uuid()) @db.VarChar(36)
+  id                  String            @id @default(uuid()) @db.Uuid
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
   orderedCustomMenu   OrderedCustomMenu @relation(fields: [orderedCustomMenuId], references: [id])
-  orderedCustomMenuId String            @unique @db.VarChar(36)
+  orderedCustomMenuId String            @unique @db.Uuid
   level               Int               @db.SmallInt
 }
 
 model BotramGroup {
-  id                          String                      @id @default(uuid()) @db.VarChar(36)
+  id                          String                      @id @default(uuid()) @db.Uuid
   createdAt                   DateTime                    @default(now())
   updatedAt                   DateTime                    @updatedAt
   creatorCustomer             Customer                    @relation(fields: [creatorCustomerId], references: [id])
-  creatorCustomerId           String                      @db.VarChar(36)
+  creatorCustomerId           String                      @db.Uuid
   restaurant                  Restaurant                  @relation(fields: [restaurantId], references: [id])
-  restaurantId                String                      @db.VarChar(36)
+  restaurantId                String                      @db.Uuid
   name                        String                      @db.VarChar(30)
   openMembership              Boolean                     @default(true)
   status                      BotramGroupStatus           @default(ORDERING)
@@ -481,13 +481,13 @@ enum BotramGroupStatus {
 }
 
 model BotramGroupMember {
-  id                         String                      @id @default(uuid()) @db.VarChar(36)
+  id                         String                      @id @default(uuid()) @db.Uuid
   createdAt                  DateTime                    @default(now())
   updatedAt                  DateTime                    @updatedAt
   botramGroup                BotramGroup                 @relation(fields: [botramGroupId], references: [id])
-  botramGroupId              String                      @db.VarChar(36)
+  botramGroupId              String                      @db.Uuid
   customer                   Customer                    @relation(fields: [customerId], references: [id])
-  customerId                 String                      @db.VarChar(36)
+  customerId                 String                      @db.Uuid
   status                     BotramGroupMemberStatus
   memberOrder                BotramGroupMemberOrder?
   botramGroupMenuCarts       BotramGroupMenuCart[]
@@ -503,13 +503,13 @@ enum BotramGroupMemberStatus {
 }
 
 model BotramGroupOrder {
-  id            String                 @id @default(uuid()) @db.VarChar(36)
+  id            String                 @id @default(uuid()) @db.Uuid
   createdAt     DateTime               @default(now())
   updatedAt     DateTime               @updatedAt
   botramGroup   BotramGroup            @relation(fields: [botramGroupId], references: [id])
-  botramGroupId String                 @db.VarChar(36)
+  botramGroupId String                 @db.Uuid
   restaurant    Restaurant             @relation(fields: [restaurantId], references: [id])
-  restaurantId  String                 @db.VarChar(36)
+  restaurantId  String                 @db.Uuid
   totalAmount   Int
   status        BotramGroupOrderStatus @default(READY_TO_ORDER)
   isPaid        Boolean                @default(false)
@@ -524,74 +524,74 @@ enum BotramGroupOrderStatus {
 }
 
 model BotramGroupMemberOrder {
-  id                  String            @id @default(uuid()) @db.VarChar(36)
+  id                  String            @id @default(uuid()) @db.Uuid
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
   botramGroupMember   BotramGroupMember @relation(fields: [botramGroupMemberId], references: [id])
-  botramGroupMemberId String            @unique @db.VarChar(36)
-  orderId             String            @db.VarChar(36)
+  botramGroupMemberId String            @unique @db.Uuid
+  orderId             String
 }
 
 model BotramGroupMenuCart {
-  id                         String                    @id @default(uuid()) @db.VarChar(36)
+  id                         String                    @id @default(uuid()) @db.Uuid
   createdAt                  DateTime                  @default(now())
   updatedAt                  DateTime                  @updatedAt
   botramGroup                BotramGroup               @relation(fields: [botramGroupId], references: [id])
-  botramGroupId              String                    @unique @db.VarChar(36)
+  botramGroupId              String                    @unique @db.Uuid
   botramGroupMember          BotramGroupMember         @relation(fields: [botramGroupMemberId], references: [id])
-  botramGroupMemberId        String                    @unique @db.VarChar(36)
+  botramGroupMemberId        String                    @unique @db.Uuid
   menu                       Menu                      @relation(fields: [menuId], references: [id])
-  menuId                     String                    @unique @db.VarChar(36)
+  menuId                     String                    @unique @db.Uuid
   quantity                   Int                       @db.SmallInt
   isDibungkus                Boolean                   @default(false)
   botramMenuCartSpicyLevel   BotramMenuCartSpicyLevel?
-  botramMenuCartSpicyLevelId String?                   @db.VarChar(36)
+  botramMenuCartSpicyLevelId String?
 
   @@unique([botramGroupMemberId, menuId, quantity, isDibungkus, botramMenuCartSpicyLevelId])
 }
 
 model BotramMenuCartSpicyLevel {
-  id                    String              @id @default(uuid()) @db.VarChar(36)
+  id                    String              @id @default(uuid()) @db.Uuid
   createdAt             DateTime            @default(now())
   updatedAt             DateTime            @updatedAt
   botramGroupMenuCart   BotramGroupMenuCart @relation(fields: [botramGroupMenuCartId], references: [id])
-  botramGroupMenuCartId String              @unique @db.VarChar(36)
+  botramGroupMenuCartId String              @unique @db.Uuid
   level                 Int                 @db.SmallInt
 }
 
 model BotramGroupCustomMenuCart {
-  id                               String                          @id @default(uuid()) @db.VarChar(36)
+  id                               String                          @id @default(uuid()) @db.Uuid
   createdAt                        DateTime                        @default(now())
   updatedAt                        DateTime                        @updatedAt
   botramGroup                      BotramGroup                     @relation(fields: [botramGroupId], references: [id])
-  botramGroupId                    String                          @unique @db.VarChar(36)
+  botramGroupId                    String                          @unique @db.Uuid
   botramGroupMember                BotramGroupMember               @relation(fields: [botramGroupMemberId], references: [id])
-  botramGroupMemberId              String                          @unique @db.VarChar(36)
+  botramGroupMemberId              String                          @unique @db.Uuid
   customMenu                       CustomMenu                      @relation(fields: [customMenuId], references: [id])
-  customMenuId                     String                          @unique @db.VarChar(36)
+  customMenuId                     String                          @unique @db.Uuid
   quantity                         Int                             @db.SmallInt
   isDibungkus                      Boolean                         @default(false)
   botramCustomMenuCartSpicyLevel   BotramCustomMenuCartSpicyLevel?
-  botramCustomMenuCartSpicyLevelId String?                         @db.VarChar(36)
+  botramCustomMenuCartSpicyLevelId String?
 
   @@unique([botramGroupMemberId, customMenuId, quantity, isDibungkus, botramCustomMenuCartSpicyLevelId])
 }
 
 model BotramCustomMenuCartSpicyLevel {
-  id                          String                    @id @default(uuid()) @db.VarChar(36)
+  id                          String                    @id @default(uuid()) @db.Uuid
   createdAt                   DateTime                  @default(now())
   updatedAt                   DateTime                  @updatedAt
   botramGroupCustomMenuCart   BotramGroupCustomMenuCart @relation(fields: [botramGroupCustomMenuCartId], references: [id])
-  botramGroupCustomMenuCartId String                    @unique @db.VarChar(36)
+  botramGroupCustomMenuCartId String                    @unique @db.Uuid
   level                       Int                       @db.SmallInt
 }
 
 model RestaurantNotification {
-  id           String     @id @default(uuid()) @db.VarChar(36)
+  id           String     @id @default(uuid()) @db.Uuid
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
-  restaurantId String     @db.VarChar(36)
+  restaurantId String     @db.Uuid
   title        String     @db.VarChar(50)
   description  String     @db.VarChar(250)
   redirectLink String
@@ -599,11 +599,11 @@ model RestaurantNotification {
 }
 
 model CustomerNotification {
-  id           String   @id @default(uuid()) @db.VarChar(36)
+  id           String   @id @default(uuid()) @db.Uuid
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   customer     Customer @relation(fields: [customerId], references: [id])
-  customerId   String   @db.VarChar(36)
+  customerId   String   @db.Uuid
   title        String   @db.VarChar(50)
   description  String   @db.VarChar(250)
   redirectLink String

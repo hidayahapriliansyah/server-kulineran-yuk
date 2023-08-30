@@ -1,7 +1,5 @@
-import { connect as mongooseConnect, connection as mongooseConnection } from 'mongoose';
-import config from '../config';
+import { PrismaClient } from '@prisma/client';
 
-mongooseConnect(config.urlDb as string);
-const db = mongooseConnection;
+const prisma = new PrismaClient();
 
-export default db;
+export default prisma;
