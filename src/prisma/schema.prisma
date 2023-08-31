@@ -51,9 +51,9 @@ model Restaurant {
   name                      String                           @db.VarChar(50)
   username                  String                           @unique @db.VarChar(30)
   email                     String                           @unique @db.VarChar(254)
-  password                  String                           @unique @db.VarChar(255)
+  password                  String?                          @unique @db.VarChar(255)
   passMinimumProfileSetting Boolean                          @default(false)
-  avatar                    String
+  avatar                    String                           @default("avatar.jpg")
   isVerified                Boolean                          @default(false)
   customerPayment           RestaurantCustomerPayment        @default(AFTER_ORDER)
   locationLink              String?
@@ -105,6 +105,7 @@ model RestaurantVerification {
   updatedAt    DateTime   @updatedAt
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
   restaurantId String     @db.Uuid
+  email        String     @db.VarChar(254)
   uniqueString String
   expiredAt    DateTime
 }
@@ -215,8 +216,8 @@ model Customer {
   name                  String                         @db.VarChar(30)
   username              String                         @unique @db.VarChar(30)
   email                 String                         @unique @db.VarChar(254)
-  password              String
-  avatar                String
+  password              String?
+  avatar                String                         @default("avatar-customer.jpg")
   isVerified            Boolean                        @default(false)
   joinBotram            CustomerJoinBotramSetting      @default(INVITATION)
   resetPasswordRequests CustomerResetPasswordRequest[]
@@ -252,6 +253,7 @@ model CustomerVerification {
   id           String   @id @default(uuid()) @db.Uuid
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  email        String   @db.VarChar(254)
   uniqueString String
   expiredAt    DateTime
   Customer     Customer @relation(fields: [customerId], references: [id])

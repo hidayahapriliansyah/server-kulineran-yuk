@@ -3,9 +3,9 @@ import { PassportStatic } from 'passport';
 import { nanoid } from 'nanoid';
 import _ from 'lodash';
 
+import { Restaurant, Customer } from '@prisma/client';
 import config from '../../config';
-import Restaurant, { IRestaurant } from '../../models/Restaurant';
-import Customer, { ICustomer } from '../../models/Customer';
+import prisma from '../../db';
 
 const GoogleStrategy = passportGoogleOauth20.Strategy;
 
@@ -20,13 +20,19 @@ const resto = (passport: PassportStatic) => {
     async (req, accessToken, refreshToken, profile, done): Promise<void> => {
       try {
         if (profile.emails && profile.emails.length > 0) {
-          const existingUser = await Restaurant.findOne({ email: profile.emails[0].value });
+          const existingUser = await prisma.restaurant.findUnique({
+            where: {
+              email: profile.emails[0].value,
+            },
+          });
 
           if (existingUser) {
             const { isVerified: existingUserIsVerified } = existingUser;
             if (!existingUserIsVerified) {
-              const updatedExistingUser = 
-                await Restaurant.findByIdAndUpdate(existingUser._id, { isVerified: true });
+              const updatedExistingUser = await prisma.restaurant.update({
+                where: { id: existingUser.id },
+                data: { isVerified: true },
+              });
               return done(null, updatedExistingUser!);
             }
             return done(null, existingUser);
@@ -35,7 +41,7 @@ const resto = (passport: PassportStatic) => {
               name: string;
               username: string;
               email: string;
-            } & Pick<IRestaurant, 'passMinimumProfileSetting' | 'isVerified'>
+            } & Pick<Restaurant, 'passMinimumProfileSetting' | 'isVerified'>
 
             const payload: signupGooglePayload = {
               name: profile.displayName,
@@ -48,7 +54,9 @@ const resto = (passport: PassportStatic) => {
               isVerified: true,
             }
 
-            const newUser = await Restaurant.create(payload);
+            const newUser = await prisma.restaurant.create({
+              data: payload,
+            });
             return done(null, newUser);
           }
         }
@@ -71,13 +79,17 @@ const customer = (passport: PassportStatic) => {
     async (req, accessToken, refreshToken, profile, done): Promise<void> => {
       try {
         if (profile.emails && profile.emails.length > 0) {
-          const existingUser = await Customer.findOne({ email: profile.emails[0].value });
+          const existingUser = await prisma.customer.findUnique({
+            where: { email: profile.emails[0].value },
+          });
 
           if (existingUser) {
             const { isVerified: existingUserIsVerified } = existingUser;
             if (!existingUserIsVerified) {
-              const updatedExistingUser = 
-                await Customer.findByIdAndUpdate(existingUser._id, { isVerified: true });
+              const updatedExistingUser = await prisma.customer.update({
+                where: { id: existingUser.id },
+                data: { isVerified: true },
+              });
               return done(null, updatedExistingUser!);
             }
             return done(null, existingUser);
@@ -86,7 +98,7 @@ const customer = (passport: PassportStatic) => {
               name: string;
               username: string;
               email: string;
-            } & Pick<ICustomer, 'isVerified'>
+            } & Pick<Customer, 'isVerified'>
 
             const payload: signupGooglePayload = {
               name: profile.displayName,
@@ -98,7 +110,7 @@ const customer = (passport: PassportStatic) => {
               isVerified: true,
             }
 
-            const newUser = await Customer.create(payload);
+            const newUser = await prisma.customer.create({ data: payload });
             return done(null, newUser);
           }
         }

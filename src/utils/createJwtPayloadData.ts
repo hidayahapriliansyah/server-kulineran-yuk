@@ -1,13 +1,11 @@
-import { Schema } from 'mongoose';
-import { ICustomer } from '../models/Customer';
-import { IRestaurant } from '../models/Restaurant';
+import { Restaurant, Customer } from '@prisma/client';
 
-export type IPayloadDataAccessToken = {
-  _id: Schema.Types.ObjectId;
+export type PayloadDataAccessToken = {
+  id: string;
   email: string;
 };
 
-export type IPayloadDataIDToken = {
+export type PayloadDataIDToken = {
   name: string;
   username: string;
   email: string;
@@ -15,29 +13,29 @@ export type IPayloadDataIDToken = {
 };
 
 const createJWTPayloadDataRestoAccessToken = (
-  data: IRestaurant
-): IPayloadDataAccessToken => {
-  const payloadData: Pick<IRestaurant, '_id' | 'email'>  = {
-    _id: data._id,
+  data: Restaurant
+): PayloadDataAccessToken => {
+  const payloadData: Pick<Restaurant, 'id' | 'email'>  = {
+    id: data.id,
     email: data.email,
   }
   return payloadData;
 };
 
 const createJWTPayloadDataCustomerAccessToken = (
-  data: ICustomer
-): IPayloadDataAccessToken => {
-  const payloadData: Pick<ICustomer, '_id' | 'email'>  = {
-    _id: data._id,
+  data: Customer
+): PayloadDataAccessToken => {
+  const payloadData: Pick<Customer, 'id' | 'email'>  = {
+    id: data.id,
     email: data.email,
   };
   return payloadData;
 };
 
 const createJWTPayloadDataRestoIDToken = (
-  data: IRestaurant
-): IPayloadDataIDToken => {
-  const payloadData: Pick<IRestaurant, 'name' | 'username' | 'email' | 'avatar'> = {
+  data: Restaurant
+): PayloadDataIDToken => {
+  const payloadData: Pick<Restaurant, 'name' | 'username' | 'email' | 'avatar'> = {
     name: data.name,
     username: data.username,
     email: data.email,
@@ -47,9 +45,9 @@ const createJWTPayloadDataRestoIDToken = (
 };
 
 const createJWTPayloadDataCustomerIDToken = (
-  data: ICustomer
-): IPayloadDataIDToken => {
-  const payloadData: Pick<ICustomer, 'name' | 'username' | 'email' | 'avatar'> = {
+  data: Customer
+): PayloadDataIDToken => {
+  const payloadData: Pick<Customer, 'name' | 'username' | 'email' | 'avatar'> = {
     name: data.name,
     username: data.username,
     email: data.email,

@@ -1,26 +1,31 @@
 import dayjs from 'dayjs';
 import { v4 as uuidv4 } from 'uuid';
 
-import { IRestaurant } from '../models/Restaurant';
-import RestaurantVerification from '../models/RestaurantVerification';
+import { Restaurant, RestaurantVerification } from '@prisma/client';
+import prisma from '../db';
+
 
 const createRestaurantEmailVerification = async ({
   restaurantId,
   restaurantEmail,
 }: {
-  restaurantId: IRestaurant['_id'],
-  restaurantEmail: IRestaurant['email']
-}): Promise<void> => {
+  restaurantId: Restaurant['id'],
+  restaurantEmail: Restaurant['email'],
+}): Promise<RestaurantVerification> => {
   const now = dayjs();
   const expiredAt = now.add(10, 'minutes').toISOString();
   const uniqueString = uuidv4();
 
-  await RestaurantVerification.create({
-    restaurantId: restaurantId,
-    email: restaurantEmail,
-    uniqueString,
-    expiredAt,
+  const result = await prisma.restaurantVerification.create({
+    data: {
+      restaurantId,
+      email: restaurantEmail,
+      expiredAt,
+      uniqueString,
+    },
   });
+  
+  return result; 
 };
 
 export default createRestaurantEmailVerification;

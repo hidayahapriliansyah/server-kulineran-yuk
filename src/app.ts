@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // router
-app.use('/api/v1', rootRouter);
+app.use('/api/v2', rootRouter);
 
 // middleware
 app.use(routeNotFound);

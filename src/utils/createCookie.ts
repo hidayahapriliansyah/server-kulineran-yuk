@@ -5,10 +5,9 @@ import {
 } from './createJwtPayloadData';
 import { createAccessToken } from './jwt';
 import config from '../config';
-import { IRestaurant } from '../models/Restaurant';
-import { ICustomer } from '../models/Customer';
+import { Restaurant, Customer } from '@prisma/client';
 
-const createCookieRestoAccessToken = (res: Response, dataForPayload: IRestaurant): void => {
+const createCookieRestoAccessToken = (res: Response, dataForPayload: Restaurant): void => {
   const payload = createJWTPayloadDataRestoAccessToken(dataForPayload);
   const token = createAccessToken({ payload, userType: 'resto' });
   const cookieName = config.restoAccessTokenCookieName;
@@ -16,7 +15,7 @@ const createCookieRestoAccessToken = (res: Response, dataForPayload: IRestaurant
   res.cookie(cookieName, token, { maxAge });
 };
 
-const createCookieCustomerAccessToken = (res: Response, dataForPayload: ICustomer): void => {
+const createCookieCustomerAccessToken = (res: Response, dataForPayload: Customer): void => {
   const payload = createJWTPayloadDataCustomerAccessToken(dataForPayload);
   const token = createAccessToken({ payload, userType: 'customer' });
   const cookieName = config.customerAccessTokenCookieName;

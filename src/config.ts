@@ -18,4 +18,7 @@ export default {
   customerJWTSecretIDToken: process.env.CUSTOMER_JWT_SECRET_ID_TOKEN as string,
   jwtExpiration: '24h',
   jwtRefrestTokenExpiration: '7d',
+  // nodemailer
+  googleEmailSender: process.env.GOOGLE_EMAIL_SENDER as string,
+  googleAppPassword: process.env.GOOGLE_APP_PASSWORD as string
 };
