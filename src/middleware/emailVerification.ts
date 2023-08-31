@@ -1,18 +1,17 @@
 import { Request, Response, NextFunction } from 'express';
-import { IPayloadDataAccessToken } from '../utils/createJwtPayloadData';
-import Restaurant from '../models/Restaurant';
+import { PayloadDataAccessToken } from '../utils/createJwtPayloadData';
 import { Unauthenticated, Unauthorized } from '../errors';
-import Customer from '../models/Customer';
+import prisma from '../db';
 
 const isEmailRestoVerified = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
-  const { _id: restaurantId } = req.user as IPayloadDataAccessToken;
+  const { id: restaurantId } = req.user as PayloadDataAccessToken;
 
   try {
-    const restaurant = await Restaurant.findById(restaurantId);
+    const restaurant = await prisma.restaurant.findUnique({ where: { id: restaurantId }});
     if (!restaurant) {
       throw new Unauthenticated('Access denied. Please authenticate to access this resource.');
     }
@@ -35,10 +34,10 @@ const isEmailCustomerVerified = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const { _id: customerId } = req.user as IPayloadDataAccessToken;
+  const { id: customerId } = req.user as PayloadDataAccessToken;
 
   try {
-    const customer = await Customer.findById(customerId);
+    const customer = await prisma.customer.findUnique({ where: { id: customerId }});
     if (!customer) {
       throw new Unauthenticated('Access denied. Please authenticate to access this resource.');
     }

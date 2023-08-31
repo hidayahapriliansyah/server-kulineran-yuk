@@ -6,7 +6,7 @@ import * as authController from './controller';
 
 passportConfig(passport);
 
-// route: /api/v1/resto
+// route: /api/v2/resto
 const restoAuthRouter = Router();
 
 restoAuthRouter.post('/signup', authController.signupForm);

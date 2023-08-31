@@ -40,7 +40,7 @@ model Village {
   codeId              String              @unique @db.VarChar(12)
   districtId          String              @db.VarChar(12)
   village             String              @db.VarChar(50)
-  District            District            @relation(fields: [districtId], references: [codeId])
+  district            District            @relation(fields: [districtId], references: [codeId])
   restaurantAddresses RestaurantAddress[]
 }
 
@@ -65,8 +65,8 @@ model Restaurant {
   image5                    String?
   openingHour               String?                          @db.VarChar(5)
   closingHour               String?                          @db.VarChar(5)
-  dayOff                    String?
-  fasilities                String?
+  dayOff                    String[]
+  fasilities                String[]
   resetPasswordRequests     RestaurantResetPasswordRequest[]
   emailVerifications        RestaurantVerification[]
   address                   RestaurantAddress?
@@ -116,12 +116,12 @@ model RestaurantAddress {
   updatedAt    DateTime   @updatedAt
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
   restaurantId String     @unique @db.Uuid
-  village      Village    @relation(fields: [villageId], references: [codeId])
-  villageId    String     @db.VarChar(12)
-  villageName  String     @db.VarChar(50)
-  districtName String     @db.VarChar(50)
-  regencyName  String     @db.VarChar(50)
-  provinceName String     @db.VarChar(50)
+  village      Village?   @relation(fields: [villageId], references: [codeId])
+  villageId    String?    @db.VarChar(12)
+  villageName  String?    @db.VarChar(50)
+  districtName String?    @db.VarChar(50)
+  regencyName  String?    @db.VarChar(50)
+  provinceName String?    @db.VarChar(50)
   detail       String?    @db.VarChar(200)
 }
 

@@ -68,7 +68,6 @@ const getProfile = async (req: Request): Promise<DTO.ProfileResponse | Error> =>
   }
 };
 
-
 const updateProfile = async (req: Request): Promise<IRestaurant['_id'] | Error> => {
   const { _id: restaurantId } = req.user as { _id: ObjectId };
   const session = await db.startSession();

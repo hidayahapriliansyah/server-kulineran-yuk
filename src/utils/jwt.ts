@@ -1,13 +1,13 @@
 import jwt from 'jsonwebtoken';
 import config from '../config';
-import { IPayloadDataAccessToken, IPayloadDataIDToken } from './createJwtPayloadData';
+import { PayloadDataAccessToken, PayloadDataIDToken } from './createJwtPayloadData';
 import { Unauthenticated } from '../errors';
 
 const createAccessToken = ({
   payload,
   userType,
 }: {
-  payload: IPayloadDataAccessToken;
+  payload: PayloadDataAccessToken;
   userType: 'resto' | 'customer';
 }): string => {
   const jwtSecret = userType === 'resto'
@@ -26,7 +26,7 @@ const createIDToken = ({
   payload,
   userType,
 }: {
-  payload: IPayloadDataIDToken;
+  payload: PayloadDataIDToken;
   userType: 'resto' | 'customer';
 }): string => {
   const jwtSecret =

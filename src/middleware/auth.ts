@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import config from '../config';
 import { Unauthenticated } from '../errors';
-import { IPayloadDataAccessToken } from '../utils/createJwtPayloadData';
+import { PayloadDataAccessToken } from '../utils/createJwtPayloadData';
 import { isAccessTokenValid } from '../utils';
 
 const authenticationAdminRestoAccount = (
@@ -18,12 +18,12 @@ const authenticationAdminRestoAccount = (
     if (!token) {
       throw new Unauthenticated('Access denied. Please authenticate to access this resource.');
     }
-    const payload = isAccessTokenValid({ token, userType: 'resto' }) as IPayloadDataAccessToken;
+    const payload = isAccessTokenValid({ token, userType: 'resto' }) as PayloadDataAccessToken;
 
     req.user = {
-      _id: payload._id,
+      id: payload.id,
       email: payload.email,
-    } as IPayloadDataAccessToken;
+    } as PayloadDataAccessToken;
     next();
   } catch (error: any) {
     next(error);
@@ -44,12 +44,12 @@ const authenticationCustomerAccount = (
     if (!token) {
       throw new Unauthenticated('Access denied. Please authenticate to access this resource.');
     }
-    const payload = isAccessTokenValid({ token, userType: 'customer' }) as IPayloadDataAccessToken;
+    const payload = isAccessTokenValid({ token, userType: 'customer' }) as PayloadDataAccessToken;
     
     req.user = {
-      _id: payload._id,
+      id: payload.id,
       email: payload.email,
-    } as IPayloadDataAccessToken;
+    } as PayloadDataAccessToken;
     next();
   } catch (error: any) {
     next(error);

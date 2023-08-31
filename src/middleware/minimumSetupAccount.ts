@@ -1,17 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
-import { IPayloadDataAccessToken } from '../utils/createJwtPayloadData';
-import Restaurant from '../models/Restaurant';
+
+import { PayloadDataAccessToken } from '../utils/createJwtPayloadData';
 import { Unauthenticated } from '../errors';
+import prisma from '../db';
 
 const minimumSetupAccount = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
-  const { _id: restaurantId } = req.user as IPayloadDataAccessToken;
+  const { id: restaurantId } = req.user as PayloadDataAccessToken;
 
   try {
-    const restaurant = await Restaurant.findById(restaurantId);
+    const restaurant = await prisma.restaurant.findUnique({ where: { id: restaurantId }});
     if (!restaurant) {
       throw new Unauthenticated('Access denied. Please authenticate to access this resource.');
     }

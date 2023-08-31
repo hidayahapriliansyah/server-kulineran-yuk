@@ -1,5 +1,5 @@
 interface ImageObject {
-  [key: string]: string;
+  [key: string]: string | null;
 }
 
 type ConvertImageGalleryParameter = {
@@ -13,7 +13,7 @@ const convertImageGallery = ({ arrayOfImageUrl, maxImage }: ConvertImageGalleryP
 
     for (let i = 0; i < maxImage; i++) {
       const key = `image${i + 1}`;
-      const value = arrayOfImageUrl[i] || '';
+      const value = arrayOfImageUrl[i] || null;
       imageObject[key] = value;
     }
 
