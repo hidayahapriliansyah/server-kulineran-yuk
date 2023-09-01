@@ -143,7 +143,7 @@ model Menu {
   restaurantId         String                @db.Uuid
   name                 String                @db.VarChar(80)
   isBungkusAble        Boolean               @default(false)
-  slug                 String
+  slug                 String                @unique
   description          String
   price                Int
   stock                Int                   @default(0)
@@ -155,7 +155,7 @@ model Menu {
   image5               String?
   etalase              Etalase               @relation(fields: [etalaseId], references: [id])
   etalaseId            String                @db.Uuid
-  MenuSpicyLevel       MenuSpicyLevel?
+  menuSpicyLevel       MenuSpicyLevel?
   wishlist             Wishlist[]
   menuCarts            MenuCart[]
   orderedMenus         OrderedMenu[]
@@ -168,6 +168,7 @@ model MenuSpicyLevel {
   updatedAt DateTime @updatedAt
   menu      Menu     @relation(fields: [menuId], references: [id])
   menuId    String   @unique @db.Uuid
+  maxSpicy  Int      @db.SmallInt
 }
 
 model CustomMenuCategory {

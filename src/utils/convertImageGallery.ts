@@ -3,7 +3,7 @@ interface ImageObject {
 }
 
 type ConvertImageGalleryParameter = {
-  arrayOfImageUrl: string[],
+  arrayOfImageUrl: (string | null)[],
   maxImage: number,
 };
 
