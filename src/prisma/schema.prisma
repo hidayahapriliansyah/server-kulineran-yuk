@@ -179,7 +179,7 @@ model CustomMenuCategory {
   restaurantId                 String                        @db.Uuid
   name                         String                        @db.VarChar(50)
   isBungkusAble                Boolean                       @default(false)
-  CustomMenuCategorySpicyLevel CustomMenuCategorySpicyLevel?
+  customMenuCategorySpicyLevel CustomMenuCategorySpicyLevel?
   customMenuCompositions       CustomMenuComposition[]
   customMenus                  CustomMenu[]
 }
