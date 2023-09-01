@@ -12,6 +12,8 @@ export default {
   // jwt
   restoAccessTokenCookieName: process.env.RESTO_ACCESS_TOKEN_COOKIE_NAME as string,
   customerAccessTokenCookieName: process.env.CUSTOMER_ACCESS_TOKEN_COOKIE_NAME as string,
+  restoIDTokenCookieName: process.env.RESTO_ID_TOKEN_COOKIE_NAME as string,
+  customerIDTokenCookieName: process.env.CUSTOMER_ID_TOKEN_COOKIE_NAME as string,
   restoJWTSecretAccessToken: process.env.RESTO_JWT_SECRET_ACCESS_TOKEN as string,
   customerJWTSecretAccessToken: process.env.CUSTOMER_JWT_SECRET_ACCESS_TOKEN as string,
   restoJWTSecretIDToken: process.env.RESTO_JWT_SECRET_ID_TOKEN as string,

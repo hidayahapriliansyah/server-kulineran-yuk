@@ -1,30 +1,29 @@
 import { Request } from 'express';
 
-import { Restaurant } from '@prisma/client';
-import * as DTO from './types'
+import { Customer } from '@prisma/client';
+import * as DTO from './types';
 import prisma from '../../../../db';
 import hashPassword from '../../../../utils/hashPassword';
-import createRestaurantEmailVerification from '../../../../utils/createRestaurantEmailVerification';
+import createCustomerEmailVerification from '../../../../utils/createCustomerEmailVerification';
 import sendVerificationEmail from '../../../mail';
 import { BadRequest, Unauthorized } from '../../../../errors';
 import comparePassword from '../../../../utils/comparePassword';
 
-const signupForm = async (req: Request): Promise<Restaurant['id'] | Error> => {
+const signupForm = async (req: Request): Promise<Customer['id'] | Error> => {
   const body: DTO.SignupBodyForm = DTO.signupBodyForm.parse(req.body);
 
-  const createdRestaurantAccount = await prisma.restaurant.create({
+  const createdRestaurantAccount = await prisma.customer.create({
     data: {
       name: body.name,
       username: body.username,
       email: body.email,
       password: await hashPassword(body.password),
-      passMinimumProfileSetting: true,
     }
   });
 
-  const createdVerification = await createRestaurantEmailVerification({
-    restaurantId: createdRestaurantAccount.id,
-    restaurantEmail: createdRestaurantAccount.email,
+  const createdVerification = await createCustomerEmailVerification({
+    customerId: createdRestaurantAccount.id,
+    customerEmail: createdRestaurantAccount.email,
   });
 
   await sendVerificationEmail(createdRestaurantAccount.email, {
@@ -36,31 +35,28 @@ const signupForm = async (req: Request): Promise<Restaurant['id'] | Error> => {
   return result;
 };
 
-const signinForm = async (req: Request): Promise<Restaurant | Error> => {
+const signinForm = async (req: Request): Promise<Customer | Error> => {
   try {
-    const { email, password } = req.body as DTO.SigninFormBody;
-    if (!email || !password) {
+    const body = req.body as DTO.SigninFormBody;
+    if (!body.email || !body.password) {
       throw new BadRequest('Invalid Request. Please check your input data.');
     }
-    const foundRestaurant = await prisma.restaurant.findFirst({
+    const foundCustomer = await prisma.customer.findFirst({
       where: {
         OR: [
-          { email },
-          { username: email },
+          { email: body.email },
+          { username: body.email },
         ],
       },
     });
-    if (!foundRestaurant) {
+    if (!foundCustomer) {
       throw new Unauthorized('Credential Error. User is not exist.');
     }
-    // const isPasswordMatch = await result!.comparePassword(password);
-    const isPasswordMatch = await comparePassword(password, (foundRestaurant.password as string));
+    const isPasswordMatch = await comparePassword(body.password, foundCustomer.password as string);
     if (!isPasswordMatch) {
       throw new Unauthorized('Credential Error. User is not exist.');
     }
-
-    const result = foundRestaurant;
-    return result;
+    return foundCustomer;
   } catch (error: any) {
     throw error;
   }

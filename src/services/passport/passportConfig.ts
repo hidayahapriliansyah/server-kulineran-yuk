@@ -122,7 +122,7 @@ const customer = (passport: PassportStatic) => {
   );
 };
 
-export { 
+export {
   resto,
   customer,
 };

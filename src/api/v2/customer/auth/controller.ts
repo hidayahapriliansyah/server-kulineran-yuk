@@ -1,19 +1,21 @@
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
-import * as authService from '../../../../services/prisma/resto/auth';
+import { Customer } from '@prisma/client';
 import { SuccessAPIResponse } from '../../../../global/types';
-import { createCookieRestoAccessToken, createCookieRestoIDToken } from '../../../../utils/createCookie';
-import { Restaurant } from '@prisma/client';
+import {
+  createCookieCustomerAccessToken,
+  createCookieCustomerIDToken
+} from '../../../../utils/createCookie';
+import * as authService from '../../../../services/prisma/customer/auth';
 
 const signupForm = async (
   req: Request,
   res: Response,
   next: NextFunction,
-) => {
+): Promise<void> => {
   try {
-    const result = await authService.signupForm(req);
-
+    const result = await authService.signupForm(req) as Customer['id'];
     res
       .status(StatusCodes.CREATED)
       .json(new SuccessAPIResponse('Signup successfully', {
@@ -30,9 +32,9 @@ const signInUpOAuth = async (
   next: NextFunction,
 ) => {
   try {
-    const user = req.user as Restaurant;
-    createCookieRestoAccessToken(res, user);
-    createCookieRestoIDToken(res, user);
+    const user = req.user as Customer;
+    createCookieCustomerAccessToken(res, user);
+    createCookieCustomerIDToken(res, user);
     res.status(StatusCodes.OK).json(new SuccessAPIResponse('Signin Successfully', {
       userId: user.id,
     }));
@@ -47,13 +49,13 @@ const signinForm = async (
   next: NextFunction,
 ) => {
   try {
-    const result = await authService.signinForm(req) as Restaurant;
-    createCookieRestoAccessToken(res, result);
-    createCookieRestoIDToken(res, result);
+    const result = await authService.signinForm(req) as Customer;
+    createCookieCustomerAccessToken(res, result);
+    createCookieCustomerIDToken(res, result);
     res
       .status(StatusCodes.OK)
       .json(new SuccessAPIResponse('Signin successfully', {
-        userId: result.id as Restaurant['id'],
+        userId: result.id as Customer['id'],
       }));
   } catch (error: any) {
     next(error);
