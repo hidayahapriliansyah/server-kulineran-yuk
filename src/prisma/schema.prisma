@@ -65,7 +65,7 @@ model Restaurant {
   image5                    String?
   openingHour               String?                          @db.VarChar(5)
   closingHour               String?                          @db.VarChar(5)
-  dayOff                    String[]
+  daysOff                   String[]
   fasilities                String[]
   resetPasswordRequests     RestaurantResetPasswordRequest[]
   emailVerifications        RestaurantVerification[]
@@ -224,7 +224,7 @@ model Customer {
   resetPasswordRequests CustomerResetPasswordRequest[]
   emailVerifications    CustomerVerification[]
   wishlists             Wishlist[]
-  reviews               RestaurantReview[]
+  reviews               RestaurantReview?
   menuCarts             MenuCart[]
   customMenus           CustomMenu[]
   customMenuCarts       CustomMenuCart[]
@@ -276,7 +276,7 @@ model RestaurantReview {
   createdAt                   DateTime                  @default(now())
   updatedAt                   DateTime                  @updatedAt
   customer                    Customer                  @relation(fields: [customerId], references: [id])
-  customerId                  String                    @db.Uuid
+  customerId                  String                    @unique @db.Uuid
   restaurant                  Restaurant                @relation(fields: [restaurantId], references: [id])
   restaurantId                String                    @db.Uuid
   hasCustomerBeenShoppingHere Boolean                   @default(false)
