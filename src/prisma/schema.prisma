@@ -211,27 +211,28 @@ model CustomMenuComposition {
 }
 
 model Customer {
-  id                    String                         @id @default(uuid()) @db.Uuid
-  createdAt             DateTime                       @default(now())
-  updatedAt             DateTime                       @updatedAt
-  name                  String                         @db.VarChar(30)
-  username              String                         @unique @db.VarChar(30)
-  email                 String                         @unique @db.VarChar(254)
-  password              String?
-  avatar                String                         @default("avatar-customer.jpg")
-  isVerified            Boolean                        @default(false)
-  joinBotram            CustomerJoinBotramSetting      @default(INVITATION)
-  resetPasswordRequests CustomerResetPasswordRequest[]
-  emailVerifications    CustomerVerification[]
-  wishlists             Wishlist[]
-  reviews               RestaurantReview?
-  menuCarts             MenuCart[]
-  customMenus           CustomMenu[]
-  customMenuCarts       CustomMenuCart[]
-  orders                Order[]
-  creatorOfBotramGroup  BotramGroup[]
-  botramGroupMembers    BotramGroupMember[]
-  notifications         CustomerNotification[]
+  id                     String                         @id @default(uuid()) @db.Uuid
+  createdAt              DateTime                       @default(now())
+  updatedAt              DateTime                       @updatedAt
+  name                   String                         @db.VarChar(30)
+  username               String                         @unique @db.VarChar(30)
+  email                  String                         @unique @db.VarChar(254)
+  password               String?
+  avatar                 String                         @default("avatar-customer.jpg")
+  isVerified             Boolean                        @default(false)
+  joinBotram             CustomerJoinBotramSetting      @default(INVITATION)
+  resetPasswordRequests  CustomerResetPasswordRequest[]
+  emailVerifications     CustomerVerification[]
+  wishlists              Wishlist[]
+  reviews                RestaurantReview?
+  menuCarts              MenuCart[]
+  customMenus            CustomMenu[]
+  customMenuCarts        CustomMenuCart[]
+  orders                 Order[]
+  creatorOfBotramGroup   BotramGroup[]
+  botramGroupInvitations BotramGroupInvitation[]
+  botramGroupMembers     BotramGroupMember[]
+  notifications          CustomerNotification[]
 }
 
 enum CustomerJoinBotramSetting {
@@ -475,6 +476,7 @@ model BotramGroup {
   status                      BotramGroupStatus           @default(ORDERING)
   members                     BotramGroupMember[]
   orders                      BotramGroupOrder[]
+  botramGroupInvitations      BotramGroupInvitation[]
   botramGroupMenuCarts        BotramGroupMenuCart[]
   botramGroupCustomeMenuCarts BotramGroupCustomMenuCart[]
 }
@@ -497,6 +499,8 @@ model BotramGroupMember {
   memberOrder                BotramGroupMemberOrder?
   botramGroupMenuCarts       BotramGroupMenuCart[]
   botramGroupCustomMenuCarts BotramGroupCustomMenuCart[]
+
+  @@unique([botramGroupId, customerId])
 }
 
 enum BotramGroupMemberStatus {
@@ -505,6 +509,24 @@ enum BotramGroupMemberStatus {
   ORDER_READY
   EXIT
   EXPELLED
+}
+
+model BotramGroupInvitation {
+  id            String                      @id @default(uuid()) @db.Uuid
+  createdAt     DateTime                    @default(now())
+  updatedAt     DateTime                    @updatedAt
+  botramGroup   BotramGroup                 @relation(fields: [botramGroupId], references: [id])
+  botramGroupId String                      @db.Uuid
+  customer      Customer                    @relation(fields: [customerId], references: [id])
+  customerId    String                      @db.Uuid
+  status        BotramGroupInvitationStatus @default(NORESPONSE)
+  isActive      Boolean                     @default(true)
+}
+
+enum BotramGroupInvitationStatus {
+  NORESPONSE
+  ACCEPTED
+  REJECTED
 }
 
 model BotramGroupOrder {
