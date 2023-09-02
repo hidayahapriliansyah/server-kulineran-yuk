@@ -265,10 +265,12 @@ model Wishlist {
   id         String   @id @default(uuid()) @db.Uuid
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  Customer   Customer @relation(fields: [customerId], references: [id])
+  customer   Customer @relation(fields: [customerId], references: [id])
   customerId String   @db.Uuid
-  Menu       Menu     @relation(fields: [menuId], references: [id])
+  menu       Menu     @relation(fields: [menuId], references: [id])
   menuId     String   @db.Uuid
+
+  @@unique([menuId, customerId])
 }
 
 model RestaurantReview {
