@@ -384,21 +384,22 @@ model CustomMenuCartSpicyLevel {
 }
 
 model Order {
-  id                   String              @id @default(uuid()) @db.Uuid
-  createdAt            DateTime            @default(now())
-  updatedAt            DateTime            @updatedAt
-  customer             Customer            @relation(fields: [customerId], references: [id])
-  customerId           String              @db.Uuid
-  restaurant           Restaurant          @relation(fields: [restaurantId], references: [id])
-  restaurantId         String              @db.Uuid
-  isGroup              Boolean             @default(false)
-  total                Int
-  status               OrderStatus         @default(READY_TO_ORDER)
-  isPaid               Boolean             @default(false)
-  isAcceptedByCustomer Boolean             @default(false)
-  customerNote         String              @db.VarChar(150)
-  orderedMenus         OrderedMenu[]
-  orderedCustomMenus   OrderedCustomMenu[]
+  id                      String                   @id @default(uuid()) @db.Uuid
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  customer                Customer                 @relation(fields: [customerId], references: [id])
+  customerId              String                   @db.Uuid
+  restaurant              Restaurant               @relation(fields: [restaurantId], references: [id])
+  restaurantId            String                   @db.Uuid
+  isGroup                 Boolean                  @default(false)
+  total                   Int
+  status                  OrderStatus              @default(READY_TO_ORDER)
+  isPaid                  Boolean                  @default(false)
+  isAcceptedByCustomer    Boolean                  @default(false)
+  customerNote            String                   @db.VarChar(150)
+  orderedMenus            OrderedMenu[]
+  orderedCustomMenus      OrderedCustomMenu[]
+  botramGroupMemberOrders BotramGroupMemberOrder[]
 }
 
 enum OrderStatus {
@@ -534,7 +535,7 @@ model BotramGroupOrder {
   createdAt     DateTime               @default(now())
   updatedAt     DateTime               @updatedAt
   botramGroup   BotramGroup            @relation(fields: [botramGroupId], references: [id])
-  botramGroupId String                 @db.Uuid
+  botramGroupId String                 @unique @db.Uuid
   restaurant    Restaurant             @relation(fields: [restaurantId], references: [id])
   restaurantId  String                 @db.Uuid
   totalAmount   Int
@@ -556,7 +557,10 @@ model BotramGroupMemberOrder {
   updatedAt           DateTime          @updatedAt
   botramGroupMember   BotramGroupMember @relation(fields: [botramGroupMemberId], references: [id])
   botramGroupMemberId String            @unique @db.Uuid
+  order               Order             @relation(fields: [orderId], references: [id])
   orderId             String
+
+  @@unique([botramGroupMemberId, orderId])
 }
 
 model BotramGroupMenuCart {

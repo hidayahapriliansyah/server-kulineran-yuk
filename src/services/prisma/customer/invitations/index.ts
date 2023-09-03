@@ -134,7 +134,7 @@ const acceptInvitationBotramGroup = async (req: Request):
 
       const updatedInvitation = await prisma.botramGroupInvitation.update({
         where: { id: invitationId, customerId, status: 'NORESPONSE', isActive: true },
-        data: { status: 'ACCEPTED' },
+        data: { status: 'ACCEPTED', isActive: false },
       });
       if (!updatedInvitation) {
         throw new NotFound('Invitation Id not found. Please input valid invitation id.');

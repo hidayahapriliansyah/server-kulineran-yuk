@@ -80,7 +80,7 @@ const findCustomerToBeAddedToBotramGroup = async (req: Request):
     } catch (error: any) {
       throw error;
     }
-  }
+  };
 
 const createBotramGroup = async (req: Request):
   Promise<IGroupBotram['_id'] | Error> => {
