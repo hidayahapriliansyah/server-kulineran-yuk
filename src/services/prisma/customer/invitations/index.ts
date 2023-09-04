@@ -3,7 +3,7 @@ import { Request } from 'express';
 import * as DTO from './types';
 import { Customer } from '@prisma/client';
 import prisma from '../../../../db';
-import { BadRequest, NotFound } from '../../../../errors';
+import { BadRequest, NotFound, Unauthorized } from '../../../../errors';
 
 const getAllInvitationsBotramGroup = async (req: Request):
   Promise<DTO.GetAllInvitationsBotramGroupResponse | Error> => {
@@ -128,7 +128,13 @@ const getSpecificInvitationBotramGroup = async (req: Request):
 
 const acceptInvitationBotramGroup = async (req: Request):
   Promise<DTO.InvitationBotramGroupResponse['id'] | Error>  => {
-    const { id: customerId } = req.user as Pick<Customer, 'id' | 'email'>
+    const { id: customerId } = req.user as Pick<Customer, 'id' | 'email'>;
+    const customerIsJoiningActiveBotramGroup = await prisma.botramGroupMember.findFirst({
+      where: { customerId, status: 'ORDERING'},
+    });
+    if (customerIsJoiningActiveBotramGroup) {
+      throw new Unauthorized('Cannot accept invitation. Customer is ordering in active botram group.');
+    }
     try {
       const { invitationId } = req.params;
 

@@ -299,21 +299,18 @@ model RestaurantReviewResponse {
 }
 
 model MenuCart {
-  id                   String              @id @default(uuid()) @db.Uuid
-  createdAt            DateTime            @default(now())
-  updatedAt            DateTime            @updatedAt
-  customer             Customer            @relation(fields: [customerId], references: [id])
-  customerId           String              @db.Uuid
-  menu                 Menu                @relation(fields: [menuId], references: [id])
-  menuId               String              @db.Uuid
-  restaurant           Restaurant          @relation(fields: [restaurantId], references: [id])
-  restaurantId         String              @db.Uuid
-  quantity             Int                 @db.SmallInt
-  isDibungkus          Boolean             @default(false)
-  menuCartSpicyLevel   MenuCartSpicyLevel?
-  menuCartSpicyLevelId String?             @unique @db.Uuid
-
-  @@unique([customerId, menuId, quantity, isDibungkus, menuCartSpicyLevelId])
+  id                 String              @id @default(uuid()) @db.Uuid
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  customer           Customer            @relation(fields: [customerId], references: [id])
+  customerId         String              @db.Uuid
+  menu               Menu                @relation(fields: [menuId], references: [id])
+  menuId             String              @db.Uuid
+  restaurant         Restaurant          @relation(fields: [restaurantId], references: [id])
+  restaurantId       String              @db.Uuid
+  quantity           Int                 @db.SmallInt
+  isDibungkus        Boolean             @default(false)
+  menuCartSpicyLevel MenuCartSpicyLevel?
 }
 
 model MenuCartSpicyLevel {
@@ -357,21 +354,18 @@ model PickedCustomMenuComposition {
 }
 
 model CustomMenuCart {
-  id                         String                    @id @default(uuid()) @db.Uuid
-  createdAt                  DateTime                  @default(now())
-  updatedAt                  DateTime                  @updatedAt
-  customer                   Customer                  @relation(fields: [customerId], references: [id])
-  customerId                 String                    @db.Uuid
-  customMenu                 CustomMenu                @relation(fields: [customMenuId], references: [id])
-  customMenuId               String                    @db.Uuid
-  restaurant                 Restaurant                @relation(fields: [restaurantId], references: [id])
-  restaurantId               String                    @db.Uuid
-  quantity                   Int                       @db.SmallInt
-  isDibungkus                Boolean                   @default(false)
-  customMenuCartSpicyLevel   CustomMenuCartSpicyLevel?
-  customMenuCartSpicyLevelId String?                   @unique @db.Uuid
-
-  @@unique([customerId, customMenuId, quantity, isDibungkus, customMenuCartSpicyLevelId])
+  id                       String                    @id @default(uuid()) @db.Uuid
+  createdAt                DateTime                  @default(now())
+  updatedAt                DateTime                  @updatedAt
+  customer                 Customer                  @relation(fields: [customerId], references: [id])
+  customerId               String                    @db.Uuid
+  customMenu               CustomMenu                @relation(fields: [customMenuId], references: [id])
+  customMenuId             String                    @db.Uuid
+  restaurant               Restaurant                @relation(fields: [restaurantId], references: [id])
+  restaurantId             String                    @db.Uuid
+  quantity                 Int                       @db.SmallInt
+  isDibungkus              Boolean                   @default(false)
+  customMenuCartSpicyLevel CustomMenuCartSpicyLevel?
 }
 
 model CustomMenuCartSpicyLevel {
@@ -564,21 +558,18 @@ model BotramGroupMemberOrder {
 }
 
 model BotramGroupMenuCart {
-  id                         String                    @id @default(uuid()) @db.Uuid
-  createdAt                  DateTime                  @default(now())
-  updatedAt                  DateTime                  @updatedAt
-  botramGroup                BotramGroup               @relation(fields: [botramGroupId], references: [id])
-  botramGroupId              String                    @unique @db.Uuid
-  botramGroupMember          BotramGroupMember         @relation(fields: [botramGroupMemberId], references: [id])
-  botramGroupMemberId        String                    @unique @db.Uuid
-  menu                       Menu                      @relation(fields: [menuId], references: [id])
-  menuId                     String                    @unique @db.Uuid
-  quantity                   Int                       @db.SmallInt
-  isDibungkus                Boolean                   @default(false)
-  botramMenuCartSpicyLevel   BotramMenuCartSpicyLevel?
-  botramMenuCartSpicyLevelId String?
-
-  @@unique([botramGroupMemberId, menuId, quantity, isDibungkus, botramMenuCartSpicyLevelId])
+  id                       String                    @id @default(uuid()) @db.Uuid
+  createdAt                DateTime                  @default(now())
+  updatedAt                DateTime                  @updatedAt
+  botramGroup              BotramGroup               @relation(fields: [botramGroupId], references: [id])
+  botramGroupId            String                    @unique @db.Uuid
+  botramGroupMember        BotramGroupMember         @relation(fields: [botramGroupMemberId], references: [id])
+  botramGroupMemberId      String                    @unique @db.Uuid
+  menu                     Menu                      @relation(fields: [menuId], references: [id])
+  menuId                   String                    @unique @db.Uuid
+  quantity                 Int                       @db.SmallInt
+  isDibungkus              Boolean                   @default(false)
+  botramMenuCartSpicyLevel BotramMenuCartSpicyLevel?
 }
 
 model BotramMenuCartSpicyLevel {
@@ -591,21 +582,18 @@ model BotramMenuCartSpicyLevel {
 }
 
 model BotramGroupCustomMenuCart {
-  id                               String                          @id @default(uuid()) @db.Uuid
-  createdAt                        DateTime                        @default(now())
-  updatedAt                        DateTime                        @updatedAt
-  botramGroup                      BotramGroup                     @relation(fields: [botramGroupId], references: [id])
-  botramGroupId                    String                          @unique @db.Uuid
-  botramGroupMember                BotramGroupMember               @relation(fields: [botramGroupMemberId], references: [id])
-  botramGroupMemberId              String                          @unique @db.Uuid
-  customMenu                       CustomMenu                      @relation(fields: [customMenuId], references: [id])
-  customMenuId                     String                          @unique @db.Uuid
-  quantity                         Int                             @db.SmallInt
-  isDibungkus                      Boolean                         @default(false)
-  botramCustomMenuCartSpicyLevel   BotramCustomMenuCartSpicyLevel?
-  botramCustomMenuCartSpicyLevelId String?
-
-  @@unique([botramGroupMemberId, customMenuId, quantity, isDibungkus, botramCustomMenuCartSpicyLevelId])
+  id                             String                          @id @default(uuid()) @db.Uuid
+  createdAt                      DateTime                        @default(now())
+  updatedAt                      DateTime                        @updatedAt
+  botramGroup                    BotramGroup                     @relation(fields: [botramGroupId], references: [id])
+  botramGroupId                  String                          @unique @db.Uuid
+  botramGroupMember              BotramGroupMember               @relation(fields: [botramGroupMemberId], references: [id])
+  botramGroupMemberId            String                          @unique @db.Uuid
+  customMenu                     CustomMenu                      @relation(fields: [customMenuId], references: [id])
+  customMenuId                   String                          @unique @db.Uuid
+  quantity                       Int                             @db.SmallInt
+  isDibungkus                    Boolean                         @default(false)
+  botramCustomMenuCartSpicyLevel BotramCustomMenuCartSpicyLevel?
 }
 
 model BotramCustomMenuCartSpicyLevel {

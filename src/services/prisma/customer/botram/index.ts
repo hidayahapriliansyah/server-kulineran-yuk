@@ -86,6 +86,12 @@ const createBotramGroup = async (req: Request):
     const body: DTO.CreateBotramGroupBody =
       DTO.createBotramGroupBodySchema.parse(req.body);
 
+    const customerIsJoiningActiveBotramGroup = await prisma.botramGroupMember.findFirst({
+      where: { customerId, status: 'ORDERING'},
+    });
+    if (customerIsJoiningActiveBotramGroup) {
+      throw new Unauthorized('Cannot create botram group. Customer is ordering in active botram group.');
+    }
     try {
       return await prisma.$transaction(async (tx) => {
         const createdBotramGroup = await tx.botramGroup.create({
@@ -209,6 +215,12 @@ const joinOpenMemberBotramGroup = async (req: Request):
     const { botramId } = req.params;
     if (!botramId) {
       throw new BadRequest('Invalid request. botramId param is missing.');
+    }
+    const customerIsJoiningActiveBotramGroup = await prisma.botramGroupMember.findFirst({
+      where: { customerId, status: 'ORDERING'},
+    });
+    if (customerIsJoiningActiveBotramGroup) {
+      throw new Unauthorized('Cannot join botram group. Customer is ordering in active botram group.');
     }
     try {
       const botramGroup = await prisma.botramGroup.findUnique({
