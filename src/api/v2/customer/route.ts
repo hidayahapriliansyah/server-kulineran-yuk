@@ -10,6 +10,8 @@ import customerCartRouter from './cart/route';
 import customerMyCartRouter from './my-cart/route';
 import customerBotramCartRouter from './botram-cart/route';
 import customerOrdersRouter from './orders/route';
+import customerPurchaseRouter from './purchase/route';
+import customerAccountRouter from './account/route';
 
 // route: /api/v2/
 const customerRouter = Router();
@@ -25,5 +27,7 @@ customerRouter.use('/cart', customerCartRouter);
 customerRouter.use('/my-cart', customerMyCartRouter);
 customerRouter.use('/botram-cart', customerBotramCartRouter);
 customerRouter.use('/orders', customerOrdersRouter);
+customerRouter.use('/purchase', customerPurchaseRouter);
+customerRouter.use('/account', customerAccountRouter);
 
 export default customerRouter;
