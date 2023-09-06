@@ -378,82 +378,78 @@ model CustomMenuCartSpicyLevel {
 }
 
 model Order {
-  id                      String                   @id @default(uuid()) @db.Uuid
-  createdAt               DateTime                 @default(now())
-  updatedAt               DateTime                 @updatedAt
-  customer                Customer                 @relation(fields: [customerId], references: [id])
-  customerId              String                   @db.Uuid
-  restaurant              Restaurant               @relation(fields: [restaurantId], references: [id])
-  restaurantId            String                   @db.Uuid
-  isGroup                 Boolean                  @default(false)
-  total                   Int
-  status                  OrderStatus              @default(READY_TO_ORDER)
-  isPaid                  Boolean                  @default(false)
-  isAcceptedByCustomer    Boolean                  @default(false)
-  customerNote            String                   @db.VarChar(150)
-  orderedMenus            OrderedMenu[]
-  orderedCustomMenus      OrderedCustomMenu[]
-  botramGroupMemberOrders BotramGroupMemberOrder[]
+  id                     String                  @id @default(uuid()) @db.Uuid
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  customer               Customer                @relation(fields: [customerId], references: [id])
+  customerId             String                  @db.Uuid
+  restaurant             Restaurant              @relation(fields: [restaurantId], references: [id])
+  restaurantId           String                  @db.Uuid
+  isGroup                Boolean                 @default(false)
+  total                  Int
+  status                 OrderStatus             @default(READY_TO_ORDER)
+  isPaid                 Boolean                 @default(false)
+  isAcceptedByCustomer   Boolean                 @default(false)
+  customerNote           String?                 @db.VarChar(150)
+  orderedMenus           OrderedMenu[]
+  orderedCustomMenus     OrderedCustomMenu[]
+  botramGroupMemberOrder BotramGroupMemberOrder?
 }
 
 enum OrderStatus {
   READY_TO_ORDER
-  ACCEPTED
   PROCESSED
   DONE
+  ACCEPTED
   CANCEL
 }
 
 model OrderedMenu {
-  id                      String                 @id @default(uuid()) @db.Uuid
-  createdAt               DateTime               @default(now())
-  updatedAt               DateTime               @updatedAt
-  order                   Order                  @relation(fields: [orderId], references: [id])
-  orderId                 String                 @db.Uuid
-  menu                    Menu                   @relation(fields: [menuId], references: [id])
-  menuId                  String                 @db.Uuid
-  menuName                String                 @db.VarChar(80)
-  menuPrice               Int
-  quantity                Int                    @db.SmallInt
-  totalPrice              Int
-  isDibungkus             Boolean
-  orderedMenuSpicyLevel   OrderedMenuSpicyLevel?
-  orderedMenuSpicyLevelId String?                @unique @db.Uuid
-
-  @@unique([orderId, menuId, quantity, isDibungkus, orderedMenuSpicyLevelId])
+  id                    String                 @id @default(uuid()) @db.Uuid
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  order                 Order                  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId               String                 @db.Uuid
+  menu                  Menu                   @relation(fields: [menuId], references: [id])
+  menuId                String                 @db.Uuid
+  menuName              String                 @db.VarChar(80)
+  menuPrice             Int
+  quantity              Int                    @db.SmallInt
+  totalPrice            Int
+  isDibungkus           Boolean
+  orderedMenuSpicyLevel OrderedMenuSpicyLevel?
 }
 
 model OrderedMenuSpicyLevel {
   id            String      @id @default(uuid()) @db.Uuid
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
-  orderedMenu   OrderedMenu @relation(fields: [orderedMenuId], references: [id])
+  orderedMenu   OrderedMenu @relation(fields: [orderedMenuId], references: [id], onDelete: Cascade)
   orderedMenuId String      @unique @db.Uuid
   level         Int         @db.SmallInt
 }
 
 model OrderedCustomMenu {
-  id                            String                       @id @default(uuid()) @db.Uuid
-  createdAt                     DateTime                     @default(now())
-  updatedAt                     DateTime                     @updatedAt
-  order                         Order                        @relation(fields: [orderId], references: [id])
-  orderId                       String                       @db.Uuid
-  customMenu                    CustomMenu                   @relation(fields: [customMenuId], references: [id])
-  customMenuId                  String                       @db.Uuid
-  customMenuName                String                       @db.VarChar(80)
-  customMenuPrice               Int
-  quantity                      Int                          @db.SmallInt
-  totalPrice                    Int
-  isDibungkus                   Boolean
-  orderedCustomMenuSpicyLevel   OrderedCustomMenuSpicyLevel?
-  orderedCustomMenuSpicyLevelId String?                      @unique @db.Uuid
+  id                          String                       @id @default(uuid()) @db.Uuid
+  createdAt                   DateTime                     @default(now())
+  updatedAt                   DateTime                     @updatedAt
+  order                       Order                        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId                     String                       @db.Uuid
+  customMenu                  CustomMenu                   @relation(fields: [customMenuId], references: [id])
+  customMenuId                String                       @db.Uuid
+  customMenuName              String                       @db.VarChar(80)
+  customMenuPrice             Int
+  quantity                    Int                          @db.SmallInt
+  totalPrice                  Int
+  isDibungkus                 Boolean
+  orderedCustomMenuSpicyLevel OrderedCustomMenuSpicyLevel?
 }
 
 model OrderedCustomMenuSpicyLevel {
   id                  String            @id @default(uuid()) @db.Uuid
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
-  orderedCustomMenu   OrderedCustomMenu @relation(fields: [orderedCustomMenuId], references: [id])
+  orderedCustomMenu   OrderedCustomMenu @relation(fields: [orderedCustomMenuId], references: [id], onDelete: Cascade)
   orderedCustomMenuId String            @unique @db.Uuid
   level               Int               @db.SmallInt
 }
@@ -551,10 +547,8 @@ model BotramGroupMemberOrder {
   updatedAt           DateTime          @updatedAt
   botramGroupMember   BotramGroupMember @relation(fields: [botramGroupMemberId], references: [id])
   botramGroupMemberId String            @unique @db.Uuid
-  order               Order             @relation(fields: [orderId], references: [id])
-  orderId             String
-
-  @@unique([botramGroupMemberId, orderId])
+  order               Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId             String            @unique @db.Uuid
 }
 
 model BotramGroupMenuCart {

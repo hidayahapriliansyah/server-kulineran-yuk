@@ -8,6 +8,8 @@ import customerInvitationRouter from './invitations/route';
 import customerBotramRouter from './botram/route';
 import customerCartRouter from './cart/route';
 import customerMyCartRouter from './my-cart/route';
+import customerBotramCartRouter from './botram-cart/route';
+import customerOrdersRouter from './orders/route';
 
 // route: /api/v2/
 const customerRouter = Router();
@@ -21,6 +23,7 @@ customerRouter.use('/invitations', customerInvitationRouter);
 customerRouter.use('/botram', customerBotramRouter);
 customerRouter.use('/cart', customerCartRouter);
 customerRouter.use('/my-cart', customerMyCartRouter);
-customerRouter.use('/botram-cart', () => {});
+customerRouter.use('/botram-cart', customerBotramCartRouter);
+customerRouter.use('/orders', customerOrdersRouter);
 
 export default customerRouter;
