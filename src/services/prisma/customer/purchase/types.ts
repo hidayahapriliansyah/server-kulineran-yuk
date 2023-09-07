@@ -10,7 +10,7 @@ type PurchaseNotBotramItem = {
     name: Restaurant['name'],
   },
   isPaid: Order['isPaid'],
-  status: 'ACCEPTED',
+  status: 'ACCEPTED_BY_CUSTOMER',
   total: Order['total'],
 };
 

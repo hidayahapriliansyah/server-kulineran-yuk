@@ -398,10 +398,11 @@ model Order {
 
 enum OrderStatus {
   READY_TO_ORDER
-  PROCESSED
-  DONE
-  ACCEPTED
-  CANCEL
+  ACCEPTED_BY_RESTO
+  PROCESSED_BY_RESTO
+  DONE_BY_RESTO
+  ACCEPTED_BY_CUSTOMER
+  CANCEL_BY_RESTO
 }
 
 model OrderedMenu {
@@ -466,7 +467,7 @@ model BotramGroup {
   openMembership              Boolean                     @default(true)
   status                      BotramGroupStatus           @default(ORDERING)
   members                     BotramGroupMember[]
-  orders                      BotramGroupOrder[]
+  order                       BotramGroupOrder?
   botramGroupInvitations      BotramGroupInvitation[]
   botramGroupMenuCarts        BotramGroupMenuCart[]
   botramGroupCustomeMenuCarts BotramGroupCustomMenuCart[]
@@ -535,10 +536,11 @@ model BotramGroupOrder {
 
 enum BotramGroupOrderStatus {
   READY_TO_ORDER
-  ACCEPTED
-  PROCESSED
-  DONE
-  CANCEL
+  ACCEPTED_BY_RESTO
+  PROCESSED_BY_RESTO
+  DONE_BY_RESTO
+  ACCEPTED_BY_CUSTOMER
+  CANCEL_BY_RESTO
 }
 
 model BotramGroupMemberOrder {

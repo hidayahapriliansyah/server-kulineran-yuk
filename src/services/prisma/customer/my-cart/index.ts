@@ -67,14 +67,14 @@ const addMenuToMyCart = async (req: Request):
           restaurantId: foundCustomMenu.restaurantId,
           quantity: body.quantity,
           isDibungkus: body.isDibungkus,
-        }
+        },
       });
       if (body.spicyLevel) {
         await prisma.customMenuCartSpicyLevel.create({
           data: {
             customMenuCartId: addedCustomMenuCart.id,
             level: body.spicyLevel,
-          }
+          },
         });
       }
       return addedCustomMenuCart.id;

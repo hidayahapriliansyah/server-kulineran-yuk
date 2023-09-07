@@ -156,7 +156,7 @@ const getOrderList = async (req: Request):
     const { id: customerId } = req.user as Pick<Customer, 'id' | 'email'>;
 
     const orders = await prisma.order.findMany({
-      where: { customerId, status: { not: 'ACCEPTED'} },
+      where: { customerId, status: { not: 'ACCEPTED_BY_CUSTOMER'} },
       include: {
         restaurant: {
           select: {
@@ -193,7 +193,7 @@ const getOrderList = async (req: Request):
           name: order.restaurant.name,
         },
         isPaid: order.isPaid,
-        status: order.status as Exclude<OrderStatus, 'ACCEPTED'>,
+        status: order.status as Exclude<OrderStatus, 'ACCEPTED_BY_CUSTOMER'>,
         total: order.total,
       };
       if (order.isGroup) {

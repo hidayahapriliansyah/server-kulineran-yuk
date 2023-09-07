@@ -317,14 +317,17 @@ const createRestaurantReviews = async (req: Request):
       const body: DTO.RestaurantReviewBody = 
         DTO.restaurantReviewBodySchema.parse(req.body);
 
-      // create review
-      // TODO has customer has been shopping here harus punya order dulu euy, eta can bikin collectionna soalna jadi teu bisa cek
+      const hasCustomerBeenShoppingHere = await prisma.order.findFirst({
+          where: { customerId, restaurantId: restaurant.id, status: 'ACCEPTED_BY_CUSTOMER' },
+        })
+      ? true : false;
       const createdReview = await prisma.restaurantReview.create({
         data: {
           customerId,
           restaurantId: restaurant.id,
           reviewDescription: body.description,
           rating: Number(body.rating),
+          hasCustomerBeenShoppingHere,
         }
       });
       return createdReview.id;
@@ -351,11 +354,16 @@ const updateRestaurantReviews = async (req: Request):
       const body: DTO.RestaurantReviewBody = 
         DTO.restaurantReviewBodySchema.parse(req.body);
 
+      const hasCustomerBeenShoppingHere = await prisma.order.findFirst({
+          where: { customerId, restaurantId: restaurant.id, status: 'ACCEPTED_BY_CUSTOMER' },
+        })
+      ? true : false;
       const updatedReview = await prisma.restaurantReview.update({
         where: { id: reviewId, restaurantId: restaurant.id, customerId },
         data: {
           rating: Number(body.rating),
           reviewDescription: body.description,
+          hasCustomerBeenShoppingHere,
         },
       });
       if (!updatedReview) {

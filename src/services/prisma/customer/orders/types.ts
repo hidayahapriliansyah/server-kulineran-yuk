@@ -3,6 +3,7 @@ import {
   CustomMenu,
   Menu,
   Order,
+  OrderStatus,
   OrderedCustomMenu,
   OrderedMenu,
   Restaurant
@@ -75,7 +76,7 @@ type OrderNotBotramItem = {
   },
   total: Order['total'],
   isPaid: Order['isPaid'],
-  status: Exclude<Order['status'], 'ACCEPTED'>,
+  status: Exclude<OrderStatus, 'ACCEPTED_BY_CUSTOMER'>,
 };
 
 type OrderBotramItem = OrderNotBotramItem & {

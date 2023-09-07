@@ -9,11 +9,11 @@ const getPurchase = async (req: Request)
   :Promise<DTO.GetPurchaseResponse | Error> => {
     const { id: customerId } = req.user as Pick<Customer, 'id' | 'email'>;
 
-    const { startDate, endDate, page = '1' }: {
+    const { startDate, endDate, page = '1' } = req.query as {
       startDate?: string,
       endDate?: string,
       page?: string,
-    } = req.query;
+    };
 
     const numberedLimit = 10;
     const numberedPage = Number(page);
@@ -29,14 +29,14 @@ const getPurchase = async (req: Request)
       end.setHours(29, 59, 59);
       filter = {
         createdAt: {
-          gte: startDate,
-          lte: endDate,
+          gte: start,
+          lte: end,
         },
       };
     }
 
     const purchases = await prisma.order.findMany({
-      where: { customerId, ...filter, status: 'ACCEPTED' },
+      where: { customerId, ...filter, status: 'ACCEPTED_BY_CUSTOMER' },
       include: {
         restaurant: {
           select: {
@@ -75,7 +75,7 @@ const getPurchase = async (req: Request)
           name: purchase.restaurant.name,
         },
         isPaid: purchase.isPaid,
-        status: purchase.status as 'ACCEPTED',
+        status: purchase.status as 'ACCEPTED_BY_CUSTOMER',
         total: purchase.total,
       };
       if (purchase.isGroup) {
