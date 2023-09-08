@@ -120,6 +120,42 @@ const updateCustomerOrderPaymentStatus = async (
   }
 };
 
+const updateBotramOrderStatus = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const result = await orderService.updateBotramOrderStatus(req);
+
+    res
+      .status(StatusCodes.OK)
+      .json(new SuccessAPIResponse('Updating order status successfully.', {
+        botramOrderId: result,
+      }));
+  } catch (error: any) {
+    next(error);
+  }
+};
+
+const updateBotramOrderPaymentStatus = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const result = await orderService.updateBotramOrderPaymentStatus(req);
+
+    res
+      .status(StatusCodes.OK)
+      .json(new SuccessAPIResponse('Updating order payment status successfully.', {
+        botramOrderId: result,
+      }));
+  } catch (error: any) {
+    next(error);
+  }
+};
+
 export {
   getCountOrder,
   getTodayOrder,
@@ -128,4 +164,6 @@ export {
   findOrderDetailByCustomerUsername,
   updateCustomerOrderStatus,
   updateCustomerOrderPaymentStatus,
+  updateBotramOrderStatus,
+  updateBotramOrderPaymentStatus,
 };

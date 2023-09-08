@@ -12,6 +12,7 @@ restoOrdersRouter.get('/find', customerOrderController.findOrderDetailByCustomer
 restoOrdersRouter.get('/:orderId', customerOrderController.getDetailOrderById);
 restoOrdersRouter.put('/:orderId/status', customerOrderController.updateCustomerOrderStatus);
 restoOrdersRouter.put('/:orderId/paid', customerOrderController.updateCustomerOrderPaymentStatus);
-
+restoOrdersRouter.put('/:botramOrderId/botram/status', customerOrderController.updateBotramOrderStatus);
+restoOrdersRouter.put('/:botramOrderId/botram/paid', customerOrderController.updateBotramOrderPaymentStatus);
 
 export default restoOrdersRouter;

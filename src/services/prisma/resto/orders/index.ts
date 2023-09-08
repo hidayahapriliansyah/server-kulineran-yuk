@@ -2,7 +2,7 @@ import { Request } from 'express';
 import dayjs from 'dayjs';
 
 import prisma from '../../../../db';
-import { BotramGroupMember, Order, OrderStatus, OrderedCustomMenu, OrderedCustomMenuSpicyLevel, OrderedMenu, OrderedMenuSpicyLevel, Prisma, PrismaClient, Restaurant } from '@prisma/client';
+import { BotramGroupMember, BotramGroupOrder, Order, OrderStatus, OrderedCustomMenu, OrderedCustomMenuSpicyLevel, OrderedMenu, OrderedMenuSpicyLevel, Prisma, PrismaClient, Restaurant } from '@prisma/client';
 import { BadRequest, NotFound } from '../../../../errors';
 import * as DTO from './types';
 
@@ -586,9 +586,6 @@ const updateCustomerOrderStatus = async (
   req: Request
 ): Promise<Order['id'] | Error> => {
   const { id: restaurantId } = req.user as Pick<Restaurant, 'id' | 'email'>;
-  const restaurant = await prisma.restaurant.findUnique({
-    where: { id: restaurantId },
-  });
   const { orderId } = req.params;
   if (!orderId) {
     throw new BadRequest('orderId param is missing.');
@@ -693,8 +690,10 @@ const updateCustomerOrderStatus = async (
         calculatedTotalOrder += orderedCustomMenuTotalPrice;
       });
     }
-
-    if (restaurant!.customerPayment) {
+    const restaurant = await prisma.restaurant.findUnique({
+      where: { id: restaurantId },
+    });
+    if (restaurant!.customerPayment === 'BEFORE_ORDER') {
       orderUpdateInput = { ...orderUpdateInput, isPaid: true };
     }
     if (calculatedTotalOrder !== foundCustomerOrder.total) {
@@ -764,6 +763,263 @@ const updateCustomerOrderPaymentStatus = async (
   return updatedCustomerOrderPaymentStatus.id;
 };
 
+const updateBotramOrderStatus = async (
+  req: Request,
+): Promise<BotramGroupOrder['id'] | Error> => {
+  const { id: restaurantId } = req.user as Pick<Restaurant, 'id' | 'email'>;
+  const { botramOrderId } = req.params;
+  if (!botramOrderId) {
+    throw new BadRequest('botramOrderId param is missing.');
+  }
+
+  const body = req.body as {
+    status: 'ACCEPTED' | 'PROCESSED' | 'DONE' | 'CANCEL',
+  };
+
+  if (!body.status) {
+    throw new BadRequest('status body payload is missing');
+  }
+
+  if (!['ACCEPTED', 'PROCESSED', 'DONE', 'CANCEL'].includes(body.status)) {
+    throw new BadRequest('status body payload is invalid.');
+  }
+
+  const foundBotramOrder = await prisma.botramGroupOrder.findUnique({
+    where: { id: botramOrderId, restaurantId },
+    include: {
+      botramGroup: {
+        include: {
+          members: {
+            include: {
+              memberOrder: {
+                include: {
+                  order: {
+                    include: {
+                      orderedMenus: {
+                        include: {
+                          menu: true,
+                          orderedMenuSpicyLevel: {
+                            select: {
+                              level: true,
+                            },
+                          },
+                        },
+                      },
+                      orderedCustomMenus: {
+                        include: {
+                          customMenu: {
+                            include: {
+                              pickedCustomMenuCompositions: {
+                                include: {
+                                  customMenuComposition: true,
+                                },
+                              },
+                            },
+                          },
+                          orderedCustomMenuSpicyLevel: {
+                            select: {
+                              level: true
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!foundBotramOrder) {
+    throw new NotFound('Botram order is not found.');
+  }
+
+  let botramGroupOrderUpdateInput: Prisma.BotramGroupOrderUpdateInput = {};
+  if (body.status === 'ACCEPTED') {
+    if (foundBotramOrder.status !== 'READY_TO_ORDER') {
+      throw new BadRequest(
+        'status body payload is invalid. ACCEPTED is allowed if status order is READY_TO_ORDER'
+      );
+    }
+
+    let calculatedTotalBotramOrder = 0;
+    foundBotramOrder.botramGroup.members
+      .filter((member) => member.status === 'ORDER_READY')
+      .map(async (member) => {
+        let calculatedTotalMemberBotramOrder = 0;
+        if (member.memberOrder!.order.orderedMenus.length > 0) {
+          member.memberOrder!.order.orderedMenus.map(async (orderedMenu) => {
+            if (orderedMenu.quantity > orderedMenu.menu.stock) {
+              throw new BadRequest('Menu stock is running out. Try again later.');
+            }
+            let orderedMenuTotalPrice = orderedMenu.totalPrice;
+            if (orderedMenu.menuPrice !== orderedMenu.menu.price) {
+              orderedMenuTotalPrice = orderedMenu.quantity * orderedMenu.menu.price,
+              await prisma.orderedMenu.update({
+                where: { id: orderedMenu.id },
+                data: {
+                  menuPrice: orderedMenu.menu.price,
+                  totalPrice: orderedMenu.quantity * orderedMenu.menu.price,
+                },
+              });
+            }
+            calculatedTotalMemberBotramOrder += orderedMenuTotalPrice;
+          });
+        }
+        if (member.memberOrder!.order.orderedCustomMenus.length > 0) {
+          member.memberOrder!.order.orderedCustomMenus.map(async (orderedCustomMenu) => {
+            let orderedCustomMenuTotalPrice = orderedCustomMenu.totalPrice;
+            let orderedCustomMenuPrice = orderedCustomMenu.customMenuPrice;
+            let currentOrderedCustomMenuPrice = 0;
+            orderedCustomMenu.customMenu.pickedCustomMenuCompositions.map((pickCustMenu) => {
+              const isStockAvailable = pickCustMenu.qty > pickCustMenu.customMenuComposition.stock; 
+              if (!isStockAvailable) {
+                throw new BadRequest('Item is run out of stock. Please try again later.');
+              }
+              currentOrderedCustomMenuPrice += (pickCustMenu.customMenuComposition.price * pickCustMenu.qty);
+            });
+            if (currentOrderedCustomMenuPrice !== orderedCustomMenuPrice) {
+              await prisma.customMenu.update({
+                where: { id: orderedCustomMenu.customMenuId },
+                data: { price: currentOrderedCustomMenuPrice },
+              });
+              orderedCustomMenuTotalPrice = orderedCustomMenu.quantity * orderedCustomMenu.customMenu.price;
+              await prisma.orderedCustomMenu.update({
+                where: { id: orderedCustomMenu.id },
+                data: {
+                  customMenuPrice: currentOrderedCustomMenuPrice,
+                  totalPrice: orderedCustomMenu.quantity * orderedCustomMenu.customMenu.price,
+                },
+              });
+            }
+            calculatedTotalMemberBotramOrder += orderedCustomMenuTotalPrice;
+          });
+        }
+        if (calculatedTotalMemberBotramOrder !== member.memberOrder!.order.total) {
+          await prisma.order.update({
+            where: { id: member.memberOrder!.orderId },
+            data: { total: calculatedTotalMemberBotramOrder },
+          });
+        }
+        calculatedTotalBotramOrder += calculatedTotalMemberBotramOrder;
+      });
+    const restaurant = await prisma.restaurant.findUnique({
+      where: { id: restaurantId },
+    });
+    if (restaurant!.customerPayment === 'BEFORE_ORDER') {
+      botramGroupOrderUpdateInput = { isPaid: true };
+    }
+    if (calculatedTotalBotramOrder !== foundBotramOrder.totalAmount) {
+      botramGroupOrderUpdateInput = { totalAmount: calculatedTotalBotramOrder };
+    }
+    botramGroupOrderUpdateInput = { status: 'ACCEPTED_BY_RESTO' };
+  }
+
+  if (body.status === 'PROCESSED') {
+    if (foundBotramOrder.status !== 'ACCEPTED_BY_RESTO') {
+      throw new BadRequest(
+        'status body payload is invalid. PROCESSED is allowed if status order is ACCEPTED_BY_RESTO'
+      );
+    }
+    botramGroupOrderUpdateInput = { status: 'PROCESSED_BY_RESTO' };
+  }
+
+  if (body.status === 'DONE') {
+    if (foundBotramOrder.status !== 'PROCESSED_BY_RESTO') {
+      throw new BadRequest(
+        'status body payload is invalid. DONE is allowed if status order is PROCESSED_BY_RESTO'
+      );
+    }
+    botramGroupOrderUpdateInput = { status: 'DONE_BY_RESTO' };
+  }
+
+  if (body.status === 'CANCEL') {
+    if (foundBotramOrder.status !== 'PROCESSED_BY_RESTO') {
+      throw new BadRequest(
+        'status body payload is invalid. CANCEL is allowed if status order is PROCESSED_BY_RESTO'
+      );
+    }
+    botramGroupOrderUpdateInput = { status: 'CANCEL_BY_RESTO' };
+  }
+
+  const updatedStatusOrderIdList = foundBotramOrder.botramGroup.members
+    .filter((member) => member.status === 'ORDER_READY')
+    .map((member) => member.memberOrder!.orderId);
+  let updateManyMemberOrderInput: Prisma.OrderUpdateInput = {
+    status: botramGroupOrderUpdateInput!.status,
+  };
+  if (botramGroupOrderUpdateInput.isPaid) {
+    updateManyMemberOrderInput = {
+      ...updateManyMemberOrderInput,
+      isPaid: botramGroupOrderUpdateInput.isPaid,
+    };
+  }
+  await prisma.order.updateMany({
+    where: { id: { in: updatedStatusOrderIdList }},
+    data: { ...updateManyMemberOrderInput },
+  });
+
+  const updatedBotramOrderStatus = await prisma.botramGroupOrder.update({
+    where: { id: foundBotramOrder.id },
+    data: { ...botramGroupOrderUpdateInput },
+  });
+  return updatedBotramOrderStatus.id;
+};
+
+const updateBotramOrderPaymentStatus = async (
+  req: Request,
+): Promise<BotramGroupOrder['id'] | Error> => {
+  const { id: restaurantId } = req.user as Pick<Restaurant, 'id' | 'email'>;
+  const { botramOrderId } = req.params;
+  if (!botramOrderId) {
+    throw new BadRequest('botramOrderId param is missing.');
+  }
+
+  const foundBotramOrder = await prisma.botramGroupOrder.findUnique({
+    where: { id: botramOrderId, restaurantId },
+    include: {
+      botramGroup: {
+        include: {
+          members: {
+            include: {
+              memberOrder: {
+                include: {
+                  order: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+  if (!foundBotramOrder) {
+    throw new NotFound('Botram order is not found.');
+  }
+
+  if (foundBotramOrder.isPaid) {
+    throw new BadRequest('Botram order status has been paid.');
+  }
+
+  const updatedPaymentStatusOrderIdList = foundBotramOrder.botramGroup.members
+    .filter((member) => member.status === 'ORDER_READY')
+    .map((member) => member.memberOrder!.orderId);
+  await prisma.order.updateMany({
+    where: { id: { in: updatedPaymentStatusOrderIdList } },
+    data: { isPaid: true },
+  });
+
+  const updatedBotramOrderPaymentStatus = await prisma.botramGroupOrder.update({
+    where: { id: foundBotramOrder.id },
+    data: { isPaid: true },
+  });
+  return updatedBotramOrderPaymentStatus.id;
+};
+
 export {
   getCountOrder,
   getTodayOrder,
@@ -772,4 +1028,6 @@ export {
   findOrderDetailByCustomerUsername,
   updateCustomerOrderStatus,
   updateCustomerOrderPaymentStatus,
+  updateBotramOrderStatus,
+  updateBotramOrderPaymentStatus,
 };
