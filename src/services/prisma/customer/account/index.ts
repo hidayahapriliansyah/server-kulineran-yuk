@@ -3,11 +3,12 @@ import dayjs from 'dayjs';
 import { v4 as uuidv4 } from 'uuid';
 
 import prisma from '../../../../db';
-import createCustomerEmailVerification from '../../../../utils/createCustomerEmailVerification';
+import createCustomerVerification from '../../../../utils/createCustomerVerification';
 import { BadRequest, NotFound } from '../../../../errors';
 import Conflict from '../../../../errors/Conflict';
 import InvalidToken from '../../../../errors/InvalidToken';
 import * as DTO from './types';
+import { renderEmailHTMLTempalate, sendVerificationEmail } from '../../../mail';
 
 const createReEmailVerificationRequest = async (req: Request): Promise<void | Error> => {
   try {
@@ -22,8 +23,14 @@ const createReEmailVerificationRequest = async (req: Request): Promise<void | Er
     });
 
     if (accountWithEmailIsNotVerifiedExist) {
-      const { id, email } = accountWithEmailIsNotVerifiedExist;
-      await createCustomerEmailVerification({ customerId: id, customerEmail: email });
+      const { id, email, name } = accountWithEmailIsNotVerifiedExist;
+      const createdVerification = await createCustomerVerification({ customerId: id, customerEmail: email });
+      const emailHTMLTempalate = renderEmailHTMLTempalate('CUSTOMER_VERIFICATION', {
+        receiverName: name,
+        redirectLink: 'ngacoheulateusih',
+        expiredAt: createdVerification.expiredAt,
+      });
+      await sendVerificationEmail(email, emailHTMLTempalate);
     }
   } catch (error: any) {
     throw error;
@@ -76,13 +83,19 @@ const createResetPasswordRequest = async (req: Request): Promise<void | Error> =
     });
 
     if (customer) {
-      await prisma.customerResetPasswordRequest.create({
+      const createdResetPasswordRequest = await prisma.customerResetPasswordRequest.create({
         data: {
           customerId: customer.id,
           uniqueString: uuidv4(),
           expiredAt: dayjs().add(10, 'minutes').toISOString(),
         }
+      });    
+      const emailHTMLTempalate = renderEmailHTMLTempalate('CUSTOMER_RESET_PASSWORD_REQUEST', {
+        receiverName: customer.name,
+        redirectLink: 'ngacoheulateusih',
+        expiredAt: createdResetPasswordRequest.expiredAt,
       });
+      await sendVerificationEmail(customer.email, emailHTMLTempalate);
     }
   } catch (error: any) {
     throw error;

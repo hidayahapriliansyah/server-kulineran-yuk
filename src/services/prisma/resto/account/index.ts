@@ -3,11 +3,12 @@ import { v4 as uuidv4 } from 'uuid';
 
 import * as DTO from './types';
 import prisma from '../../../../db';
-import createRestaurantEmailVerification from '../../../../utils/createRestaurantEmailVerification';
+import createRestaurantVerification from '../../../../utils/createRestaurantVerification';
 import { BadRequest, NotFound } from '../../../../errors';
 import Conflict from '../../../../errors/Conflict';
 import dayjs from 'dayjs';
 import InvalidToken from '../../../../errors/InvalidToken';
+import { renderEmailHTMLTempalate, sendVerificationEmail } from '../../../mail';
 
 const createReEmailVerificationRequest = async (req: Request): Promise<void | Error> => {
   try {
@@ -23,7 +24,13 @@ const createReEmailVerificationRequest = async (req: Request): Promise<void | Er
 
     if (accountWithEmailIsNotVerifiedExist) {
       const { id, email } = accountWithEmailIsNotVerifiedExist;
-      await createRestaurantEmailVerification({ restaurantId: id, restaurantEmail: email });
+      const createdVerification = await createRestaurantVerification({ restaurantId: id, restaurantEmail: email });
+      const emailHTMLTempalate = renderEmailHTMLTempalate('RESTO_VERIFICATION', {
+        receiverName: accountWithEmailIsNotVerifiedExist.name,
+        redirectLink: 'ngacoheulateusih',
+        expiredAt: createdVerification.expiredAt,
+      });
+      await sendVerificationEmail(accountWithEmailIsNotVerifiedExist.email, emailHTMLTempalate);
     }
   } catch (error: any) {
     throw error;
@@ -82,13 +89,19 @@ const createResetPasswordRequest = async (req: Request): Promise<void | Error> =
     })
 
     if (restaurant) {
-      await prisma.restaurantResetPasswordRequest.create({
+      const createdResetPasswordRequest = await prisma.restaurantResetPasswordRequest.create({
         data: {
           restaurantId: restaurant.id,
           uniqueString: uuidv4(),
           expiredAt: dayjs().add(10, 'minutes').toISOString(),
         }
       });
+      const emailHTMLTempalate = renderEmailHTMLTempalate('RESTO_RESET_PASSWORD_REQUEST', {
+        receiverName: restaurant.name,
+        redirectLink: 'ngacoheulateusih',
+        expiredAt: createdResetPasswordRequest.expiredAt,
+      });
+      await sendVerificationEmail(restaurant.email, emailHTMLTempalate);
     }
   } catch (error: any) {
     throw error;

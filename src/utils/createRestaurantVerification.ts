@@ -5,7 +5,7 @@ import { Restaurant, RestaurantVerification } from '@prisma/client';
 import prisma from '../db';
 
 
-const createRestaurantEmailVerification = async ({
+const createRestaurantVerification = async ({
   restaurantId,
   restaurantEmail,
 }: {
@@ -28,4 +28,4 @@ const createRestaurantEmailVerification = async ({
   return result; 
 };
 
-export default createRestaurantEmailVerification;
+export default createRestaurantVerification;

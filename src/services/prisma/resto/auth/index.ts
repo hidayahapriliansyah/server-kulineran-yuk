@@ -4,10 +4,10 @@ import { Restaurant } from '@prisma/client';
 import * as DTO from './types'
 import prisma from '../../../../db';
 import hashPassword from '../../../../utils/hashPassword';
-import createRestaurantEmailVerification from '../../../../utils/createRestaurantEmailVerification';
-import sendVerificationEmail from '../../../mail';
+import createRestaurantVerification from '../../../../utils/createRestaurantVerification';
 import { BadRequest, Unauthorized } from '../../../../errors';
 import comparePassword from '../../../../utils/comparePassword';
+import { renderEmailHTMLTempalate, sendVerificationEmail } from '../../../mail';
 
 const signupForm = async (req: Request): Promise<Restaurant['id'] | Error> => {
   const body: DTO.SignupBodyForm = DTO.signupBodyForm.parse(req.body);
@@ -22,15 +22,17 @@ const signupForm = async (req: Request): Promise<Restaurant['id'] | Error> => {
     }
   });
 
-  const createdVerification = await createRestaurantEmailVerification({
+  const createdVerification = await createRestaurantVerification({
     restaurantId: createdRestaurantAccount.id,
     restaurantEmail: createdRestaurantAccount.email,
   });
 
-  await sendVerificationEmail(createdRestaurantAccount.email, {
-    link: `http://localhost:3000/resto/verification/${createdVerification.uniqueString}`,
-    name: createdRestaurantAccount.name,
+  const emailHTMLTempalate = renderEmailHTMLTempalate('RESTO_VERIFICATION', {
+    receiverName: body.name,
+    redirectLink: 'ngacoheulateusih',
+    expiredAt: createdVerification.expiredAt,
   });
+  await sendVerificationEmail(body.email, emailHTMLTempalate);
 
   const result = createdRestaurantAccount.id;
   return result;

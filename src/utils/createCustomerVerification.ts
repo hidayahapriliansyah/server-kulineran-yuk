@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import prisma from '../db';
 import { Customer, CustomerVerification } from '@prisma/client';
 
-const createCustomerEmailVerification = async ({
+const createCustomerVerification = async ({
   customerId,
   customerEmail,
 }: {
@@ -25,4 +25,4 @@ const createCustomerEmailVerification = async ({
   return createdCustomerEmailVerification; 
 };
 
-export default createCustomerEmailVerification;
+export default createCustomerVerification;
