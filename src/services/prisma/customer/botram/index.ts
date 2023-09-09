@@ -92,54 +92,80 @@ const createBotramGroup = async (req: Request):
     if (customerIsJoiningActiveBotramGroup) {
       throw new Unauthorized('Cannot create botram group. Customer is ordering in active botram group.');
     }
-    try {
-      return await prisma.$transaction(async (tx) => {
-        const createdBotramGroup = await tx.botramGroup.create({
-          data: {
-            creatorCustomerId: customerId,
-            restaurantId: body.restaurantId,
-            name: body.name,
-          },
+
+    const customerDetail = await prisma.customer.findUnique({
+      where: { id: customerId },
+    });
+    const restaurantDetail = await prisma.restaurant.findUnique({
+      where: { id: body.restaurantId },
+    });
+    if (!restaurantDetail) {
+      throw new NotFound('Restaurant is not found.');
+    }
+
+    return await prisma.$transaction(async (tx) => {
+      const createdBotramGroup = await tx.botramGroup.create({
+        data: {
+          creatorCustomerId: customerId,
+          restaurantId: body.restaurantId,
+          name: body.name,
+        },
+      });
+      await Promise.all(body.members.map(async (member) => {
+        const invitedCustomerExist = await tx.customer.findUnique({
+          where: { id: member.id },
         });
-        await Promise.all(body.members.map(async (member) => {
-          const invitedCustomerExist = await tx.customer.findUnique({
-            where: { id: member.id },
+        if (!invitedCustomerExist) {
+          throw new NotFound('Customer is not found.');
+        }
+        if (invitedCustomerExist.joinBotram === 'BYSELF') {
+          return;
+        }
+        let statusJoinGroupBotram: BotramGroupMemberStatus;
+        if (invitedCustomerExist.joinBotram === 'DIRECTLY') {
+          statusJoinGroupBotram = 'ORDERING';
+          await tx.customerNotification.create({
+            data: {
+              customerId: invitedCustomerExist.id,
+              title: 'Join Botram',
+              description: `${customerDetail!.username} memasukkan mu ke dalam group botram ${body.name} di ${restaurantDetail.name}. Yuk gercep pilih menu menu nya!`,
+              redirectLink: 'ngacodulu',
+            },
           });
-          if (!invitedCustomerExist) {
-            throw new NotFound('Customer is not found.');
-          }
-          if (invitedCustomerExist.joinBotram === 'BYSELF') {
-            return;
-          }
-          let statusJoinGroupBotram: BotramGroupMemberStatus;
-          if (invitedCustomerExist.joinBotram === 'DIRECTLY') {
-            statusJoinGroupBotram = 'ORDERING';
-          } else {
-            await tx.botramGroupInvitation.create({
-              data: { botramGroupId: createdBotramGroup.id, customerId },
-            });
-            statusJoinGroupBotram = 'NOT_JOIN_YET';
-          }
-          await tx.botramGroupMember.create({
+        } else {
+          await tx.botramGroupInvitation.create({
             data: {
               botramGroupId: createdBotramGroup.id,
               customerId: invitedCustomerExist.id,
-              status: statusJoinGroupBotram,
             },
           });
-        }));
+          statusJoinGroupBotram = 'NOT_JOIN_YET';
+          await tx.customerNotification.create({
+            data: {
+              customerId: invitedCustomerExist.id,
+              title: 'Undangan Botram',
+              description: `${customerDetail!.username} mengajak mu untuk makan bersama di group botram ${body.name} di ${restaurantDetail.name}, kamu bisa terima ajakannya atau terserah kamu deh.`,
+              redirectLink: 'ngacodulu',
+            },
+          });
+        }
         await tx.botramGroupMember.create({
           data: {
             botramGroupId: createdBotramGroup.id,
-            customerId,
-            status: 'ORDERING',
+            customerId: invitedCustomerExist.id,
+            status: statusJoinGroupBotram,
           },
         });
-        return createdBotramGroup.id;
+      }));
+      await tx.botramGroupMember.create({
+        data: {
+          botramGroupId: createdBotramGroup.id,
+          customerId,
+          status: 'ORDERING',
+        },
       });
-    } catch (error: any) {
-      throw error;
-    }
+      return createdBotramGroup.id;
+    });
   };
 
 const getSpecificCustomerBotramGroup = async (req: Request):
@@ -517,6 +543,7 @@ const kickMemberBotramGroupByAdmin = async (req: Request):
     try {
       const foundBotramGroup = await prisma.botramGroup.findUnique({
         where: { id: botramId },
+        include: { creatorCustomer: true },
       });
       if (!foundBotramGroup) {
         throw new NotFound('Botram group is not found.');
@@ -534,6 +561,13 @@ const kickMemberBotramGroupByAdmin = async (req: Request):
       const kickedMember = await prisma.botramGroupMember.update({
         where: { id: foundBotramGroupMember.id, customerId: memberId, botramGroupId: botramId },
         data: { status: 'EXPELLED'},
+      });
+      await prisma.customerNotification.create({
+        data: {
+          customerId: kickedMember.customerId,
+          title: 'Kamu Dikeluarkan Dari Grup Botram',
+          description: `Admin ${foundBotramGroup.creatorCustomer.name} telah mengeluarkanmu dari ${foundBotramGroup.name} botram group.`,
+        },
       });
 
       return kickedMember.id;
@@ -554,11 +588,14 @@ const updateMemberStatusPaymentByAdmin = async (req: Request):
 
     try {
       const foundMemberToBeUpdated = await prisma.botramGroupMember.findUnique({
-        where: {
-          id: memberId,
-          botramGroupId: botramId,
-          status: 'ORDER_READY',
-        },
+        where: { id: memberId, botramGroupId: botramId, status: 'ORDER_READY' },
+        include: {
+          botramGroup: {
+            include: {
+              creatorCustomer: true,
+            }
+          }
+        }
       });
       if (!foundMemberToBeUpdated) {
         throw new NotFound('Member of botram group is not found.');
@@ -580,6 +617,14 @@ const updateMemberStatusPaymentByAdmin = async (req: Request):
           isPaid: true,
         },
       });
+      await prisma.customerNotification.create({
+        data: {
+          customerId: foundMemberToBeUpdated.customerId,
+          title: 'Pesanan Botrammu Telah Dibayar',
+          description: `Admin ${foundMemberToBeUpdated.botramGroup.creatorCustomer.name} dari ${foundMemberToBeUpdated.botramGroup.name} mengubah status pembayaran pesananmu di ${foundMemberToBeUpdated.botramGroup.name}`,
+          redirectLink: 'ngacoheulateusih',
+        },
+      });
 
       const result = foundMemberToBeUpdated.id;
       return result;
@@ -597,12 +642,27 @@ const updateGroupBotramStatusToAllReadyOrder = async (req: Request):
     }
 
     const foundBotramGroup = await prisma.botramGroup.findUnique({
-      where: { id: botramId },
+      where: { id: botramId, creatorCustomerId: customerId },
+      include: {
+        creatorCustomer: true,
+        members: true,
+      },
     });
     if (!foundBotramGroup) {
       throw new NotFound('Botram group is not found.');
     }
 
+    foundBotramGroup.members
+    .filter((member) => member.status === 'ORDERING')
+    .map(async (member) => {
+      await prisma.customerNotification.create({
+        data: {
+          customerId: member.customerId,
+          title: 'Kamu Belum Pesan Apa-Apa',
+          description: `Kamu belum pesan apa-apa di grup botram ${foundBotramGroup.name} sedangkan anggota yang lain telah sepakat untuk memesan. Kamu secara otomatis bukan merupakan anggota dari grup botram ${foundBotramGroup.name}.`,
+        },
+      });
+    });
     await prisma.botramGroupMember.updateMany({
       where: { botramGroupId: foundBotramGroup.id, status: 'ORDERING'},
       data: { status: 'EXPELLED' },
@@ -611,6 +671,18 @@ const updateGroupBotramStatusToAllReadyOrder = async (req: Request):
       where: { id: foundBotramGroup.id },
       data: { openMembership: false, status: 'ALL_READY_ORDER', },
     });
+    foundBotramGroup.members
+      .filter((member) => member.status === 'ORDER_READY')
+      .map(async (member) => {
+        await prisma.customerNotification.create({
+          data: {
+            customerId: member.customerId,
+            title: 'Pesanan Botram Siap Dipesankan',
+            description: `Admin ${foundBotramGroup.creatorCustomer.name} dari ${foundBotramGroup.name} mengubah status pesanan botram group agar siap diproses restaurant.`,
+            redirectLink: 'ngacoheula',
+          },
+        });
+      });
     await prisma.botramGroupInvitation.updateMany({
       where: { botramGroupId: foundBotramGroup.id, isActive: true },
       data: { isActive: false },

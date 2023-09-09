@@ -2,7 +2,7 @@ import { Request } from 'express';
 import dayjs from 'dayjs';
 
 import prisma from '../../../../db';
-import { BotramGroupMember, BotramGroupOrder, Order, OrderStatus, OrderedCustomMenu, OrderedCustomMenuSpicyLevel, OrderedMenu, OrderedMenuSpicyLevel, Prisma, PrismaClient, Restaurant } from '@prisma/client';
+import { BotramGroupOrder, Order, OrderStatus, Prisma, Restaurant } from '@prisma/client';
 import { BadRequest, NotFound } from '../../../../errors';
 import * as DTO from './types';
 
@@ -606,6 +606,7 @@ const updateCustomerOrderStatus = async (
   const foundCustomerOrder = await prisma.order.findUnique({
     where: { id: orderId, restaurantId },
     include: {
+      restaurant: true,
       orderedMenus: {
         include: {
           menu: true,
@@ -690,16 +691,29 @@ const updateCustomerOrderStatus = async (
         calculatedTotalOrder += orderedCustomMenuTotalPrice;
       });
     }
-    const restaurant = await prisma.restaurant.findUnique({
-      where: { id: restaurantId },
-    });
-    if (restaurant!.customerPayment === 'BEFORE_ORDER') {
+    if (foundCustomerOrder.restaurant.customerPayment === 'BEFORE_ORDER') {
       orderUpdateInput = { ...orderUpdateInput, isPaid: true };
+      await prisma.customerNotification.create({
+        data: {
+          customerId: foundCustomerOrder.customerId,
+          title: 'Pesanan Dibayar',
+          description: `Pesananmu di ${foundCustomerOrder.restaurant.name} sebesar ${foundCustomerOrder.total} telah dibayar. Terima kasih telah berbelanja`,
+          redirectLink: 'ngacoheula',
+        },
+      });
     }
     if (calculatedTotalOrder !== foundCustomerOrder.total) {
       orderUpdateInput = { ...orderUpdateInput, total: calculatedTotalOrder };
     }
     orderUpdateInput = { ...orderUpdateInput, status: 'ACCEPTED_BY_RESTO' };
+    await prisma.customerNotification.create({
+      data: {
+        customerId: foundCustomerOrder.customerId,
+        title: 'Pesanan Diterima',
+        description: `${foundCustomerOrder.restaurant.name} telah menerima pesananmu. Pesananmu akan segera diproses.`,
+        redirectLink: 'ngacoheula',
+      },
+    });
   }
 
   if (body.status === 'PROCESSED') {
@@ -709,6 +723,14 @@ const updateCustomerOrderStatus = async (
       );
     }
     orderUpdateInput = { ...orderUpdateInput, status: 'PROCESSED_BY_RESTO' };
+    await prisma.customerNotification.create({
+      data: {
+        customerId: foundCustomerOrder.customerId,
+        title: 'Pesanan Diproses',
+        description: `${foundCustomerOrder.restaurant.name} sedang memproses pesananmu. Pesananmu bisa segera kamu nikmati.`,
+        redirectLink: 'ngacoheula',
+      },
+    });
   }
 
   if (body.status === 'DONE') {
@@ -718,6 +740,14 @@ const updateCustomerOrderStatus = async (
       );
     }
     orderUpdateInput = { ...orderUpdateInput, status: 'DONE_BY_RESTO' };
+    await prisma.customerNotification.create({
+      data: {
+        customerId: foundCustomerOrder.customerId,
+        title: 'Pesanan Selesai',
+        description: `${foundCustomerOrder.restaurant.name} telah selesai memprose pesananmu. Bila kamu belum menerima pesananmu, kamu bisa menghubungi pelayan restaurant nya ya.`,
+        redirectLink: 'ngacoheula',
+      },
+    });
   }
 
   if (body.status === 'CANCEL') {
@@ -727,6 +757,14 @@ const updateCustomerOrderStatus = async (
       );
     }
     orderUpdateInput = { ...orderUpdateInput, status: 'CANCEL_BY_RESTO' };
+    await prisma.customerNotification.create({
+      data: {
+        customerId: foundCustomerOrder.customerId,
+        title: 'Pesanan Dibatalkan',
+        description: `Uppsss... ${foundCustomerOrder.restaurant.name} membatalkan pesananmu. Hubungi pelayan restaurant untuk keterangan lebih lanjut.`,
+        redirectLink: 'ngacoheula',
+      },
+    });
   }
 
   const updatedCustomerOrderStatus = await prisma.order.update({
@@ -747,6 +785,13 @@ const updateCustomerOrderPaymentStatus = async (
 
   const foundCustomerOrder = await prisma.order.findUnique({
     where: { id: orderId, restaurantId },
+    include: {
+      restaurant: {
+        select: {
+          name: true,
+        },
+      },
+    },
   });
   if (!foundCustomerOrder) {
     throw new NotFound('Order is not found.');
@@ -759,6 +804,14 @@ const updateCustomerOrderPaymentStatus = async (
   const updatedCustomerOrderPaymentStatus = await prisma.order.update({
     where: { id: foundCustomerOrder.id },
     data: { isPaid: true},
+  });
+  await prisma.customerNotification.create({
+    data: {
+      customerId: foundCustomerOrder.customerId,
+      title: 'Pesanan Dibayar',
+      description: `Pesananmu di ${foundCustomerOrder.restaurant.name} sebesar ${foundCustomerOrder.total} telah dibayar. Terima kasih telah berbelanja`,
+      redirectLink: 'ngacoheula',
+    },
   });
   return updatedCustomerOrderPaymentStatus.id;
 };
@@ -787,6 +840,7 @@ const updateBotramOrderStatus = async (
   const foundBotramOrder = await prisma.botramGroupOrder.findUnique({
     where: { id: botramOrderId, restaurantId },
     include: {
+      restaurant: true,
       botramGroup: {
         include: {
           members: {
@@ -907,16 +961,37 @@ const updateBotramOrderStatus = async (
         }
         calculatedTotalBotramOrder += calculatedTotalMemberBotramOrder;
       });
-    const restaurant = await prisma.restaurant.findUnique({
-      where: { id: restaurantId },
-    });
-    if (restaurant!.customerPayment === 'BEFORE_ORDER') {
+    if (foundBotramOrder.restaurant.customerPayment === 'BEFORE_ORDER') {
       botramGroupOrderUpdateInput = { isPaid: true };
+      foundBotramOrder.botramGroup.members
+        .filter((member) => member.status === 'ORDER_READY')
+        .map(async (member) => {
+          await prisma.customerNotification.create({
+            data: {
+              customerId: member.customerId,
+              title: 'Pesanan Botram Dibayar',
+              description: `${foundBotramOrder.restaurant.name} telah menerima pembayaran pesanan ${foundBotramOrder.botramGroup.name}. Terima kasih telah berbelanja.`,
+              redirectLink: 'ngacoheula',
+            },
+          });
+        });
     }
     if (calculatedTotalBotramOrder !== foundBotramOrder.totalAmount) {
       botramGroupOrderUpdateInput = { totalAmount: calculatedTotalBotramOrder };
     }
     botramGroupOrderUpdateInput = { status: 'ACCEPTED_BY_RESTO' };
+    foundBotramOrder.botramGroup.members
+      .filter((member) => member.status === 'ORDER_READY')
+      .map(async (member) => {
+        await prisma.customerNotification.create({
+          data: {
+            customerId: member.customerId,
+            title: 'Pesanan Botram Diterima',
+            description: `${foundBotramOrder.restaurant.name} telah menerima pesanan grup botram ${foundBotramOrder.botramGroup.name}. Pesanan akan segera diproses.`,
+            redirectLink: 'ngacoheula',
+          },
+        });
+      });
   }
 
   if (body.status === 'PROCESSED') {
@@ -926,6 +1001,18 @@ const updateBotramOrderStatus = async (
       );
     }
     botramGroupOrderUpdateInput = { status: 'PROCESSED_BY_RESTO' };
+    foundBotramOrder.botramGroup.members
+      .filter((member) => member.status === 'ORDER_READY')
+      .map(async (member) => {
+        await prisma.customerNotification.create({
+          data: {
+            customerId: member.customerId,
+            title: 'Pesanan Botram Diproses',
+            description: `${foundBotramOrder.restaurant.name} sedang memproses pesanan grup botram ${foundBotramOrder.botramGroup.name}.`,
+            redirectLink: 'ngacoheula',
+          },
+        });
+      });
   }
 
   if (body.status === 'DONE') {
@@ -935,6 +1022,18 @@ const updateBotramOrderStatus = async (
       );
     }
     botramGroupOrderUpdateInput = { status: 'DONE_BY_RESTO' };
+    foundBotramOrder.botramGroup.members
+      .filter((member) => member.status === 'ORDER_READY')
+      .map(async (member) => {
+        await prisma.customerNotification.create({
+          data: {
+            customerId: member.customerId,
+            title: 'Pesanan Botram Selesai',
+            description: `Pesanan ${foundBotramOrder.botramGroup.name} telah selesai diproses. Bila pesanan belum kunjung sedia, kamu bisa menghubungi pelayan restaurant nya ya.`,
+            redirectLink: 'ngacoheula',
+          },
+        });
+      });
   }
 
   if (body.status === 'CANCEL') {
@@ -944,6 +1043,18 @@ const updateBotramOrderStatus = async (
       );
     }
     botramGroupOrderUpdateInput = { status: 'CANCEL_BY_RESTO' };
+    foundBotramOrder.botramGroup.members
+      .filter((member) => member.status === 'ORDER_READY')
+      .map(async (member) => {
+        await prisma.customerNotification.create({
+          data: {
+            customerId: member.customerId,
+            title: 'Pesanan Botram Dibatalkan',
+            description: `${foundBotramOrder.restaurant.name} membatalkan pesanan grup botram ${foundBotramOrder.botramGroup.name}. Hubungi pelayan restaurant untuk keterangan lebih lanjut`,
+            redirectLink: 'ngacoheula',
+          },
+        });
+      });
   }
 
   const updatedStatusOrderIdList = foundBotramOrder.botramGroup.members
@@ -982,6 +1093,7 @@ const updateBotramOrderPaymentStatus = async (
   const foundBotramOrder = await prisma.botramGroupOrder.findUnique({
     where: { id: botramOrderId, restaurantId },
     include: {
+      restaurant: true,
       botramGroup: {
         include: {
           members: {
@@ -1005,13 +1117,18 @@ const updateBotramOrderPaymentStatus = async (
     throw new BadRequest('Botram order status has been paid.');
   }
 
-  const updatedPaymentStatusOrderIdList = foundBotramOrder.botramGroup.members
+  foundBotramOrder.botramGroup.members
     .filter((member) => member.status === 'ORDER_READY')
-    .map((member) => member.memberOrder!.orderId);
-  await prisma.order.updateMany({
-    where: { id: { in: updatedPaymentStatusOrderIdList } },
-    data: { isPaid: true },
-  });
+    .map(async (member) => {
+      await prisma.customerNotification.create({
+        data: {
+          customerId: member.customerId,
+          title: 'Pesanan Botram Dibayar',
+          description: `${foundBotramOrder.restaurant.name} telah menerima pembayaran pesanan ${foundBotramOrder.botramGroup.name}. Terima kasih telah berbelanja.`,
+          redirectLink: 'ngacoheula',
+        },
+      });
+    });
 
   const updatedBotramOrderPaymentStatus = await prisma.botramGroupOrder.update({
     where: { id: foundBotramOrder.id },

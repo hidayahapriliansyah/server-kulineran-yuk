@@ -621,6 +621,6 @@ model CustomerNotification {
   customerId   String   @db.Uuid
   title        String   @db.VarChar(50)
   description  String   @db.VarChar(250)
-  redirectLink String
+  redirectLink String?
   isRead       Boolean  @default(false)
 }
