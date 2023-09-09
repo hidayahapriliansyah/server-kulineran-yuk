@@ -6,6 +6,7 @@ import prisma from '../../../../db';
 import * as DTO from './types';
 import checkRestaurantIsOpenNow from '../../../../utils/checkIsRestaurantOpenNow';
 import { Customer } from '@prisma/client';
+import updateRestaurantRating from '../../../../utils/updateRestaurantRating';
 
 const findRestaurantByUsername = async (req: Request):
   Promise<DTO.FindRestaurantResponse | Error> => {
@@ -59,11 +60,18 @@ const getRestaurantProfile = async (req: Request):
           })
         : null;
 
+      const countRestaurantReview = await prisma.restaurantReview.count({
+        where: { restaurantId: restaurant.id },
+      });
       const result: DTO.RestaurantProfileResponse = {
         id: restaurant.id,
         username: restaurant.username,
         name: restaurant.name,
         avatar: restaurant.avatar,
+        rating: {
+          mean: restaurant.rating,
+          totalReview: countRestaurantReview,
+        },
         detail: {
           address: restaurantDetailAddress,
           openingHour: restaurant.openingHour,
@@ -330,6 +338,8 @@ const createRestaurantReviews = async (req: Request):
           hasCustomerBeenShoppingHere,
         }
       });
+      await updateRestaurantRating(restaurant.id);
+
       return createdReview.id;
     } catch (error: any) {
       throw error;
@@ -369,6 +379,7 @@ const updateRestaurantReviews = async (req: Request):
       if (!updatedReview) {
         throw new NotFound('Review id not found. Please input valid review id.');
       }
+      await updateRestaurantRating(restaurant.id);
       const { id: result } = updatedReview;
       return result;
     } catch (error: any) {
@@ -398,6 +409,7 @@ const deleteRestaurantReviews = async (req: Request):
         throw new NotFound('Review id not found. Please input valid review id.');
       }
 
+      await updateRestaurantRating(deletedRestaurantReview.restaurantId);
       return deletedRestaurantReview.id;
     } catch (error: any) {
       if (error.name === 'CastError') {

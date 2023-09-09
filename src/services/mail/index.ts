@@ -17,6 +17,7 @@ const transporter = nodemailer.createTransport({
 const sendVerificationEmail = async (email: string, data: {
   link: string;
   name: string;
+  expiredAt: Date,
 }): Promise<void> => {
   try {
     const template = fs.readFileSync('src/views/email/verification.html', 'utf-8');

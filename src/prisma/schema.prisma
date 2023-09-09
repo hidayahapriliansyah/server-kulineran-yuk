@@ -67,6 +67,7 @@ model Restaurant {
   closingHour               String?                          @db.VarChar(5)
   daysOff                   String[]
   fasilities                String[]
+  rating                    Float                            @default(0)
   resetPasswordRequests     RestaurantResetPasswordRequest[]
   emailVerifications        RestaurantVerification[]
   address                   RestaurantAddress?

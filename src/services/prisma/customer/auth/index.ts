@@ -29,6 +29,7 @@ const signupForm = async (req: Request): Promise<Customer['id'] | Error> => {
   await sendVerificationEmail(createdRestaurantAccount.email, {
     link: `http://localhost:3000/resto/verification/${createdVerification.uniqueString}`,
     name: createdRestaurantAccount.name,
+    expiredAt: createdVerification.expiredAt,
   });
 
   const result = createdRestaurantAccount.id;

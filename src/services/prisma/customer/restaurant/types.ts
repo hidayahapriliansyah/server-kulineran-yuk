@@ -7,6 +7,10 @@ type RestaurantProfileResponse = {
   avatar: Restaurant['avatar'],
   username: Restaurant['username'],
   name: Restaurant['name'],
+  rating:{
+    mean: number,
+    totalReview: number,
+  },
   isOpenNow: boolean | null,
   gallery: (string | null)[],
   detail: {
