@@ -56,7 +56,7 @@ const getProfile = async (req: Request): Promise<DTO.ProfileResponse | Error> =>
       bussinessHours: {
         closingHours: foundRestaurant.closingHour,
         openingHours: foundRestaurant.openingHour,
-        daysOff: foundRestaurant.dayOff,
+        daysOff: foundRestaurant.daysOff,
       },
       contact: foundRestaurant.contact,
       fasilities: foundRestaurant.fasilities,
@@ -96,7 +96,7 @@ const updateProfile = async (req: Request): Promise<Restaurant['id'] | Error> =>
         username: body.username,
         closingHour: body.closingHour,
         openingHour: body.openingHour,
-        dayOff: body.daysOff,
+        daysOff: body.daysOff,
         contact: body.contact,
         locationLink: body.locationLink,
         fasilities: body.fasilities,
@@ -130,10 +130,10 @@ const updateProfile = async (req: Request): Promise<Restaurant['id'] | Error> =>
           data: {
             detail: body.detail,
             villageId: body.villageId,
-            villageName: villageDetail?.village,
-            districtName: villageDetail?.district.district,
-            regencyName: villageDetail?.district.regency.regency,
-            provinceName: villageDetail?.district.regency.province.province,
+            villageName: villageDetail?.village ?? null,
+            districtName: villageDetail?.district.district ?? null,
+            regencyName: villageDetail?.district.regency.regency ?? null,
+            provinceName: villageDetail?.district.regency.province.province ?? null,
           },
         });
       } else {
@@ -142,10 +142,10 @@ const updateProfile = async (req: Request): Promise<Restaurant['id'] | Error> =>
             restaurantId,
             detail: body.detail,
             villageId: body.villageId,
-            villageName: villageDetail!.village,
-            districtName: villageDetail!.district.district,
-            regencyName: villageDetail!.district.regency.regency,
-            provinceName: villageDetail!.district.regency.province.province,
+            villageName: villageDetail?.village ?? null,
+            districtName: villageDetail?.district.district ?? null,
+            regencyName: villageDetail?.district.regency.regency ?? null,
+            provinceName: villageDetail?.district.regency.province.province ?? null,
           },
         });
       }

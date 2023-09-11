@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { getVillage } from '../../../../services/mongoose/location/village';
+
 import { SuccessAPIResponse } from '../../../../global/types';
+import { getVillage } from '../../../../services/prisma/location/village';
 
 const getVillageController = async (
   req: Request,

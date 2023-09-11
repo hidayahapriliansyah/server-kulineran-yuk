@@ -1,13 +1,13 @@
 import { Request } from 'express';
 
 import { Restaurant } from '@prisma/client';
-import * as DTO from './types'
 import prisma from '../../../../db';
 import hashPassword from '../../../../utils/hashPassword';
 import createRestaurantVerification from '../../../../utils/createRestaurantVerification';
 import { BadRequest, Unauthorized } from '../../../../errors';
 import comparePassword from '../../../../utils/comparePassword';
 import { renderEmailHTMLTempalate, sendVerificationEmail } from '../../../mail';
+import * as DTO from './types';
 
 const signupForm = async (req: Request): Promise<Restaurant['id'] | Error> => {
   const body: DTO.SignupBodyForm = DTO.signupBodyForm.parse(req.body);
