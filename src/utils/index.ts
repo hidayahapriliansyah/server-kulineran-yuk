@@ -12,6 +12,8 @@ import {
   createJWTPayloadDataRestoAccessToken,
 } from './createJwtPayloadData';
 
+import findQueueNumberOrder from './findQueueOrder';
+
 export {
   createAccessToken,
   createIDToken,
@@ -21,4 +23,5 @@ export {
   createJWTPayloadDataCustomerIDToken,
   createJWTPayloadDataRestoIDToken,
   createJWTPayloadDataRestoAccessToken,
+  findQueueNumberOrder,
 };

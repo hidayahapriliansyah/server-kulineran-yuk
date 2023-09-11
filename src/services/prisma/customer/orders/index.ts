@@ -1,9 +1,10 @@
 import { Request } from 'express';
 
-import { Customer, Order, OrderStatus } from '@prisma/client';
+import { Customer, Order, OrderStatus, Restaurant } from '@prisma/client';
 import * as DTO from './types';
 import prisma from '../../../../db';
 import { BadRequest, NotFound } from '../../../../errors';
+import { findQueueNumberOrder } from '../../../../utils';
 
 const createOrder = async (req: Request):
   Promise<Order['id'] | Error> => {
@@ -195,6 +196,9 @@ const getOrderList = async (req: Request):
         isPaid: order.isPaid,
         status: order.status as Exclude<OrderStatus, 'ACCEPTED_BY_CUSTOMER'>,
         total: order.total,
+        queueNumber: order.status === 'ACCEPTED_BY_RESTO'
+          ? (async () => await findQueueNumberOrder({ restaurantId: order.restaurantId, customerId }))()
+          : null,
       };
       if (order.isGroup) {
         (orderItem as DTO.OrderBotramItem).botramGroup = {
@@ -264,6 +268,9 @@ const getOrderById = async (req: Request):
       total: foundOrder.total,
       status: foundOrder.status,
       isPaid: foundOrder.isPaid,
+      queueNumber: foundOrder.status === 'ACCEPTED_BY_RESTO'
+        ? (async () => await findQueueNumberOrder({ restaurantId: foundOrder.restaurantId, customerId }))()
+        : null,
       orderedMenu: foundOrder.orderedMenus.map((orderedMenu) => ({
         id: orderedMenu.id,
         menu: {

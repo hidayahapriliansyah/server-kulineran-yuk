@@ -77,6 +77,7 @@ type OrderNotBotramItem = {
   total: Order['total'],
   isPaid: Order['isPaid'],
   status: Exclude<OrderStatus, 'ACCEPTED_BY_CUSTOMER'>,
+  queueNumber: Promise<number> | null,
 };
 
 type OrderBotramItem = OrderNotBotramItem & {
@@ -128,6 +129,7 @@ type OrderNotBotramDetail = {
   isPaid: Order['isPaid'],
   orderedMenu: OrderedMenuResponse[] | [],
   orderedCustomMenu: OrderedCustomMenuResponse[] | [],
+  queueNumber: Promise<number> | null,
 };
 
 type OrderBotramDetail = OrderNotBotramDetail & {
