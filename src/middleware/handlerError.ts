@@ -8,8 +8,10 @@ import { ValidationErrorAPIResponse } from '../global/types';
 import CustomAPIError from '../errors/CustomAPIError';
 import ValidationError from '../errors/ValidationError';
 import { Unauthenticated } from '../errors';
+import prisma from '../db';
+import { Customer, CustomerRefreshTokenValidation, Restaurant, RestaurantRefreshTokenValidation } from '@prisma/client';
 
-const errorHandlerMiddleware = (
+const errorHandlerMiddleware = async (
   err: any,
   req: Request,
   res: Response,
@@ -24,17 +26,47 @@ const errorHandlerMiddleware = (
       message: err.message,
     };
 
-    if (err instanceof TokenExpiredError) {
+  if (err instanceof TokenExpiredError) {
+    type UserType = 'RESTO' | 'CUSTOMER' | 'REFRESH_TOKEN';
+    const userType = err.message.split('|')[1] as UserType;
+
+    if (userType === 'REFRESH_TOKEN') {
       return res
         .status(StatusCodes.UNAUTHORIZED)
-        .json(new Unauthenticated('Token is expired'));
-      }
-      
-    if (err instanceof JsonWebTokenError) {
-      return res
-        .status(StatusCodes.UNAUTHORIZED)
-        .json(new Unauthenticated('Token is invalid'));
+        .json(new Unauthenticated('Token is expired.'));
     }
+
+    let refreshTokenValidatorId: RestaurantRefreshTokenValidation['id'] | CustomerRefreshTokenValidation['id'];
+    if (userType === 'RESTO') {
+      const { id: restaurantId } = req.user as Pick<Restaurant, 'id' | 'email'>;
+      const refreshTokenValidator = await prisma.restaurantRefreshTokenValidation.create({
+        data: { restaurantId },
+      });
+      refreshTokenValidatorId = refreshTokenValidator.id;
+    } else {
+      const { id: customerId } = req.user as Pick<Customer, 'id' | 'email'>;
+      const refreshTokenValidator = await prisma.customerRefreshTokenValidation.create({
+        data: { customerId },
+      });
+      refreshTokenValidatorId = refreshTokenValidator.id;
+    }
+
+    return res
+      .status(StatusCodes.UNAUTHORIZED)
+      .json({
+        success: false,
+        message: 'Token expired',
+        data: {
+          token: refreshTokenValidatorId,
+        },
+      });
+  }
+
+  if (err instanceof JsonWebTokenError) {
+    return res
+      .status(StatusCodes.UNAUTHORIZED)
+      .json(new Unauthenticated('Token is invalid'));
+  }
 
   if (err instanceof PrismaClientKnownRequestError && err.code === 'P2002') {
     const errors = {

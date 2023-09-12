@@ -6,6 +6,7 @@ import restoCustomMenuRouter from './custom-menu/route';
 import restoNotificationsRouter from './notifications/route';
 import restoOrdersRouter from './orders/route';
 import restoReviewsRouter from './reviews/route';
+import restoRefreshTokenRouter from './refresh-token/route';
 
 // route: /api/v2/resto
 const restoRouter = Router();
@@ -18,5 +19,6 @@ restoRouter.use('/custom-menu', restoCustomMenuRouter);
 restoRouter.use('/notifications', restoNotificationsRouter);
 restoRouter.use('/orders', restoOrdersRouter);
 restoRouter.use('/reviews', restoReviewsRouter);
+restoRouter.use('/refresh-token', restoRefreshTokenRouter);
 
 export default restoRouter;

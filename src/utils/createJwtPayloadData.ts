@@ -5,6 +5,10 @@ export type PayloadDataAccessToken = {
   email: string;
 };
 
+export type PayloadDataRefreshToken = {
+  id: string;
+};
+
 export type PayloadDataIDToken = {
   name: string;
   username: string;
@@ -30,6 +34,22 @@ const createJWTPayloadDataCustomerAccessToken = (
     email: data.email,
   };
   return payloadData;
+};
+
+const createJWTPayloadDataRestoRefreshToken = (
+  data: Restaurant
+): PayloadDataRefreshToken => {
+  return {
+    id: data.id,
+  };
+};
+
+const createJWTPayloadDataCustomerRefreshToken = (
+  data: Customer
+): PayloadDataRefreshToken => {
+  return {
+    id: data.id,
+  };
 };
 
 const createJWTPayloadDataRestoIDToken = (
@@ -59,6 +79,8 @@ const createJWTPayloadDataCustomerIDToken = (
 export {
   createJWTPayloadDataRestoAccessToken,
   createJWTPayloadDataCustomerAccessToken,
+  createJWTPayloadDataRestoRefreshToken,
+  createJWTPayloadDataCustomerRefreshToken,
   createJWTPayloadDataRestoIDToken,
   createJWTPayloadDataCustomerIDToken,
 };

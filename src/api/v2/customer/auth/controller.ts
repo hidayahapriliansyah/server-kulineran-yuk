@@ -5,9 +5,11 @@ import { Customer } from '@prisma/client';
 import { SuccessAPIResponse } from '../../../../global/types';
 import {
   createCookieCustomerAccessToken,
-  createCookieCustomerIDToken
 } from '../../../../utils/createCookie';
 import * as authService from '../../../../services/prisma/customer/auth';
+import { createIDToken, createJWTPayloadDataCustomerIDToken } from '../../../../utils';
+import { createRefreshToken } from '../../../../utils/jwt';
+import { createJWTPayloadDataCustomerRefreshToken } from '../../../../utils/createJwtPayloadData';
 
 const signupForm = async (
   req: Request,
@@ -33,10 +35,21 @@ const signInUpOAuth = async (
 ) => {
   try {
     const user = req.user as Customer;
+
     createCookieCustomerAccessToken(res, user);
-    createCookieCustomerIDToken(res, user);
+
+    const customerIdToken = createIDToken({
+      payload: createJWTPayloadDataCustomerIDToken(user),
+      userType: 'resto',
+    });
+
+    const customerRefreshToken = createRefreshToken({
+      payload: createJWTPayloadDataCustomerRefreshToken(user),
+      userType: 'resto',
+    });
     res.status(StatusCodes.OK).json(new SuccessAPIResponse('Signin Successfully', {
-      userId: user.id,
+      userId: customerIdToken,
+      token: customerRefreshToken,
     }));
   } catch (error) {
     next(error);
@@ -50,12 +63,23 @@ const signinForm = async (
 ) => {
   try {
     const result = await authService.signinForm(req) as Customer;
+
     createCookieCustomerAccessToken(res, result);
-    createCookieCustomerIDToken(res, result);
+
+    const customerIdToken = createIDToken({
+      payload: createJWTPayloadDataCustomerIDToken(result),
+      userType: 'resto',
+    });
+
+    const customerRefreshToken = createRefreshToken({
+      payload: createJWTPayloadDataCustomerRefreshToken(result),
+      userType: 'resto',
+    });
     res
       .status(StatusCodes.OK)
       .json(new SuccessAPIResponse('Signin successfully', {
-        userId: result.id as Customer['id'],
+        userId: customerIdToken,
+        token: customerRefreshToken,
       }));
   } catch (error: any) {
     next(error);

@@ -31,5 +31,6 @@ customerRouter.use('/orders', customerOrdersRouter);
 customerRouter.use('/purchase', customerPurchaseRouter);
 customerRouter.use('/account', customerAccountRouter);
 customerRouter.use('/notifications', customerNotificationsRoute);
+customerRouter.use('/refresh-token', () => {});
 
 export default customerRouter;

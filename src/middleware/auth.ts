@@ -3,6 +3,7 @@ import config from '../config';
 import { Unauthenticated } from '../errors';
 import { PayloadDataAccessToken } from '../utils/createJwtPayloadData';
 import { isAccessTokenValid } from '../utils';
+import { TokenExpiredError } from 'jsonwebtoken';
 
 const authenticationAdminRestoAccount = (
   req: Request,
@@ -26,6 +27,9 @@ const authenticationAdminRestoAccount = (
     } as PayloadDataAccessToken;
     next();
   } catch (error: any) {
+    if (error instanceof TokenExpiredError) {
+      error.message = 'jwt expired |RESTO';
+    }
     next(error);
   }
 };
@@ -52,6 +56,9 @@ const authenticationCustomerAccount = (
     } as PayloadDataAccessToken;
     next();
   } catch (error: any) {
+    if (error instanceof TokenExpiredError) {
+      error.message = 'jwt expired |CUSTOMER';
+    }
     next(error);
   }
 };

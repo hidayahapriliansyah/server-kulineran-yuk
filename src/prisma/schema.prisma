@@ -45,29 +45,29 @@ model Village {
 }
 
 model Restaurant {
-  id                        String                           @id @default(uuid()) @db.Uuid
-  createdAt                 DateTime                         @default(now())
-  updatedAt                 DateTime                         @updatedAt
-  name                      String                           @db.VarChar(50)
-  username                  String                           @unique @db.VarChar(30)
-  email                     String                           @unique @db.VarChar(254)
-  password                  String?                          @unique @db.VarChar(255)
-  passMinimumProfileSetting Boolean                          @default(false)
-  avatar                    String                           @default("avatar.jpg")
-  isVerified                Boolean                          @default(false)
-  customerPayment           RestaurantCustomerPayment        @default(AFTER_ORDER)
+  id                        String                             @id @default(uuid()) @db.Uuid
+  createdAt                 DateTime                           @default(now())
+  updatedAt                 DateTime                           @updatedAt
+  name                      String                             @db.VarChar(50)
+  username                  String                             @unique @db.VarChar(30)
+  email                     String                             @unique @db.VarChar(254)
+  password                  String?                            @unique @db.VarChar(255)
+  passMinimumProfileSetting Boolean                            @default(false)
+  avatar                    String                             @default("avatar.jpg")
+  isVerified                Boolean                            @default(false)
+  customerPayment           RestaurantCustomerPayment          @default(AFTER_ORDER)
   locationLink              String?
-  contact                   String?                          @db.VarChar(14)
+  contact                   String?                            @db.VarChar(14)
   image1                    String?
   image2                    String?
   image3                    String?
   image4                    String?
   image5                    String?
-  openingHour               String?                          @db.VarChar(5)
-  closingHour               String?                          @db.VarChar(5)
+  openingHour               String?                            @db.VarChar(5)
+  closingHour               String?                            @db.VarChar(5)
   daysOff                   String[]
   fasilities                String[]
-  rating                    Float                            @default(0)
+  rating                    Float                              @default(0)
   resetPasswordRequests     RestaurantResetPasswordRequest[]
   emailVerifications        RestaurantVerification[]
   address                   RestaurantAddress?
@@ -83,6 +83,7 @@ model Restaurant {
   botramGroups              BotramGroup[]
   botramGroupOrders         BotramGroupOrder[]
   notifications             RestaurantNotification[]
+  RestaurantRefreshToken    RestaurantRefreshTokenValidation[]
 }
 
 enum RestaurantCustomerPayment {
@@ -212,16 +213,16 @@ model CustomMenuComposition {
 }
 
 model Customer {
-  id                     String                         @id @default(uuid()) @db.Uuid
-  createdAt              DateTime                       @default(now())
-  updatedAt              DateTime                       @updatedAt
-  name                   String                         @db.VarChar(30)
-  username               String                         @unique @db.VarChar(30)
-  email                  String                         @unique @db.VarChar(254)
+  id                     String                           @id @default(uuid()) @db.Uuid
+  createdAt              DateTime                         @default(now())
+  updatedAt              DateTime                         @updatedAt
+  name                   String                           @db.VarChar(30)
+  username               String                           @unique @db.VarChar(30)
+  email                  String                           @unique @db.VarChar(254)
   password               String?
-  avatar                 String                         @default("avatar-customer.jpg")
-  isVerified             Boolean                        @default(false)
-  joinBotram             CustomerJoinBotramSetting      @default(INVITATION)
+  avatar                 String                           @default("avatar-customer.jpg")
+  isVerified             Boolean                          @default(false)
+  joinBotram             CustomerJoinBotramSetting        @default(INVITATION)
   resetPasswordRequests  CustomerResetPasswordRequest[]
   emailVerifications     CustomerVerification[]
   wishlists              Wishlist[]
@@ -234,6 +235,7 @@ model Customer {
   botramGroupInvitations BotramGroupInvitation[]
   botramGroupMembers     BotramGroupMember[]
   notifications          CustomerNotification[]
+  CustomerRefreshToken   CustomerRefreshTokenValidation[]
 }
 
 enum CustomerJoinBotramSetting {
@@ -624,4 +626,22 @@ model CustomerNotification {
   description  String   @db.VarChar(250)
   redirectLink String?
   isRead       Boolean  @default(false)
+}
+
+model RestaurantRefreshTokenValidation {
+  id           String     @id @default(uuid()) @db.Uuid
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId String     @db.Uuid
+  hasUsed      Boolean    @default(false)
+}
+
+model CustomerRefreshTokenValidation {
+  id         String   @id @default(uuid()) @db.Uuid
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId String   @db.Uuid
+  hasUsed    Boolean  @default(false)
 }

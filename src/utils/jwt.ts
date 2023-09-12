@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import config from '../config';
-import { PayloadDataAccessToken, PayloadDataIDToken } from './createJwtPayloadData';
+import { PayloadDataAccessToken, PayloadDataIDToken, PayloadDataRefreshToken } from './createJwtPayloadData';
 import { Unauthenticated } from '../errors';
 
 const createAccessToken = ({
@@ -18,6 +18,25 @@ const createAccessToken = ({
     payload,
     jwtSecret,
     { expiresIn: config.jwtExpiration },
+  );
+  return token;
+};
+
+const createRefreshToken = ({
+  payload,
+  userType,
+}: {
+  payload: PayloadDataRefreshToken;
+  userType: 'resto' | 'customer';
+}): string => {
+  const jwtSecret = userType === 'resto'
+    ? config.restoJWTSecretRefreshToken
+    : config.customerJWTSecretRefreshToken;
+
+  const token = jwt.sign(
+    payload,
+    jwtSecret,
+    { expiresIn: config.jwtRefreshTokenExpiration },
   );
   return token;
 };
@@ -61,6 +80,25 @@ const isAccessTokenValid = ({
   }
 };
 
+const isRefreshTokenValid = ({
+  token,
+  userType,
+}: {
+  token: string;
+  userType: 'resto' | 'customer';
+}) => {
+  const jwtSecret =
+    userType === 'resto'
+      ? config.restoJWTSecretRefreshToken
+      : config.customerJWTSecretRefreshToken;
+
+  try {
+    return jwt.verify(token, jwtSecret);
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 const isIDTokenValid = ({
   token,
   userType,
@@ -85,4 +123,6 @@ export {
   createIDToken,
   isAccessTokenValid,
   isIDTokenValid,
+  createRefreshToken,
+  isRefreshTokenValid,
 };

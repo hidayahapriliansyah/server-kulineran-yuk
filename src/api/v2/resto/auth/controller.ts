@@ -3,8 +3,11 @@ import { StatusCodes } from 'http-status-codes';
 
 import * as authService from '../../../../services/prisma/resto/auth';
 import { SuccessAPIResponse } from '../../../../global/types';
-import { createCookieRestoAccessToken, createCookieRestoIDToken } from '../../../../utils/createCookie';
+import { createCookieRestoAccessToken } from '../../../../utils/createCookie';
 import { Restaurant } from '@prisma/client';
+import { createIDToken, createJWTPayloadDataRestoIDToken } from '../../../../utils';
+import { createJWTPayloadDataRestoRefreshToken } from '../../../../utils/createJwtPayloadData';
+import { createRefreshToken } from '../../../../utils/jwt';
 
 const signupForm = async (
   req: Request,
@@ -31,10 +34,22 @@ const signInUpOAuth = async (
 ) => {
   try {
     const user = req.user as Restaurant;
+
     createCookieRestoAccessToken(res, user);
-    createCookieRestoIDToken(res, user);
+
+    const restoIdToken = createIDToken({
+      payload: createJWTPayloadDataRestoIDToken(user),
+      userType: 'resto',
+    });
+
+    const restoRefreshToken = createRefreshToken({
+      payload: createJWTPayloadDataRestoRefreshToken(user),
+      userType: 'resto',
+    });
+
     res.status(StatusCodes.OK).json(new SuccessAPIResponse('Signin Successfully', {
-      userId: user.id,
+      userId: restoIdToken,
+      token: restoRefreshToken,
     }));
   } catch (error) {
     next(error);
@@ -48,12 +63,24 @@ const signinForm = async (
 ) => {
   try {
     const result = await authService.signinForm(req) as Restaurant;
+
     createCookieRestoAccessToken(res, result);
-    createCookieRestoIDToken(res, result);
+
+    const restoIdToken = createIDToken({
+      payload: createJWTPayloadDataRestoIDToken(result),
+      userType: 'resto',
+    });
+
+    const restoRefreshToken = createRefreshToken({
+      payload: createJWTPayloadDataRestoRefreshToken(result),
+      userType: 'resto',
+    });
+
     res
       .status(StatusCodes.OK)
       .json(new SuccessAPIResponse('Signin successfully', {
-        userId: result.id as Restaurant['id'],
+        userId: restoIdToken,
+        token: restoIdToken,
       }));
   } catch (error: any) {
     next(error);
