@@ -17,5 +17,6 @@ customerAuthRouter.get('/google/callback',
 );
 customerAuthRouter.post('/signin', authController.signinForm);
 customerAuthRouter.get('/signin/google', passport.authenticate('google', { scope: ['email', 'profile'] }));
+customerAuthRouter.post('/signout', authController.signOut);
 
 export default customerAuthRouter;

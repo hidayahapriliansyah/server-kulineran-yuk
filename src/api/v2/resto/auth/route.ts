@@ -17,5 +17,6 @@ restoAuthRouter.get('/google/callback',
 );
 restoAuthRouter.post('/signin', authController.signinForm);
 restoAuthRouter.get('/signin/google', passport.authenticate('google', { scope: ['email', 'profile'] }));
+restoAuthRouter.get('/signout', authController.signOut);
 
 export default restoAuthRouter;

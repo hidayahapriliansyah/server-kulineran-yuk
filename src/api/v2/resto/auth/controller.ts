@@ -8,6 +8,7 @@ import { Restaurant } from '@prisma/client';
 import { createIDToken, createJWTPayloadDataRestoIDToken } from '../../../../utils';
 import { createJWTPayloadDataRestoRefreshToken } from '../../../../utils/createJwtPayloadData';
 import { createRefreshToken } from '../../../../utils/jwt';
+import config from '../../../../config';
 
 const signupForm = async (
   req: Request,
@@ -87,8 +88,25 @@ const signinForm = async (
   }
 };
 
+const signOut = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    res.clearCookie(config.restoAccessTokenCookieName);
+
+    res
+      .status(StatusCodes.OK)
+      .json(new SuccessAPIResponse('Sign out successfully.'));
+  } catch (error: any) {
+    next(error);
+  }
+};
+
 export {
   signupForm,
   signInUpOAuth,
   signinForm,
+  signOut,
 };
