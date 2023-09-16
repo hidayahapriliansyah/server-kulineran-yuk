@@ -9,7 +9,9 @@ import comparePassword from '../../../../utils/comparePassword';
 import { renderEmailHTMLTempalate, sendVerificationEmail } from '../../../mail';
 import * as DTO from './types';
 
-const signupForm = async (req: Request): Promise<Restaurant['id'] | Error> => {
+const signupForm = async (
+  req: Request
+): Promise<Restaurant['id'] | Error> => {
   const body: DTO.SignupBodyForm = DTO.signupBodyForm.parse(req.body);
 
   const createdRestaurantAccount = await prisma.restaurant.create({
@@ -38,34 +40,31 @@ const signupForm = async (req: Request): Promise<Restaurant['id'] | Error> => {
   return result;
 };
 
-const signinForm = async (req: Request): Promise<Restaurant | Error> => {
-  try {
-    const { email, password } = req.body as DTO.SigninFormBody;
-    if (!email || !password) {
-      throw new BadRequest('Invalid Request. Please check your input data.');
-    }
-    const foundRestaurant = await prisma.restaurant.findFirst({
-      where: {
-        OR: [
-          { email },
-          { username: email },
-        ],
-      },
-    });
-    if (!foundRestaurant) {
-      throw new Unauthorized('Credential Error. User is not exist.');
-    }
-    // const isPasswordMatch = await result!.comparePassword(password);
-    const isPasswordMatch = await comparePassword(password, (foundRestaurant.password as string));
-    if (!isPasswordMatch) {
-      throw new Unauthorized('Credential Error. User is not exist.');
-    }
-
-    const result = foundRestaurant;
-    return result;
-  } catch (error: any) {
-    throw error;
+const signinForm = async (
+  req: Request
+): Promise<Restaurant | Error> => {
+  const { email, password } = req.body as DTO.SigninFormBody;
+  if (!email || !password) {
+    throw new BadRequest('email or password property is missing.');
   }
+  const foundRestaurant = await prisma.restaurant.findFirst({
+    where: {
+      OR: [
+        { email },
+        { username: email },
+      ],
+    },
+  });
+  if (!foundRestaurant) {
+    throw new Unauthorized('Credential Error. User is not exist.');
+  }
+  const isPasswordMatch = await comparePassword(password, (foundRestaurant.password as string));
+  if (!isPasswordMatch) {
+    throw new Unauthorized('Credential Error. User is not exist.');
+  }
+
+  const result = foundRestaurant;
+  return result;
 };
 
 export {

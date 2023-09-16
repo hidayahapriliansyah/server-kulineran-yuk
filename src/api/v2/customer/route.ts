@@ -13,6 +13,7 @@ import customerOrdersRouter from './orders/route';
 import customerPurchaseRouter from './purchase/route';
 import customerAccountRouter from './account/route';
 import customerNotificationsRoute from './notifications/route';
+import customerRefreshTokenRouter from './refresh-token/route';
 
 // route: /api/v2/
 const customerRouter = Router();
@@ -31,6 +32,6 @@ customerRouter.use('/orders', customerOrdersRouter);
 customerRouter.use('/purchase', customerPurchaseRouter);
 customerRouter.use('/account', customerAccountRouter);
 customerRouter.use('/notifications', customerNotificationsRoute);
-customerRouter.use('/refresh-token', () => {});
+customerRouter.use('/refresh-token', customerRefreshTokenRouter);
 
 export default customerRouter;

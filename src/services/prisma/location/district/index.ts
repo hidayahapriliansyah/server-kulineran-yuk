@@ -8,7 +8,7 @@ const getDistrict = async (req: Request): Promise<DTO.districtResponse[] | Error
   const { regency } = req.query;
 
   if(!regency) {
-    throw new BadRequest('Invalid Request. regency query is missing. Please check your input.');
+    throw new BadRequest('regency query is missing.');
   }
 
   const districts = await prisma.district.findMany({

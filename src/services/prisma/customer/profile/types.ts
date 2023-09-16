@@ -24,7 +24,6 @@ const updateCustomerProfileBodySchema = z.object({
 });
 
 const updateCustomerJoinBotramMethodBodySchema = z.object({
-  // joinBotram: z.enum(['directly', 'invitation', 'byself']),
   joinBotram: z.string({
       required_error: 'Status joinBotram harus diisi.',
       invalid_type_error: 'Status valid antara \'directly\', \'invitation\', \'byself\''

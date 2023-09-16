@@ -18,13 +18,13 @@ const getAllNotifications = async (
   const numberedLimit = Number(limit);
   const numberedPage = Number(page);
   if (isNaN(numberedLimit) || isNaN(numberedPage)) {
-    throw new BadRequest('Invalid Request. Please check your input data.');
+    throw new BadRequest('limit or page query is not number.');
   }
   
   let filter: Prisma.CustomerNotificationWhereInput = {};
   if (read) {
     if(!['0', '1'].includes(read)) {
-      throw new BadRequest('Invalid Request. Please check your input data.');
+      throw new BadRequest('read query is not 0 or 1');
     }
 
     filter = { ...filter, isRead: Boolean(Number(read)) };
@@ -58,7 +58,9 @@ const getAllNotifications = async (
   return result;
 };
 
-const updateAllCustomerNotificationReadStatus = async (req: Request): Promise<void | Error> => {
+const updateAllCustomerNotificationReadStatus = async (
+  req: Request
+): Promise<void | Error> => {
   const { id: customerId } = req.user as Pick<Customer, 'id' | 'email'>;
   await prisma.customerNotification.updateMany({
     where: { customerId, isRead: false },
@@ -72,7 +74,7 @@ const updateCustomerNotificationReadStatus = async (
   const { id: customerId } = req.user as Pick<Customer, 'id' | 'email'>;
   const { notificationId } = req.params;
   if (!notificationId) {
-    throw new BadRequest('Invalid Request. notificationId params is undefined. Please check your input data.');
+    throw new BadRequest('notificationId param is missing.');
   }
 
   const updatedNotification = await prisma.customerNotification.update({
@@ -81,7 +83,7 @@ const updateCustomerNotificationReadStatus = async (
   });
 
   if (!updatedNotification) {
-    throw new NotFound('Notification Id is not found. Please input valid notification id.');
+    throw new NotFound('Notification is not found.');
   }
 
   return updatedNotification.id;

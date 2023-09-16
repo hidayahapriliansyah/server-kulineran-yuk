@@ -7,10 +7,9 @@ const getVillage = async (req: Request): Promise<DTO.VillageResponse[] | Error> 
   const { district } = req.query;
 
   if(!district) {
-    throw new BadRequest('Invalid Request. district query is missing. Please check your input.');
+    throw new BadRequest(' district query is missing.');
   }
 
-  // const result = await Village.find({ districtId: district });
   const villages = await prisma.village.findMany({
     where: {
       districtId: district as string,

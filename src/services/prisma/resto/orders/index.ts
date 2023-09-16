@@ -36,118 +36,64 @@ const orderedCustomMenusMapping = (
   }));
 };
 
-const getCountOrder = async (req: Request):
-  Promise<DTO.GetCountOrderResponse | Error> => {
-    const { id: restaurantId } = req.user as Pick<Restaurant, 'id' | 'email'>;
+const getCountOrder = async (
+  req: Request
+): Promise<DTO.GetCountOrderResponse | Error> => {
+  const { id: restaurantId } = req.user as Pick<Restaurant, 'id' | 'email'>;
 
-    const orders = await prisma.order.findMany({
-      where: { restaurantId, status: { notIn: ['READY_TO_ORDER', 'ACCEPTED_BY_CUSTOMER'] } },
-    });
+  const orders = await prisma.order.findMany({
+    where: { restaurantId, status: { notIn: ['READY_TO_ORDER', 'ACCEPTED_BY_CUSTOMER'] } },
+  });
 
-    const acceptedByRestoOrder = orders.filter((order) => order.status === 'ACCEPTED_BY_RESTO');
-    const processedByRestoOrder = orders.filter((order) => order.status === 'PROCESSED_BY_RESTO');
-    const doneByRestoOrder = orders.filter((order) => order.status === 'DONE_BY_RESTO');
-    const canceledByRestoOrder = orders.filter((order) => order.status === 'CANCEL_BY_RESTO');
-    
-    const result: DTO.GetCountOrderResponse = {
-      accepted: acceptedByRestoOrder.length,
-      processed: processedByRestoOrder.length,
-      done: doneByRestoOrder.length,
-      cancel: canceledByRestoOrder.length,
-      total: acceptedByRestoOrder.length + processedByRestoOrder.length
-        + doneByRestoOrder.length + canceledByRestoOrder.length,
-    };
-    return result;
+  const acceptedByRestoOrder = orders.filter((order) => order.status === 'ACCEPTED_BY_RESTO');
+  const processedByRestoOrder = orders.filter((order) => order.status === 'PROCESSED_BY_RESTO');
+  const doneByRestoOrder = orders.filter((order) => order.status === 'DONE_BY_RESTO');
+  const canceledByRestoOrder = orders.filter((order) => order.status === 'CANCEL_BY_RESTO');
+  
+  const result: DTO.GetCountOrderResponse = {
+    accepted: acceptedByRestoOrder.length,
+    processed: processedByRestoOrder.length,
+    done: doneByRestoOrder.length,
+    cancel: canceledByRestoOrder.length,
+    total: acceptedByRestoOrder.length + processedByRestoOrder.length
+      + doneByRestoOrder.length + canceledByRestoOrder.length,
+  };
+  return result;
+};
+
+const getTodayOrder = async (
+  req: Request
+): Promise<DTO.GetTodayOrderResponse | Error> => {
+  const { id: restaurantId } = req.user as Pick<Restaurant, 'id' | 'email'>;
+
+  const { status, page = '1' } = req.query as {
+    status?: OrderStatus | 'BOTRAM',
+    page?: string,
   };
 
-const getTodayOrder = async (req: Request):
-  Promise<DTO.GetTodayOrderResponse | Error> => {
-    const { id: restaurantId } = req.user as Pick<Restaurant, 'id' | 'email'>;
+  let filter: Prisma.OrderWhereInput = {
+    status: { notIn: ['READY_TO_ORDER', 'ACCEPTED_BY_CUSTOMER'] },
+  };
 
-    const { status, page = '1' } = req.query as {
-      status?: OrderStatus | 'BOTRAM',
-      page?: string,
-    };
+  const numberedLimit = 10;
+  const numberedPage = Number(page);
+  if (isNaN(numberedPage)) {
+    throw new BadRequest('page query is not number.');
+  }
 
-    let filter: Prisma.OrderWhereInput = {
-      status: { notIn: ['READY_TO_ORDER', 'ACCEPTED_BY_CUSTOMER'] },
-    };
-
-    const numberedLimit = 10;
-    const numberedPage = Number(page);
-    if (isNaN(numberedPage)) {
-      throw new BadRequest('Invalid Request. page query is not number.');
-    }
-
-    if (status && status === 'BOTRAM') {
-      const todayBotramOrders = await prisma.botramGroupOrder.findMany({
-        where: { restaurantId, status: { notIn: ['READY_TO_ORDER', 'ACCEPTED_BY_CUSTOMER'] }, },
-        include: {
-          botramGroup: {
-            include: {
-              creatorCustomer: {
-                select: {
-                  username: true,
-                  name: true,
-                  avatar: true,
-                },
-              }
-            },
-          },
-        },
-        take: numberedLimit,
-        skip: numberedLimit * (numberedPage - 1),
-      });
-
-      const countTodayBotramOrders = await prisma.botramGroupOrder.count({
-        where: { restaurantId, status: { notIn: ['READY_TO_ORDER', 'ACCEPTED_BY_CUSTOMER'] }, },
-      });
-      const totalPages = Math.ceil(countTodayBotramOrders / numberedLimit);
-      const todayBotramOrdersMapped: DTO.BotramGroupOrderItem[] = todayBotramOrders.map((botramOrder) => ({
-        id: botramOrder.id,
-        createdAt: botramOrder.createdAt,
-        botramGroup: {
-          name: botramOrder.botramGroup.name,
-          admin: {
-            username: botramOrder.botramGroup.creatorCustomer.username,
-            name: botramOrder.botramGroup.creatorCustomer.name,
-            image: botramOrder.botramGroup.creatorCustomer.avatar,
-          },
-        },
-        isPaid: botramOrder.isPaid,
-        status: botramOrder.status,
-        total: botramOrder.totalAmount,
-      }));
-
-      const result: DTO.GetTodayOrderResponse = {
-        orders: todayBotramOrdersMapped,
-        total: countTodayBotramOrders,
-        pages: totalPages,
-      }
-      return result;
-    }
-
-    if (status) {
-      filter = { status };
-    }
-
-    const todayCustomerOrders = await prisma.order.findMany({
-      where: { restaurantId, ...filter },
+  if (status && status === 'BOTRAM') {
+    const todayBotramOrders = await prisma.botramGroupOrder.findMany({
+      where: { restaurantId, status: { notIn: ['READY_TO_ORDER', 'ACCEPTED_BY_CUSTOMER'] }, },
       include: {
-        customer: {
-          select: {
-            username: true,
-            name: true,
-            avatar: true,
-          },
-        },
-        botramGroupMemberOrder: {
+        botramGroup: {
           include: {
-            botramGroupMember: {
-              include: {
-                botramGroup: true,
+            creatorCustomer: {
+              select: {
+                username: true,
+                name: true,
+                avatar: true,
               },
-            },
+            }
           },
         },
       },
@@ -155,121 +101,69 @@ const getTodayOrder = async (req: Request):
       skip: numberedLimit * (numberedPage - 1),
     });
 
-    const countTodayCustomerOrders = await prisma.order.count({
-      where: { restaurantId, ...filter },
+    const countTodayBotramOrders = await prisma.botramGroupOrder.count({
+      where: { restaurantId, status: { notIn: ['READY_TO_ORDER', 'ACCEPTED_BY_CUSTOMER'] }, },
     });
-    const totalPages = Math.ceil(countTodayCustomerOrders / numberedLimit);
-    const todayCustomerOrdersMapped: (DTO.CustomerOrderBotramItem | DTO.CustomerOrderNotBotramItem)[] | [] =
-      todayCustomerOrders.map((order) => {
-        const orderItem: DTO.CustomerOrderNotBotramItem = {
-          id: order.id,
-          createdAt: order.createdAt,
-          isGroup: order.isGroup,
-          customer: {
-            username: order.customer.username,
-            name: order.customer.name,
-            image: order.customer.avatar,
-          },
-          isPaid: order.isPaid,
-          status: order.status,
-          total: order.total,
-        };
-        if (order.isGroup) {
-          (orderItem as DTO.CustomerOrderBotramItem).botramGroup = {
-            id: order.botramGroupMemberOrder!.botramGroupMember.botramGroupId,
-            name: order.botramGroupMemberOrder!.botramGroupMember.botramGroup.name,
-          };
-        }
-        return orderItem;
-      });
+    const totalPages = Math.ceil(countTodayBotramOrders / numberedLimit);
+    const todayBotramOrdersMapped: DTO.BotramGroupOrderItem[] = todayBotramOrders.map((botramOrder) => ({
+      id: botramOrder.id,
+      createdAt: botramOrder.createdAt,
+      botramGroup: {
+        name: botramOrder.botramGroup.name,
+        admin: {
+          username: botramOrder.botramGroup.creatorCustomer.username,
+          name: botramOrder.botramGroup.creatorCustomer.name,
+          image: botramOrder.botramGroup.creatorCustomer.avatar,
+        },
+      },
+      isPaid: botramOrder.isPaid,
+      status: botramOrder.status,
+      total: botramOrder.totalAmount,
+    }));
 
     const result: DTO.GetTodayOrderResponse = {
-      orders: todayCustomerOrdersMapped,
+      orders: todayBotramOrdersMapped,
+      total: countTodayBotramOrders,
       pages: totalPages,
-      total: countTodayCustomerOrders,
-    };
+    }
     return result;
-  };
+  }
 
-const getAllOrders = async (req: Request):
-  Promise<DTO.GetAllOrderResponse | Error> => {
-    const { id: restaurantId } = req.user as Pick<Restaurant, 'id' | 'email'>;
+  if (status) {
+    filter = { status };
+  }
 
-    const { status, page = '1', startDate, endDate } = req.query as {
-      status?: OrderStatus | 'UNPAID',
-      page?: string,
-      startDate?: string,
-      endDate?: string,
-    };
-
-    const numberedLimit = 10;
-    const numberedPage = Number(page);
-    if (isNaN(numberedPage)) {
-      throw new BadRequest('numberedPage is not number.');
-    }
-
-    let filter: Prisma.OrderWhereInput = {};
-    if (startDate && endDate) {
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-        throw new BadRequest('startDate or endDate is not valid.');
-      }
-
-      start.setHours(0, 0, 0);
-      end.setHours(23, 59, 59);
-
-      if (dayjs(start).isAfter(dayjs(end))) {
-        throw new BadRequest('startDate is greater than endDate.');
-      }
-      filter = {
-        createdAt: { gte: start, lte: end },
-      };
-    }
-
-    if (status && status === 'UNPAID') {
-      filter = { isPaid: false, ...filter };
-    }
-
-    if (status && status !== 'UNPAID') {
-      filter = { ...filter, status };
-    }
-
-    const orders = await prisma.order.findMany({
-      where: { restaurantId, ...filter },
-      include: {
-        customer: {
-          select: {
-            username: true,
-            name: true,
-            avatar: true,
-          }
+  const todayCustomerOrders = await prisma.order.findMany({
+    where: { restaurantId, ...filter },
+    include: {
+      customer: {
+        select: {
+          username: true,
+          name: true,
+          avatar: true,
         },
-        botramGroupMemberOrder: {
-          include: {
-            botramGroupMember: {
-              include: {
-                botramGroup: {
-                  select: {
-                    id: true,
-                    name: true,
-                  },
-                },
-              },
+      },
+      botramGroupMemberOrder: {
+        include: {
+          botramGroupMember: {
+            include: {
+              botramGroup: true,
             },
           },
         },
       },
-      take: numberedLimit,
-      skip: numberedLimit * (numberedPage - 1),
-    });
+    },
+    take: numberedLimit,
+    skip: numberedLimit * (numberedPage - 1),
+  });
 
-    const countOrders = await prisma.order.count({
-      where: { restaurantId, isPaid: false, ...filter },
-    });
-    const totalPages = Math.ceil(countOrders / numberedLimit);
-    const ordersMapped = orders.map((order) => {
-      const orderMappedItem: DTO.CustomerOrderNotBotramItem = {
+  const countTodayCustomerOrders = await prisma.order.count({
+    where: { restaurantId, ...filter },
+  });
+  const totalPages = Math.ceil(countTodayCustomerOrders / numberedLimit);
+  const todayCustomerOrdersMapped: (DTO.CustomerOrderBotramItem | DTO.CustomerOrderNotBotramItem)[] | [] =
+    todayCustomerOrders.map((order) => {
+      const orderItem: DTO.CustomerOrderNotBotramItem = {
         id: order.id,
         createdAt: order.createdAt,
         isGroup: order.isGroup,
@@ -278,25 +172,134 @@ const getAllOrders = async (req: Request):
           name: order.customer.name,
           image: order.customer.avatar,
         },
-        total: order.total,
-        status: order.status,
         isPaid: order.isPaid,
+        status: order.status,
+        total: order.total,
       };
       if (order.isGroup) {
-        (orderMappedItem as DTO.CustomerOrderBotramItem).botramGroup = {
+        (orderItem as DTO.CustomerOrderBotramItem).botramGroup = {
           id: order.botramGroupMemberOrder!.botramGroupMember.botramGroupId,
           name: order.botramGroupMemberOrder!.botramGroupMember.botramGroup.name,
-        }
+        };
       }
-      return orderMappedItem;
+      return orderItem;
     });
-    const result: DTO.GetAllOrderResponse = {
-      orders: ordersMapped,
-      pages: totalPages,
-      total: countOrders, 
-    };
-    return result;
+
+  const result: DTO.GetTodayOrderResponse = {
+    orders: todayCustomerOrdersMapped,
+    pages: totalPages,
+    total: countTodayCustomerOrders,
   };
+  return result;
+};
+
+const getAllOrders = async (
+  req: Request
+): Promise<DTO.GetAllOrderResponse | Error> => {
+  const { id: restaurantId } = req.user as Pick<Restaurant, 'id' | 'email'>;
+
+  const { status, page = '1', startDate, endDate } = req.query as {
+    status?: OrderStatus | 'UNPAID',
+    page?: string,
+    startDate?: string,
+    endDate?: string,
+  };
+
+  const numberedLimit = 10;
+  const numberedPage = Number(page);
+  if (isNaN(numberedPage)) {
+    throw new BadRequest('page query is not number.');
+  }
+
+  let filter: Prisma.OrderWhereInput = {};
+  if (startDate && endDate) {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      throw new BadRequest('startDate or endDate query is not valid.');
+    }
+
+    start.setHours(0, 0, 0);
+    end.setHours(23, 59, 59);
+
+    if (dayjs(start).isAfter(dayjs(end))) {
+      throw new BadRequest('startDate is greater than endDate.');
+    }
+    filter = {
+      createdAt: { gte: start, lte: end },
+    };
+  }
+
+  if (status && status === 'UNPAID') {
+    filter = { isPaid: false, ...filter };
+  }
+
+  if (status && status !== 'UNPAID') {
+    filter = { ...filter, status };
+  }
+
+  const orders = await prisma.order.findMany({
+    where: { restaurantId, ...filter },
+    include: {
+      customer: {
+        select: {
+          username: true,
+          name: true,
+          avatar: true,
+        }
+      },
+      botramGroupMemberOrder: {
+        include: {
+          botramGroupMember: {
+            include: {
+              botramGroup: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    take: numberedLimit,
+    skip: numberedLimit * (numberedPage - 1),
+  });
+
+  const countOrders = await prisma.order.count({
+    where: { restaurantId, isPaid: false, ...filter },
+  });
+  const totalPages = Math.ceil(countOrders / numberedLimit);
+  const ordersMapped = orders.map((order) => {
+    const orderMappedItem: DTO.CustomerOrderNotBotramItem = {
+      id: order.id,
+      createdAt: order.createdAt,
+      isGroup: order.isGroup,
+      customer: {
+        username: order.customer.username,
+        name: order.customer.name,
+        image: order.customer.avatar,
+      },
+      total: order.total,
+      status: order.status,
+      isPaid: order.isPaid,
+    };
+    if (order.isGroup) {
+      (orderMappedItem as DTO.CustomerOrderBotramItem).botramGroup = {
+        id: order.botramGroupMemberOrder!.botramGroupMember.botramGroupId,
+        name: order.botramGroupMemberOrder!.botramGroupMember.botramGroup.name,
+      }
+    }
+    return orderMappedItem;
+  });
+  const result: DTO.GetAllOrderResponse = {
+    orders: ordersMapped,
+    pages: totalPages,
+    total: countOrders, 
+  };
+  return result;
+};
 
 const findOrderDetailByCustomerUsername = async (
   req: Request
@@ -452,70 +455,70 @@ const findOrderDetailByCustomerUsername = async (
   return result;
 };
 
-const getDetailOrderById = async (req: Request):
-  Promise<DTO.GetDetailOrderResponse | Error> => {
-    const { id: restaurantId } = req.user as Pick<Restaurant, 'id' | 'email'>;
-    const { orderId } = req.params;
+const getDetailOrderById = async (
+  req: Request
+):Promise<DTO.GetDetailOrderResponse | Error> => {
+  const { id: restaurantId } = req.user as Pick<Restaurant, 'id' | 'email'>;
+  const { orderId } = req.params;
 
-    const foundCustomerOrder = await prisma.order.findUnique({
-      where: { id: orderId, restaurantId },
-      include: {
-        customer: {
-          select: {
-            username: true,
-            name: true,
-          },
-        },
-        orderedMenus: {
-          include: {
-            orderedMenuSpicyLevel: {
-              select: { level: true },
-            },
-          }
-        },
-        orderedCustomMenus: {
-          include: {
-            orderedCustomMenuSpicyLevel: {
-              select: { level: true },
-            },
-          }
+  const foundCustomerOrder = await prisma.order.findUnique({
+    where: { id: orderId, restaurantId },
+    include: {
+      customer: {
+        select: {
+          username: true,
+          name: true,
         },
       },
-    });
-
-    if (!foundCustomerOrder) {
-      const foundBotramOrder = await prisma.botramGroupOrder.findUnique({
-        where: { id: orderId, restaurantId },
+      orderedMenus: {
         include: {
-          botramGroup: {
-            include: {
-              creatorCustomer: {
-                select: {
-                  username: true,
-                  name: true,
-                }
-              },
-              members: {
-                include: {
-                  customer: {
-                    select: {
-                      username: true,
-                      name: true,
-                    },
+          orderedMenuSpicyLevel: {
+            select: { level: true },
+          },
+        }
+      },
+      orderedCustomMenus: {
+        include: {
+          orderedCustomMenuSpicyLevel: {
+            select: { level: true },
+          },
+        }
+      },
+    },
+  });
+
+  if (!foundCustomerOrder) {
+    const foundBotramOrder = await prisma.botramGroupOrder.findUnique({
+      where: { id: orderId, restaurantId },
+      include: {
+        botramGroup: {
+          include: {
+            creatorCustomer: {
+              select: {
+                username: true,
+                name: true,
+              }
+            },
+            members: {
+              include: {
+                customer: {
+                  select: {
+                    username: true,
+                    name: true,
                   },
-                  memberOrder: {
-                    include: {
-                      order: {
-                        include: {
-                          orderedMenus: {
-                            include: {
-                              orderedMenuSpicyLevel: true,
-                            }
-                          },
-                          orderedCustomMenus: {
-                            include: {
-                              orderedCustomMenuSpicyLevel: true,
-                            },
+                },
+                memberOrder: {
+                  include: {
+                    order: {
+                      include: {
+                        orderedMenus: {
+                          include: {
+                            orderedMenuSpicyLevel: true,
+                          }
+                        },
+                        orderedCustomMenus: {
+                          include: {
+                            orderedCustomMenuSpicyLevel: true,
                           },
                         },
                       },
@@ -526,61 +529,62 @@ const getDetailOrderById = async (req: Request):
             },
           },
         },
-      });
-
-      if (!foundBotramOrder) {
-        throw new NotFound('Order is not found.');
-      }
-
-      const botramMemberOrderMapped: DTO.BotramGroupOrderDetailResponse['memberOrder'] =
-        foundBotramOrder.botramGroup.members
-        .filter((member) => member.status === 'ORDER_READY')
-        .map((member) => ({
-          member: {
-            username: member.customer.username,
-            name: member.customer.name,
-          },
-          order: {
-            isPaid: member.memberOrder!.order.isPaid,
-            orderedMenu: orderedMenusMapping(member.memberOrder?.order.orderedMenus ?? []),
-            orderedCustomMenu: orderedCustomMenusMapping(member.memberOrder?.order.orderedCustomMenus ?? []),
-          },
-        }));
-
-      const result: DTO.BotramGroupOrderDetailResponse = {
-        id: foundBotramOrder.id,
-        createdAt: foundBotramOrder.createdAt,
-        isGroup: true,
-        botramGroup: {
-          id: foundBotramOrder.botramGroupId,
-          name: foundBotramOrder.botramGroup.name,
-          admin: {
-            username: foundBotramOrder.botramGroup.creatorCustomer.username,
-            name: foundBotramOrder.botramGroup.creatorCustomer.name,
-          },
-        },
-        status: foundBotramOrder.status,
-        isPaid: foundBotramOrder.isPaid,
-        memberOrder: botramMemberOrderMapped,
-      };
-      return result;
-    };
-
-    const result: DTO.CustomerOrderDetailResponse = {
-      id: foundCustomerOrder.id,
-      createdAt: foundCustomerOrder.createdAt,
-      isGroup: foundCustomerOrder.isGroup,
-      customer: {
-        username: foundCustomerOrder.customer.username,
-        name: foundCustomerOrder.customer.name,
       },
-      status: foundCustomerOrder.status,
-      isPaid: foundCustomerOrder.isPaid,
-      orderedMenu: orderedMenusMapping(foundCustomerOrder.orderedMenus),
-      orderedCustomMenu: orderedCustomMenusMapping(foundCustomerOrder.orderedCustomMenus),
+    });
+
+    if (!foundBotramOrder) {
+      throw new NotFound('Order is not found.');
+    }
+
+    const botramMemberOrderMapped: DTO.BotramGroupOrderDetailResponse['memberOrder'] =
+      foundBotramOrder.botramGroup.members
+      .filter((member) => member.status === 'ORDER_READY')
+      .map((member) => ({
+        member: {
+          username: member.customer.username,
+          name: member.customer.name,
+        },
+        order: {
+          isPaid: member.memberOrder!.order.isPaid,
+          orderedMenu: orderedMenusMapping(member.memberOrder?.order.orderedMenus ?? []),
+          orderedCustomMenu: orderedCustomMenusMapping(member.memberOrder?.order.orderedCustomMenus ?? []),
+        },
+      }));
+
+    const result: DTO.BotramGroupOrderDetailResponse = {
+      id: foundBotramOrder.id,
+      createdAt: foundBotramOrder.createdAt,
+      isGroup: true,
+      botramGroup: {
+        id: foundBotramOrder.botramGroupId,
+        name: foundBotramOrder.botramGroup.name,
+        admin: {
+          username: foundBotramOrder.botramGroup.creatorCustomer.username,
+          name: foundBotramOrder.botramGroup.creatorCustomer.name,
+        },
+      },
+      status: foundBotramOrder.status,
+      isPaid: foundBotramOrder.isPaid,
+      memberOrder: botramMemberOrderMapped,
     };
     return result;
   };
+
+  const result: DTO.CustomerOrderDetailResponse = {
+    id: foundCustomerOrder.id,
+    createdAt: foundCustomerOrder.createdAt,
+    isGroup: foundCustomerOrder.isGroup,
+    customer: {
+      username: foundCustomerOrder.customer.username,
+      name: foundCustomerOrder.customer.name,
+    },
+    status: foundCustomerOrder.status,
+    isPaid: foundCustomerOrder.isPaid,
+    orderedMenu: orderedMenusMapping(foundCustomerOrder.orderedMenus),
+    orderedCustomMenu: orderedCustomMenusMapping(foundCustomerOrder.orderedCustomMenus),
+  };
+  return result;
+};
 
 const updateCustomerOrderStatus = async (
   req: Request
@@ -638,7 +642,7 @@ const updateCustomerOrderStatus = async (
   if (body.status === 'ACCEPTED') {
     if (foundCustomerOrder.status !== 'READY_TO_ORDER') {
       throw new BadRequest(
-        'status body payload is invalid. ACCEPTED is allowed if status order is READY_TO_ORDER'
+        'status body payload is invalid. ACCEPTED is allowed if status order is READY_TO_ORDER.'
       );
     }
 
@@ -646,7 +650,7 @@ const updateCustomerOrderStatus = async (
     if (foundCustomerOrder.orderedMenus.length > 0) {
       foundCustomerOrder.orderedMenus.map(async (orderedMenu) => {
         if (orderedMenu.quantity > orderedMenu.menu.stock) {
-          throw new BadRequest('Menu stock is running out. Try again later.');
+          throw new BadRequest('Menu stock is running out. Please try again later.');
         }
         let orderedMenuTotalPrice = orderedMenu.totalPrice;
         if (orderedMenu.menuPrice !== orderedMenu.menu.price) {
@@ -670,7 +674,7 @@ const updateCustomerOrderStatus = async (
         orderedCustomMenu.customMenu.pickedCustomMenuCompositions.map((pickCustMenu) => {
           const isStockAvailable = pickCustMenu.qty > pickCustMenu.customMenuComposition.stock; 
           if (!isStockAvailable) {
-            throw new BadRequest('Item is run out of stock. Please try again later.');
+            throw new BadRequest('Custom Menu Composition is run out of stock. Please try again later.');
           }
           currentOrderedCustomMenuPrice += (pickCustMenu.customMenuComposition.price * pickCustMenu.qty);
         });
@@ -908,7 +912,7 @@ const updateBotramOrderStatus = async (
         if (member.memberOrder!.order.orderedMenus.length > 0) {
           member.memberOrder!.order.orderedMenus.map(async (orderedMenu) => {
             if (orderedMenu.quantity > orderedMenu.menu.stock) {
-              throw new BadRequest('Menu stock is running out. Try again later.');
+              throw new BadRequest('Menu stock is running out. Please try again later.');
             }
             let orderedMenuTotalPrice = orderedMenu.totalPrice;
             if (orderedMenu.menuPrice !== orderedMenu.menu.price) {
@@ -932,7 +936,7 @@ const updateBotramOrderStatus = async (
             orderedCustomMenu.customMenu.pickedCustomMenuCompositions.map((pickCustMenu) => {
               const isStockAvailable = pickCustMenu.qty > pickCustMenu.customMenuComposition.stock; 
               if (!isStockAvailable) {
-                throw new BadRequest('Item is run out of stock. Please try again later.');
+                throw new BadRequest('Custom Menu Composition is run out of stock. Please try again later.');
               }
               currentOrderedCustomMenuPrice += (pickCustMenu.customMenuComposition.price * pickCustMenu.qty);
             });

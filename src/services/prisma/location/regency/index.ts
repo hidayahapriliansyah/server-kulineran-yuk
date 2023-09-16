@@ -8,7 +8,7 @@ const getRegency = async (req: Request): Promise<DTO.RegencyResponse[] | Error> 
   const { province } = req.query;
 
   if(!province) {
-    throw new BadRequest('Invalid Request. province query is missing. Please check your input.');
+    throw new BadRequest('province query is missing.');
   }
 
   const regencies = await prisma.regency.findMany({
