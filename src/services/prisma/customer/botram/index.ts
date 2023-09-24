@@ -639,6 +639,13 @@ const updateGroupBotramStatusToAllReadyOrder = async (
     throw new NotFound('Botram group is not found.');
   }
 
+  const customerMembership = foundBotramGroup.members
+    .find((member) => member.customerId === customerId);
+
+  if (customerMembership!.status !== 'ORDER_READY') {
+    throw new BadRequest('Admin should have an order ready before change the status botram group order.');
+  }
+
   foundBotramGroup.members
     .filter((member) => member.status === 'ORDERING')
     .map(async (member) => {
