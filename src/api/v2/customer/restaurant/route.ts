@@ -7,7 +7,7 @@ import * as restaurantController from './controller';
 // route: /api/v2/restaurant
 const customerRestaurantRouter = Router();
 
-customerRestaurantRouter.get('/:restaurantUsername', 
+customerRestaurantRouter.get('/:restaurantUsername',
   authenticationCustomerAccount,
   isEmailCustomerVerified,
   restaurantController.findRestaurantByUsername,
@@ -20,7 +20,7 @@ customerRestaurantRouter.post('/:restaurantUsername/reviews',
   isEmailCustomerVerified,
   restaurantController.createRestaurantReviews,
 );
-customerRestaurantRouter.put('/:restaurantUsername/reviews/:reviewId', 
+customerRestaurantRouter.put('/:restaurantUsername/reviews/:reviewId',
   authenticationCustomerAccount,
   isEmailCustomerVerified,
   restaurantController.updateRestaurantReviews,

@@ -3,20 +3,20 @@ import { z } from 'zod';
 
 const updateCustomerProfileBodySchema = z.object({
   avatar: z.string({
-      invalid_type_error: 'Avatar harus diisi dengan url gambar avatar.',
-    })
+    invalid_type_error: 'Avatar harus diisi dengan url gambar avatar.',
+  })
     .url('Avatar harus diisi dengan url gambar avatar.')
     .optional(),
   username: z.string({
-      invalid_type_error: 'Username harus berupa string.',
-    })
+    invalid_type_error: 'Username harus berupa string.',
+  })
     .regex(/^[a-z0-9._']+$/, 'Silakan gunakan karakter a-z 0-9 . _ \'')
     .min(3, 'Username minimal memiliki 3 karakter.')
     .max(30, 'Username maksimal memiliki 30 karakter.')
     .optional(),
   name: z.string({
-      invalid_type_error: 'Nama harus berupa string.',
-    })
+    invalid_type_error: 'Nama harus berupa string.',
+  })
     .regex(/^[a-zA-Z.,_\s-]+$/, 'Silakan gunakan karakter a-z A-Z 0-9 . , _ -')
     .min(3, 'Nama minimal memiliki 3 karakter.')
     .max(50, 'Nama maksimal memiliki 50 karakter.')
@@ -25,11 +25,11 @@ const updateCustomerProfileBodySchema = z.object({
 
 const updateCustomerJoinBotramMethodBodySchema = z.object({
   joinBotram: z.string({
-      required_error: 'Status joinBotram harus diisi.',
-      invalid_type_error: 'Status valid antara \'directly\', \'invitation\', \'byself\''
-    })
+    required_error: 'Status joinBotram harus diisi.',
+    invalid_type_error: 'Status valid antara \'directly\', \'invitation\', \'byself\''
+  })
     .refine((value) => ['DIRECTLY', 'INVITATION', 'BYSELF'].includes(value), {
-      message: 'Status valid antara \'directly\', \'invitation\', \'byself\'',
+      message: 'Status valid antara \'DIRECTLY\', \'INVITATION\', \'BYSELF\'',
     }),
 });
 

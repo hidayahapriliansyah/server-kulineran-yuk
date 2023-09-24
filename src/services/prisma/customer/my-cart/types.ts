@@ -9,29 +9,29 @@ type GetMyCartResponse = {
 
 const addMenuToMyCartBodySchema = z.object({
   menu: z.object({
-      isCustomMenu: z.boolean({
-        required_error: 'isCustomMenu wajib diisi.',
-        invalid_type_error: 'isCustomMenu harus berupa boolean.',
-      }),
-      id: z.string({
-        required_error: 'id harus diisi.',
-        invalid_type_error: 'id harus berupa string.',
-      }),
-    }, {
-      required_error: 'menu wajib diisi.',
-      invalid_type_error: 'menu harus berupa objek.'
+    isCustomMenu: z.boolean({
+      required_error: 'isCustomMenu wajib diisi.',
+      invalid_type_error: 'isCustomMenu harus berupa boolean.',
     }),
+    id: z.string({
+      required_error: 'id harus diisi.',
+      invalid_type_error: 'id harus berupa string.',
+    }),
+  }, {
+    required_error: 'menu wajib diisi.',
+    invalid_type_error: 'menu harus berupa objek.'
+  }),
   isDibungkus: z.boolean({
-      required_error: 'isDibungkus harus diisi.',
-      invalid_type_error: 'isDibungkus harus berupa boolean.',
-    }),
+    required_error: 'isDibungkus harus diisi.',
+    invalid_type_error: 'isDibungkus harus berupa boolean.',
+  }),
   quantity: z.number({
-      required_error: 'quantity harus diisi.',
-      invalid_type_error: 'quantity harus berupa number.',
-    }),
+    required_error: 'quantity harus diisi.',
+    invalid_type_error: 'quantity harus berupa number.',
+  }),
   spicyLevel: z.number({
-      invalid_type_error: 'spicyLevel harus berupa number.'
-    })
+    invalid_type_error: 'spicyLevel harus berupa number.'
+  })
     .positive('spicyLevel harus bernilai lebih dari 0')
     .optional(),
 });
@@ -77,19 +77,19 @@ type UpdateQtyOfMyCartItemResponse = {
 
 const itemBulkDeletionBodySchema = z.object({
   itemIds: z.array(z.object({
-      isCustomMenu: z.boolean({
-          required_error: 'isCustomMenu harus diisi.',
-          invalid_type_error: 'isCustomMenu harus berupa boolean.'
-        }),
-      id: z.string({
-        required_error: 'id harus diisi.',
-        invalid_type_error: 'id harus berupa string.'
-      }),
-    }), {
-      required_error: 'itemIds harus diisi.',
-      invalid_type_error: 'itemIds harus berupa array.',
-    }).min(1, 'itemIds setidaknya memiliki 1 item'),
-}); 
+    isCustomMenu: z.boolean({
+      required_error: 'isCustomMenu harus diisi.',
+      invalid_type_error: 'isCustomMenu harus berupa boolean.'
+    }),
+    id: z.string({
+      required_error: 'id harus diisi.',
+      invalid_type_error: 'id harus berupa string.'
+    }),
+  }), {
+    required_error: 'itemIds harus diisi.',
+    invalid_type_error: 'itemIds harus berupa array.',
+  }).min(1, 'itemIds setidaknya memiliki 1 item'),
+});
 
 type ItemBulkDeletionBodyRequest = z.infer<typeof itemBulkDeletionBodySchema>;
 

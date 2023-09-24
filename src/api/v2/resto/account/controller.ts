@@ -45,7 +45,7 @@ const createResetPasswordRequest = async (
 
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Success sending reset password request to system'));
+      .json(new SuccessAPIResponse('Success sending reset password request to system.'));
   } catch (error: any) {
     next(error);
   }

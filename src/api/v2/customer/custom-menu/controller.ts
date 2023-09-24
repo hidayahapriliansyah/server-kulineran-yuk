@@ -31,7 +31,9 @@ const createCustomMenu = async (
 
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Creating custom menu successfully.', result));
+      .json(new SuccessAPIResponse('Creating custom menu successfully.', {
+        customMenuId: result,
+      }));
   } catch (error: any) {
     next(error);
   }

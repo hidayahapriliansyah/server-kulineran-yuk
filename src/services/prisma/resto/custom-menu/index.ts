@@ -1,6 +1,6 @@
 import { Request } from 'express';
 
-import { CustomMenuCategory, Restaurant } from '@prisma/client';
+import { CustomMenuCategory, Prisma, Restaurant } from '@prisma/client';
 import prisma from '../../../../db';
 import * as DTO from './types';
 import { BadRequest, NotFound } from '../../../../errors';
@@ -95,7 +95,7 @@ const updateCustomMenuCategory = async (
   }
 
   const customMenuCategoryHasSpicyLevel =
-    await prisma.customMenuCategorySpicyLevel.findUnique({ 
+    await prisma.customMenuCategorySpicyLevel.findUnique({
       where: {
         customMenuCategoryId: categoryId,
       },
@@ -160,7 +160,7 @@ const deleteCustomMenuCategory = async (
 
 const getAllCustomMenuComposition = async (
   req: Request
-): Promise<DTO.GetCustomMenuCompositionsWithPaginated | Error>=> {
+): Promise<DTO.GetCustomMenuCompositionsWithPaginated | Error> => {
   const { id: restaurantId } = req.user as Pick<Restaurant, 'id' | 'email'>;
   const { limit = '10', page = '1', category, name }: {
     limit?: string,
@@ -174,14 +174,14 @@ const getAllCustomMenuComposition = async (
   if (isNaN(numberedLimit) || isNaN(numberedPage)) {
     throw new BadRequest('page or limit query is not number.');
   }
-  let filter = {};
+  let filter: Prisma.CustomMenuCompositionWhereInput = {};
   if (category) {
     filter = { ...filter, customMenuCategoryId: category };
   }
   if (name) {
     filter = {
       ...filter,
-      name: { $regex: name, $options: 'i' },
+      name: { contains: name },
     };
   }
 
@@ -280,7 +280,7 @@ const updateCustomMenuComposition = async (
     throw new BadRequest('compositionId param is missing.');
   }
 
-  const body: DTO.CustomMenuCompositionBody = 
+  const body: DTO.CustomMenuCompositionBody =
     DTO.customMenuCompositionBodySchema.parse(req.body);
 
   const customMenuCategoryExist = await prisma.customMenuCategory.findUnique({
@@ -304,7 +304,7 @@ const updateCustomMenuComposition = async (
   });
 
   if (!updatedCustomMenuComposition) {
-    throw new NotFound('Custom Menu Category is not found.');
+    throw new NotFound('Custom Menu Composition is not found.');
   }
 
   return updatedCustomMenuComposition.id;

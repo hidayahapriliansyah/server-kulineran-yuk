@@ -16,7 +16,7 @@ const getProfile = async (
 
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Get restaurant profile data successfully', result ));
+      .json(new SuccessAPIResponse('Get restaurant profile data successfully.', result));
   } catch (error: any) {
     next(error);
   }
@@ -32,7 +32,7 @@ const updateProfile = async (
 
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Update restaurant profile data successfully', { userId: result }));
+      .json(new SuccessAPIResponse('Update restaurant profile data successfully.', { userId: result }));
   } catch (error: any) {
     next(error);
   }
@@ -48,7 +48,7 @@ const setupProfile = async (
 
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Update restaurant profile data successfully', { userId: result }));
+      .json(new SuccessAPIResponse('Update restaurant profile data successfully.', { userId: result }));
   } catch (error: any) {
     next(error);
   }
@@ -66,7 +66,7 @@ const updateCustomerPaymentType = async (
       .status(StatusCodes.OK)
       .json(
         new SuccessAPIResponse(
-          'Update restaurant customer payment type successfully', 
+          'Update restaurant customer payment type successfully.',
           { userId: result }
         )
       );

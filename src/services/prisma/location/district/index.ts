@@ -5,20 +5,20 @@ import { BadRequest, NotFound } from '../../../../errors';
 import prisma from '../../../../db';
 
 const getDistrict = async (req: Request): Promise<DTO.districtResponse[] | Error> => {
-  const { regency } = req.query;
+  const { regencyId } = req.query;
 
-  if(!regency) {
+  if(!regencyId) {
     throw new BadRequest('regency query is missing.');
   }
 
   const districts = await prisma.district.findMany({
     where: {
-      regencyId: regency as string,
+      regencyId: regencyId as string,
     },
   })
 
   if(districts.length === 0) {
-    throw new NotFound(`Resource not found. regency id ${regency} is not exist`);
+    throw new NotFound(`Resource not found. regency id ${regencyId} is not exist`);
   }
 
   const result: DTO.districtResponse[] = districts.map((district) => ({

@@ -8,7 +8,7 @@ import * as customMenuController from './controller';
 const restoCustomMenuRouter = Router();
 
 // middleware
-restoCustomMenuRouter.use(authenticationAdminRestoAccount, minimumSetupAccount, isEmailRestoVerified,); 
+restoCustomMenuRouter.use(authenticationAdminRestoAccount, minimumSetupAccount, isEmailRestoVerified,);
 
 restoCustomMenuRouter.get('/categories', customMenuController.getAllCustomMenuCategory);
 restoCustomMenuRouter.post('/categories', customMenuController.createCustomMenuCategory);

@@ -32,7 +32,7 @@ const createCustomMenuCategory = async (
     const result = await customMenuService.createCustomMenuCategory(req) as CustomMenuCategory['id'];
     res
       .status(StatusCodes.CREATED)
-      .json(new SuccessAPIResponse('Creating menu successfully', {
+      .json(new SuccessAPIResponse('Creating menu successfully.', {
         customMenuCategoryId: result,
       }));
   } catch (error: any) {
@@ -48,7 +48,7 @@ const getSpecificCustomMenuCategory = async (
   try {
     const result = await customMenuService.getSpecificCustomMenuCategory(req) as DTO.CustomMenuCategoryResponse;
 
-    res 
+    res
       .status(StatusCodes.OK)
       .json(new SuccessAPIResponse('Success to get custom menu category data.', result));
   } catch (error: any) {
@@ -64,7 +64,7 @@ const updateCustomMenuCategory = async (
   try {
     const result = await customMenuService.updateCustomMenuCategory(req) as DTO.CustomMenuCategoryResponse['id'];
 
-    res 
+    res
       .status(StatusCodes.OK)
       .json(new SuccessAPIResponse('Updating category custom menu successfully.', {
         customMenuCategoryId: result,
@@ -82,7 +82,7 @@ const deleteCustomMenuCategory = async (
   try {
     const result = await customMenuService.deleteCustomMenuCategory(req) as DTO.CustomMenuCategoryResponse['id'];
 
-    res 
+    res
       .status(StatusCodes.OK)
       .json(new SuccessAPIResponse('Success to delete custom menu category data.', {
         customMenuCategoryId: result,
@@ -125,8 +125,8 @@ const createCustomMenuComposition = async (
 
     res
       .status(StatusCodes.CREATED)
-      .json(new SuccessAPIResponse('Creating menu successfully', {
-        customMenuCategoryId: result,
+      .json(new SuccessAPIResponse('Creating menu successfully.', {
+        customMenuCompositionId: result,
       }));
   } catch (error: any) {
     next(error);
@@ -144,7 +144,7 @@ const getSpecificCustomMenuComposition = async (
 
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Get custom menu composition successfully', result));
+      .json(new SuccessAPIResponse('Get custom menu composition successfully.', result));
   } catch (error: any) {
     next(error);
   }
@@ -161,8 +161,8 @@ const updateCustomMenuComposition = async (
 
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Updating custom menu composition successfully', {
-        customMenuCategoryId: result,
+      .json(new SuccessAPIResponse('Updating custom menu composition successfully.', {
+        customMenuCompositionId: result,
       }));
   } catch (error: any) {
     next(error);
@@ -180,8 +180,8 @@ const deleteCustomMenuComposition = async (
 
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Deleting custom menu composition successfully', {
-        customMenuCategoryId: result,
+      .json(new SuccessAPIResponse('Deleting custom menu composition successfully.', {
+        customMenuCompositionId: result,
       }));
   } catch (error: any) {
     next(error);

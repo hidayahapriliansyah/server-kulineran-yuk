@@ -124,8 +124,8 @@ type BotramGroupOrderDetailResponse = {
     },
     order: {
       isPaid: Order['isPaid'],
-      orderedMenu: OrderedMenuDetailResponse[] |[],
-      orderedCustomMenu: OrderedCustomMenuDetailResponse[] |[],
+      orderedMenu: OrderedMenuDetailResponse[] | [],
+      orderedCustomMenu: OrderedCustomMenuDetailResponse[] | [],
     },
   }[],
 };

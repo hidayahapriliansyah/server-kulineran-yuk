@@ -31,7 +31,7 @@ const addMenuWishlist = async (
 
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Adding menu to wishlist successfully', {
+      .json(new SuccessAPIResponse('Adding menu to wishlist successfully.', {
         wishlistId: result,
       }));
   } catch (error: any) {
@@ -49,7 +49,7 @@ const isMenuInWishlist = async (
 
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Checking successfully', result));
+      .json(new SuccessAPIResponse('Checking successfully.', result));
   } catch (error: any) {
     next(error);
   }
@@ -65,7 +65,7 @@ const removeMenuFromWishlist = async (
 
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Checking successfully', {
+      .json(new SuccessAPIResponse('Remove menu from wishlist successfully.', {
         wishlistId: result,
       }));
   } catch (error: any) {

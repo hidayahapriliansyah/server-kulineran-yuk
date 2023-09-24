@@ -51,8 +51,8 @@ const getProfile = async (
       villageId: foundRestaurant.address?.villageId ?? null,
     },
     bussinessHours: {
-      closingHours: foundRestaurant.closingHour,
-      openingHours: foundRestaurant.openingHour,
+      closingHour: foundRestaurant.closingHour,
+      openingHour: foundRestaurant.openingHour,
       daysOff: foundRestaurant.daysOff,
     },
     contact: foundRestaurant.contact,
@@ -100,7 +100,7 @@ const updateProfile = async (
   });
 
   const restaurantAddressExist =
-    await prisma.restaurantAddress.findUnique({ where: { restaurantId }});
+    await prisma.restaurantAddress.findUnique({ where: { restaurantId } });
 
   if (body.villageId) {
     const villageDetail = await prisma.village.findUnique({

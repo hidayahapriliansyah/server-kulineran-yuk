@@ -16,7 +16,7 @@ const getAllEtalase = async (
     const result = await menuService.getAllEtalase(req);
     res
       .status(StatusCodes.CREATED)
-      .json(new SuccessAPIResponse('Success to get menus data.', result));
+      .json(new SuccessAPIResponse('Success to get elatase data.', result));
   } catch (error: any) {
     next(error);
   }
@@ -98,7 +98,7 @@ const createRestaurantMenu = async (
 
     res
       .status(201)
-      .json(new SuccessAPIResponse('Creating menu successfully', { menuId: result }));
+      .json(new SuccessAPIResponse('Creating menu successfully.', { menuId: result }));
   } catch (error: any) {
     next(error);
   }
@@ -113,7 +113,7 @@ const getRestaurantMenuBySlug = async (
     const result = await menuService.getRestaurantMenuBySlug(req) as DTO.RestaurantMenuResponse;
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Success to get menu data', result));
+      .json(new SuccessAPIResponse('Success to get menu data.', result));
   } catch (error: any) {
     next(error);
   }
@@ -128,7 +128,7 @@ const updateRestaurantMenu = async (
     const result = await menuService.updateRestaurantMenu(req) as Menu['id'];
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Updating menu successfully', {
+      .json(new SuccessAPIResponse('Updating menu successfully.', {
         menuId: result,
       }));
   } catch (error: any) {
@@ -145,7 +145,7 @@ const deleteRestaurantMenu = async (
     const result = await menuService.deleteRestaurantMenu(req) as Menu['id'];
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Deleting menu successfully', {
+      .json(new SuccessAPIResponse('Deleting menu successfully.', {
         menuId: result
       }));
   } catch (error: any) {

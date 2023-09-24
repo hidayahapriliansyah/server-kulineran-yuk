@@ -15,9 +15,9 @@ restoReviewsRouter.use(
 );
 
 restoReviewsRouter.get('/', restoReviewController.getAllRestaurantReviews);
-restoReviewsRouter.get('/reviewId', restoReviewController.getDetailReviewById);
-restoReviewsRouter.post('/reviewId/reply', restoReviewController.createReviewResponse);
-restoReviewsRouter.put('/responseId/reply', restoReviewController.updateReviewResponse);
-restoReviewsRouter.delete('/responseId/reply', restoReviewController.deleteReviewResponse);
+restoReviewsRouter.get('/:reviewId', restoReviewController.getDetailReviewById);
+restoReviewsRouter.post('/:reviewId/reply', restoReviewController.createReviewResponse);
+restoReviewsRouter.put('/:responseId/reply', restoReviewController.updateReviewResponse);
+restoReviewsRouter.delete('/:responseId/reply', restoReviewController.deleteReviewResponse);
 
 export default restoReviewsRouter;

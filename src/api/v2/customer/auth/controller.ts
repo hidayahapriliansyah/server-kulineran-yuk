@@ -21,7 +21,7 @@ const signupForm = async (
     const result = await authService.signupForm(req) as Customer['id'];
     res
       .status(StatusCodes.CREATED)
-      .json(new SuccessAPIResponse('Signup successfully', {
+      .json(new SuccessAPIResponse('Signup successfully.', {
         userId: result,
       }));
   } catch (error: any) {

@@ -81,7 +81,7 @@ const createRestaurantReviews = async (
 
     res
       .status(StatusCodes.CREATED)
-      .json(new SuccessAPIResponse('Creating review successfully', {
+      .json(new SuccessAPIResponse('Creating review successfully.', {
         reviewId: result,
       }));
   } catch (error: any) {
@@ -99,7 +99,7 @@ const updateRestaurantReviews = async (
 
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Updating review successfully', {
+      .json(new SuccessAPIResponse('Updating review successfully.', {
         reviewId: result,
       }));
   } catch (error: any) {
@@ -117,7 +117,7 @@ const deleteRestaurantReviews = async (
 
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Deleting review successfully', {
+      .json(new SuccessAPIResponse('Deleting review successfully.', {
         reviewId: result,
       }));
   } catch (error: any) {

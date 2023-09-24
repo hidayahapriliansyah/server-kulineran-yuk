@@ -29,7 +29,7 @@ const addMenuToMyCart = async (
     const result = await myCartService.addMenuToMyCart(req);
 
     res
-      .status(StatusCodes.OK)
+      .status(StatusCodes.CREATED)
       .json(new SuccessAPIResponse('Add item to cart successfully.', {
         cartItemId: result,
       }));
@@ -64,7 +64,7 @@ const updateQtyOfMyCartItem = async (
 
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Get cart only from my cart successfully.', result));
+      .json(new SuccessAPIResponse('Update qty of my cart item successfully.', result));
   } catch (error: any) {
     next(error);
   }

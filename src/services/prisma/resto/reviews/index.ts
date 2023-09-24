@@ -18,20 +18,20 @@ const getAllRestaurantReviews = async (
   const numberedLimit = 10;
   const numberedPage = Number(page);
   if (isNaN(numberedPage)) {
-    throw new BadRequest('page query is not number');
+    throw new BadRequest('page query is not number.');
   }
 
   let reviewWhereInput: Prisma.RestaurantReviewWhereInput = {};
   if (rating) {
     if (!['1', '2', '3', '4', '5'].includes(rating)) {
-      throw new BadRequest('rating query is not valid');
+      throw new BadRequest('rating query is not valid.');
     }
     const numberedRating = Number(rating);
     reviewWhereInput = { ...reviewWhereInput, rating: numberedRating };
   }
   if (isReplied) {
     if (!['0', '1'].includes(isReplied)) {
-      throw new BadRequest('isReplied query is not valid');
+      throw new BadRequest('isReplied query is not valid.');
     }
     const isRepliedBoolean = Boolean(Number(isReplied));
     reviewWhereInput = { ...reviewWhereInput, isReplied: isRepliedBoolean };
@@ -170,10 +170,10 @@ const updateReviewResponse = async (
       restaurantReview: true,
     }
   });
-  if (!foundReviewResponse) {
-    throw new NotFound('Review response is not found.');
-  }
-  if (foundReviewResponse.restaurantReview.restaurantId !== restaurantId ) {
+  if (
+    !foundReviewResponse ||
+    (foundReviewResponse.restaurantReview.restaurantId !== restaurantId)
+  ) {
     throw new NotFound('Review response is not found.');
   }
 
@@ -199,10 +199,9 @@ const deleteReviewResponse = async (
       restaurantReview: true,
     }
   });
-  if (!foundReviewResponse) {
-    throw new NotFound('Review response is not found.');
-  }
-  if (foundReviewResponse.restaurantReview.restaurantId !== restaurantId ) {
+  if (!foundReviewResponse ||
+    (foundReviewResponse.restaurantReview.restaurantId !== restaurantId)
+  ) {
     throw new NotFound('Review response is not found.');
   }
 

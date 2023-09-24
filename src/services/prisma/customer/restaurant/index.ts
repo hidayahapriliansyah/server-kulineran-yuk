@@ -51,10 +51,10 @@ const getRestaurantProfile = async (
 
   const isOpen = restaurant.openingHour && restaurant.closingHour
     ? checkRestaurantIsOpenNow({
-        openingHour: restaurant.openingHour,
-        closingHour: restaurant.closingHour,
-        daysoff: restaurant.daysOff,
-      })
+      openingHour: restaurant.openingHour,
+      closingHour: restaurant.closingHour,
+      daysoff: restaurant.daysOff,
+    })
     : null;
 
   const countRestaurantReview = await prisma.restaurantReview.count({
@@ -142,18 +142,18 @@ const getAllRestaurantMenus = async (
       where: { id: etalaseId },
     });
     if (!findEtalase) {
-    throw new NotFound('Etalase is not found.');
+      throw new NotFound('Etalase is not found.');
     }
     filter = { ...filter, etalaseId };
   }
 
   const menus = await prisma.menu.findMany({
-    where: { restaurantId: restaurant.id , ...filter },
+    where: { restaurantId: restaurant.id, ...filter },
     take: numberedLimit,
     skip: numberedLimit * (numberedPage - 1),
   });
 
-  const countMenus = await prisma.menu.count({ where: { restaurantId: restaurant.id , ...filter } });
+  const countMenus = await prisma.menu.count({ where: { restaurantId: restaurant.id, ...filter } });
   const totalPages = Math.ceil(countMenus / numberedLimit);
 
   if (numberedPage !== 1 && numberedPage > totalPages) {
@@ -210,7 +210,7 @@ const getAllRestaurantReviews = async (
   }
 
   let sort: {
-    [key in 'rating' | 'createdAt']?: 'asc' | 'desc'; 
+    [key in 'rating' | 'createdAt']?: 'asc' | 'desc';
   } = {};
   if (sortBy === 'lowestrating') {
     sort = { rating: 'asc' };
@@ -234,7 +234,7 @@ const getAllRestaurantReviews = async (
       include: {
         customer: {
           select: { username: true, name: true },
-        }  
+        }
       },
     });
     if (findCustomerReview) {
@@ -249,12 +249,12 @@ const getAllRestaurantReviews = async (
           everShoppingHere: findCustomerReview.hasCustomerBeenShoppingHere,
         },
       };
-    } 
+    }
     filter = { ...filter, customerId: { not: customerId } };
   }
   if (rating) {
     if (!['1', '2', '3', '4', '5'].includes(rating)) {
-      throw new BadRequest('rating query is not  number of 1-5');
+      throw new BadRequest('rating query is not  number of 1-5.');
     }
     filter = { ...filter, rating: Number(rating) };
   }
@@ -308,13 +308,13 @@ const createRestaurantReviews = async (
     throw new NotFound('Restaurant is not Found.');
   }
 
-  const body: DTO.RestaurantReviewBody = 
+  const body: DTO.RestaurantReviewBody =
     DTO.restaurantReviewBodySchema.parse(req.body);
 
   const hasCustomerBeenShoppingHere = await prisma.order.findFirst({
-      where: { customerId, restaurantId: restaurant.id, status: 'ACCEPTED_BY_CUSTOMER' },
-    })
-  ? true : false;
+    where: { customerId, restaurantId: restaurant.id, status: 'ACCEPTED_BY_CUSTOMER' },
+  })
+    ? true : false;
   const createdReview = await prisma.restaurantReview.create({
     data: {
       customerId,
@@ -338,6 +338,9 @@ const updateRestaurantReviews = async (
   if (!reviewId) {
     throw new BadRequest('reviewId param is missing.');
   }
+  if (!restaurantUsername) {
+    throw new BadRequest('restaurantUsername param is missing.');
+  }
   const restaurant = await prisma.restaurant.findUnique({
     where: { username: restaurantUsername },
   });
@@ -345,13 +348,13 @@ const updateRestaurantReviews = async (
     throw new NotFound('Restaurant is not Found.');
   }
 
-  const body: DTO.RestaurantReviewBody = 
+  const body: DTO.RestaurantReviewBody =
     DTO.restaurantReviewBodySchema.parse(req.body);
 
   const hasCustomerBeenShoppingHere = await prisma.order.findFirst({
-      where: { customerId, restaurantId: restaurant.id, status: 'ACCEPTED_BY_CUSTOMER' },
-    })
-  ? true : false;
+    where: { customerId, restaurantId: restaurant.id, status: 'ACCEPTED_BY_CUSTOMER' },
+  })
+    ? true : false;
   const updatedReview = await prisma.restaurantReview.update({
     where: { id: reviewId, restaurantId: restaurant.id, customerId },
     data: {

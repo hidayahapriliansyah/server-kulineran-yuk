@@ -100,7 +100,7 @@ const exitFromBotramGroupForMemberOnly = async (
   try {
     const result =
       await botramService.exitFromBotramGroupForMemberOnly(req) as BotramGroupMember['id'];
-    
+
     res
       .status(StatusCodes.OK)
       .json(new SuccessAPIResponse('Exit botram group successfully.', {
@@ -137,7 +137,7 @@ const kickMemberBotramGroupByAdmin = async (
 
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Expel member successfully', {
+      .json(new SuccessAPIResponse('Expel member successfully.', {
         memberId: result,
       }));
   } catch (error: any) {
@@ -175,8 +175,27 @@ const updateGroupBotramStatusToAllReadyOrder = async (
 
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Update member payment status successfully.', {
-        memberId: result,
+      .json(new SuccessAPIResponse('Update botram group status to all ready order successfully.', {
+        botramGroupId: result,
+      }));
+  } catch (error: any) {
+    next(error);
+  }
+};
+
+const createBotramMemberOrder = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const result =
+      await botramService.createBotramMemberOrder(req);
+
+    res
+      .status(StatusCodes.OK)
+      .json(new SuccessAPIResponse('Create member order successfully.', {
+        botramMemberOrderId: result,
       }));
   } catch (error: any) {
     next(error);
@@ -194,4 +213,5 @@ export {
   kickMemberBotramGroupByAdmin,
   updateMemberStatusPaymentByAdmin,
   updateGroupBotramStatusToAllReadyOrder,
+  createBotramMemberOrder,
 };

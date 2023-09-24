@@ -10,6 +10,10 @@ import {
   OrderedMenuSpicyLevel,
   Restaurant,
 } from '@prisma/client';
+import {
+  OrderedMenuPayload,
+  OrderedCustomMenuPayload,
+} from '../orders/types';
 
 type BotramResponse = {
   id: BotramGroup['id'],
@@ -32,25 +36,24 @@ type FindCustomerResponse = Pick<Customer, 'id' | 'username' | 'name' | 'avatar'
 
 const createBotramGroupBodySchema = z.object({
   restaurantId: z.string({
-      required_error: 'restaurantId harus diisi.',
-      invalid_type_error: 'restaurantId harus berupa string.',
-    }),
+    required_error: 'restaurantId harus diisi.',
+    invalid_type_error: 'restaurantId harus berupa string.',
+  }),
   name: z.string({
-      required_error: 'name harus diisi.',
-      invalid_type_error: 'name harus berupa string.',
-    })
+    required_error: 'name harus diisi.',
+    invalid_type_error: 'name harus berupa string.',
+  })
     .nonempty('Nama minimal memiliki 1 karakter.')
     .max(30, 'Nama maksimal memiliki 30 karakter.'),
   members: z.array(z.object({
-      id: z.string({
-        required_error: 'id customer harus diisi.',
-        invalid_type_error: 'id harus berupa string.',
-      }),
-    }), {
-      required_error: 'members harus diisi.',
-      invalid_type_error: 'members harus berupa array.',
-    })
-    .nonempty('Members minimal memiliki 1 anggota untuk dimasukkan.')
+    id: z.string({
+      required_error: 'id customer harus diisi.',
+      invalid_type_error: 'id harus berupa string.',
+    }),
+  }), {
+    required_error: 'members harus diisi.',
+    invalid_type_error: 'members harus berupa array.',
+  })
     .max(50, 'Anggota members maksimal 50 orang.'),
 });
 
@@ -109,6 +112,33 @@ type GetMemberAndMemberOrderBotramGroup = {
   members: MemberOrder[] | [],
 };
 
+const createBotramMemberOrderBodyRequestSchema = z.object({
+  customerNote: z.string({
+    invalid_type_error: 'customerNote harus berupa string.',
+  }).max(100, 'customerNote maksimal memiliki 100 karakter.').nullable().optional(),
+  orderedItemList: z.object({
+    menu: z.array(z.object({
+      id: z.string(),
+      quantity: z.number(),
+      isDibungkus: z.boolean(),
+      spicyLevel: z.number().positive().nullable().optional(),
+    }), {
+      required_error: 'menu harus diisi.',
+    }),
+    customMenu: z.array(z.object({
+      id: z.string(),
+      quantity: z.number(),
+      isDibungkus: z.boolean(),
+      spicyLevel: z.number().positive().nullable().optional(),
+    })),
+  }, {
+    required_error: 'orderedItemList harus diisi.',
+    invalid_type_error: 'orderedItemList harus berupa object.',
+  }),
+});
+
+type CreateBotramMemberOrderBodyRequest = z.infer<typeof createBotramMemberOrderBodyRequestSchema>;
+
 export {
   BotramResponse,
   createBotramGroupBodySchema,
@@ -116,4 +146,8 @@ export {
   FindCustomerResponse,
   GetAllCustomerBotramGroupResponse,
   GetMemberAndMemberOrderBotramGroup,
+  createBotramMemberOrderBodyRequestSchema,
+  CreateBotramMemberOrderBodyRequest,
+  OrderedMenuPayload,
+  OrderedCustomMenuPayload,
 };

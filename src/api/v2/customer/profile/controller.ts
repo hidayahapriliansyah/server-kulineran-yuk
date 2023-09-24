@@ -12,7 +12,7 @@ const getCustomerProfile = async (
 ): Promise<void> => {
   try {
     const result =
-      await profileService.getCustomerProfile(req) as DTO.CustomerProfileResponse ;
+      await profileService.getCustomerProfile(req) as DTO.CustomerProfileResponse;
 
     res
       .status(StatusCodes.OK)
@@ -29,11 +29,11 @@ const updateCustomerProfile = async (
 ): Promise<void> => {
   try {
     const result =
-      await profileService.updateCustomerProfile(req) as DTO.CustomerProfileResponse['id'] ;
+      await profileService.updateCustomerProfile(req) as DTO.CustomerProfileResponse['id'];
 
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Update profile successfully', {
+      .json(new SuccessAPIResponse('Update profile successfully.', {
         userId: result,
       }));
   } catch (error: any) {
@@ -52,7 +52,7 @@ const updateCustomerJoinBotramMethod = async (
 
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Update join botram method successfully', {
+      .json(new SuccessAPIResponse('Update join botram method successfully.', {
         userId: result,
       }));
   } catch (error: any) {

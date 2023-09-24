@@ -30,22 +30,22 @@ const getBotramCart = async (
   });
   const botramMenuCarts = botramGroupMembership?.botramGroupMenuCarts ?? [];
   const botramCustomMenuCarts = botramGroupMembership?.botramGroupCustomMenuCarts ?? [];
-  const allOfBotramCart = [ ...botramMenuCarts, ...botramCustomMenuCarts ];
+  const allOfBotramCart = [...botramMenuCarts, ...botramCustomMenuCarts];
 
   const result: DTO.GetBotramCartResponse = botramGroupMembership
-  ? {
-    botramGroup: {
-      name: botramGroupMembership.botramGroup.name,
-      resturant: {
-        id: botramGroupMembership.botramGroup.restaurantId,
-        username: botramGroupMembership.botramGroup.restaurant.username,
-        name: botramGroupMembership.botramGroup.restaurant.name,
-        image: botramGroupMembership.botramGroup.restaurant.avatar,
-      }
-    },
-    totalCartItem: allOfBotramCart.length,
-  }
-  : null;
+    ? {
+      botramGroup: {
+        name: botramGroupMembership.botramGroup.name,
+        resturant: {
+          id: botramGroupMembership.botramGroup.restaurantId,
+          username: botramGroupMembership.botramGroup.restaurant.username,
+          name: botramGroupMembership.botramGroup.restaurant.name,
+          image: botramGroupMembership.botramGroup.restaurant.avatar,
+        }
+      },
+      totalCartItem: allOfBotramCart.length,
+    }
+    : null;
   return result;
 };
 
@@ -75,7 +75,7 @@ const addMenuToBotramCart = async (
       },
     });
     if (!foundCustomMenu) {
-      throw new NotFound('Menu is not found.');
+      throw new NotFound('Custom Menu is not found.');
     }
     foundCustomMenu.pickedCustomMenuCompositions.map((pickedComposition) => {
       const compareStock = pickedComposition.qty * body.quantity;
@@ -142,7 +142,7 @@ const getItemsByBotramGroup = async (
   }
 
   const botramGroupMembership = await prisma.botramGroupMember.findFirst({
-    where: { customerId,  botramGroupId, status: 'ORDERING' },
+    where: { customerId, botramGroupId, status: 'ORDERING' },
     include: {
       botramGroup: {
         include: {
@@ -286,7 +286,7 @@ const updateQtyOfBotramCartItem = async (
       throw new NotFound('Menu cart item is not found.');
     }
     if (foundBotramCustomMenuCartItem.botramGroupMember.customerId !== customerId) {
-      throw new Unauthorized('Member is not found.');
+      throw new Unauthorized('Membership is not found.');
     }
     let isAvailableToAddMore = true;
     foundBotramCustomMenuCartItem.customMenu.pickedCustomMenuCompositions.map((pickedComposition) => {
@@ -316,21 +316,22 @@ const updateQtyOfBotramCartItem = async (
     return result;
   }
   if (foundBotramMenuCartItem.botramGroupMember.customerId !== customerId) {
-    throw new Unauthorized('Member is not found.');
+    throw new Unauthorized('Membership is not found.');
   }
 
-  if (foundBotramMenuCartItem.quantity +  body.quantity > foundBotramMenuCartItem.menu.stock) {
+  if (foundBotramMenuCartItem.quantity + body.quantity > foundBotramMenuCartItem.menu.stock) {
     throw new BadRequest('Item is run out of stock. Please try again later.');
   }
 
   let isAvailableToAddMore = true;
-  if (foundBotramMenuCartItem.quantity +  body.quantity === foundBotramMenuCartItem.menu.stock) {
+  if (foundBotramMenuCartItem.quantity + body.quantity === foundBotramMenuCartItem.menu.stock) {
     isAvailableToAddMore = false;
   }
   const updatedQty = await prisma.botramGroupMenuCart.update({
     where: {
       id: foundBotramMenuCartItem.id,
-      botramGroupMemberId: foundBotramMenuCartItem.botramGroupMemberId },
+      botramGroupMemberId: foundBotramMenuCartItem.botramGroupMemberId
+    },
     data: { quantity: body.quantity },
   });
 
@@ -370,7 +371,7 @@ const deleteBotramCartItem = async (
     }
 
     if (foundBotramCustomMenuCartItem.botramGroupMember.customerId !== customerId) {
-      throw new Unauthorized('Member is not found.');
+      throw new Unauthorized('Membership is not found.');
     }
 
     if (foundBotramCustomMenuCartItem.botramCustomMenuCartSpicyLevel) {
@@ -388,7 +389,7 @@ const deleteBotramCartItem = async (
   }
 
   if (foundBotramMenuCartItem.botramGroupMember.customerId !== customerId) {
-    throw new Unauthorized('Member is not found.');
+    throw new Unauthorized('Membership is not found.');
   }
 
   if (foundBotramMenuCartItem.botramMenuCartSpicyLevel) {

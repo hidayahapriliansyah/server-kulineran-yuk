@@ -20,7 +20,7 @@ const signupForm = async (
 
     res
       .status(StatusCodes.CREATED)
-      .json(new SuccessAPIResponse('Signup successfully', {
+      .json(new SuccessAPIResponse('Signup successfully.', {
         userId: result,
       }));
   } catch (error: any) {
@@ -48,7 +48,7 @@ const signInUpOAuth = async (
       userType: 'resto',
     });
 
-    res.status(StatusCodes.OK).json(new SuccessAPIResponse('Signin Successfully', {
+    res.status(StatusCodes.OK).json(new SuccessAPIResponse('Signin Successfully.', {
       userId: restoIdToken,
       token: restoRefreshToken,
     }));
@@ -79,9 +79,9 @@ const signinForm = async (
 
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Signin successfully', {
+      .json(new SuccessAPIResponse('Signin successfully.', {
         userId: restoIdToken,
-        token: restoIdToken,
+        token: restoRefreshToken,
       }));
   } catch (error: any) {
     next(error);

@@ -41,5 +41,10 @@ customerBotramRouter.put(
   isGroupBotramAdmin,
   botramController.updateGroupBotramStatusToAllReadyOrder,
 );
+customerBotramRouter.post(
+  '/:botramId/orders',
+  isGroupBotramMember,
+  botramController.createBotramMemberOrder,
+);
 
 export default customerBotramRouter;

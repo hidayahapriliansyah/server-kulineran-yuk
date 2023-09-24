@@ -8,12 +8,12 @@ const isGroupBotramMember = async (
   req: Request,
   res: Response,
   next: NextFunction,
-): Promise<void | Error > => {
+): Promise<void | Error> => {
   const { id: customerId } = req.user as Pick<Customer, 'id' | 'email'>;
   try {
     const { botramId } = req.params;
     if (!botramId) {
-      throw new BadRequest('Invalid request. botramId param is missing.');
+      throw new BadRequest('botramId param is missing.');
     }
 
     const isGroupBotramMember = await prisma.botramGroupMember.findFirst({

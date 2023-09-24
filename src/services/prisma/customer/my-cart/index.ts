@@ -54,7 +54,7 @@ const addMenuToMyCart = async (
       },
     });
     if (!foundCustomMenu) {
-      throw new NotFound('Menu is not found.');
+      throw new NotFound('Custom Menu is not found.');
     }
     foundCustomMenu.pickedCustomMenuCompositions.map((pickedComposition) => {
       const compareStock = pickedComposition.qty * body.quantity;
@@ -113,8 +113,8 @@ const addMenuToMyCart = async (
 
 const getItemsByRestaurant = async (
   req: Request,
-): 
-Promise<DTO.GetItemsByRestaurantResponse | Error> => {
+):
+  Promise<DTO.GetItemsByRestaurantResponse | Error> => {
   const { id: customerId } = req.user as Pick<Customer, 'id' | 'email'>;
   const { restaurantId } = req.params;
   if (!restaurantId) {
@@ -263,12 +263,12 @@ const updateQtyOfMyCartItem = async (
     return result;
   }
 
-  if (foundMenuCartItem.quantity +  body.quantity > foundMenuCartItem.menu.stock) {
+  if (foundMenuCartItem.quantity + body.quantity > foundMenuCartItem.menu.stock) {
     throw new BadRequest('Item is run out of stock. Please try again later.');
   }
 
   let isAvailableToAddMore = true;
-  if (foundMenuCartItem.quantity +  body.quantity === foundMenuCartItem.menu.stock) {
+  if (foundMenuCartItem.quantity + body.quantity === foundMenuCartItem.menu.stock) {
     isAvailableToAddMore = false;
   }
   const updatedQty = await prisma.menuCart.update({

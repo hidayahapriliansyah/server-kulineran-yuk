@@ -159,7 +159,7 @@ const getOrderList = async (
   const { id: customerId } = req.user as Pick<Customer, 'id' | 'email'>;
 
   const orders = await prisma.order.findMany({
-    where: { customerId, status: { not: 'ACCEPTED_BY_CUSTOMER'} },
+    where: { customerId, status: { not: 'ACCEPTED_BY_CUSTOMER' } },
     include: {
       restaurant: {
         select: {

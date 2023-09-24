@@ -13,7 +13,7 @@ const isGroupBotramAdmin = async (
   try {
     const { botramId } = req.params;
     if (!botramId) {
-      throw new BadRequest('Invalid request. botramId param is missing.');
+      throw new BadRequest('botramId param is missing.');
     }
 
     const isGroupBotramAdmin = await prisma.botramGroup.findUnique({

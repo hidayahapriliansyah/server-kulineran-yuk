@@ -94,7 +94,7 @@ const getAllRestaurantMenu = async (
   let { limit = '10', page = '1', isActive }: {
     limit?: string | number;
     page?: string | number;
-    isActive?: string | undefined
+    isActive?: string | undefined;
   } = req.query;
   const numberedLimit = Number(limit);
   const numberedPage = Number(page);
@@ -151,10 +151,6 @@ const createRestaurantMenu = async (
     DTO.restaurantMenuBodySchema.parse(req.body);
 
   const slug = slugify(name + `-${nanoid(10)}`);
-  const imageList = convertImageGallery({
-    arrayOfImageUrl: body.images,
-    maxImage: 5,
-  });
 
   const etalaseExist = await prisma.etalase.findUnique({
     where: { id: body.etalaseId },
@@ -192,7 +188,6 @@ const createRestaurantMenu = async (
 
   const result = cretaedMenu.id;
   return result;
-
 };
 
 const getRestaurantMenuBySlug = async (
@@ -280,17 +275,19 @@ const updateRestaurantMenu = async (
         data: { maxSpicy: body.maxSpicy },
       });
     } else {
-      await prisma.menuSpicyLevel.create({ data: {
-        menuId: updatedMenu.id,
-        maxSpicy: body.maxSpicy,
-      }});
+      await prisma.menuSpicyLevel.create({
+        data: {
+          menuId: updatedMenu.id,
+          maxSpicy: body.maxSpicy,
+        }
+      });
     }
   } else {
     if (menuSpicyLevelExist) {
-      await prisma.menuSpicyLevel.delete({ where: { menuId }});
+      await prisma.menuSpicyLevel.delete({ where: { menuId } });
     }
   }
-  
+
   const result = updatedMenu.id;
   return result;
 };
@@ -310,7 +307,7 @@ const deleteRestaurantMenu = async (
   if (!deletedMenu) {
     throw new NotFound('Menu Id not found. Please input valid id menu.');
   }
-  const menuSpicyLevelExist = await prisma.menuSpicyLevel.findUnique({ 
+  const menuSpicyLevelExist = await prisma.menuSpicyLevel.findUnique({
     where: { menuId: deletedMenu.id },
   });
   if (menuSpicyLevelExist) {

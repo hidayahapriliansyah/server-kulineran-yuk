@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import * as DTO from './types';
-import { BotramGroup, BotramGroupMember, BotramGroupMemberStatus, BotramGroupOrderStatus, Customer } from '@prisma/client';
+import { BotramGroup, BotramGroupMember, BotramGroupMemberOrder, BotramGroupMemberStatus, BotramGroupOrderStatus, Customer } from '@prisma/client';
 import prisma from '../../../../db';
 import { BadRequest, NotFound, Unauthorized } from '../../../../errors';
 
@@ -48,7 +48,7 @@ const getAllCustomerBotramGroup = async (
       },
       status: joinedBotramGroup.botramGroup.status,
       memberStatus: joinedBotramGroup.botramGroup.creatorCustomerId.toString()
-          === customerId.toString() ? 'admin' : 'member',
+        === customerId.toString() ? 'admin' : 'member',
     }));
 
   return result;
@@ -83,7 +83,7 @@ const createBotramGroup = async (
     DTO.createBotramGroupBodySchema.parse(req.body);
 
   const customerIsJoiningActiveBotramGroup = await prisma.botramGroupMember.findFirst({
-    where: { customerId, status: 'ORDERING'},
+    where: { customerId, status: 'ORDERING' },
   });
   if (customerIsJoiningActiveBotramGroup) {
     throw new Unauthorized('Cannot create botram group. Customer is ordering in active botram group.');
@@ -184,7 +184,7 @@ const getSpecificCustomerBotramGroup = async (
     where: {
       botramGroupId: botramId,
       OR: [
-        { status: 'ORDERING'},
+        { status: 'ORDERING' },
         { status: 'ORDER_READY' },
       ],
     },
@@ -210,9 +210,9 @@ const getSpecificCustomerBotramGroup = async (
   const customerIsMember = await prisma.botramGroupMember.findFirst({
     where: {
       customerId,
-      botramGroupId: botramId, 
+      botramGroupId: botramId,
       OR: [
-        { status: 'ORDERING'},
+        { status: 'ORDERING' },
         { status: 'ORDER_READY' },
       ],
     },
@@ -241,7 +241,7 @@ const joinOpenMemberBotramGroup = async (
     throw new BadRequest('botramId param is missing.');
   }
   const customerIsJoiningActiveBotramGroup = await prisma.botramGroupMember.findFirst({
-    where: { customerId, status: 'ORDERING'},
+    where: { customerId, status: 'ORDERING' },
   });
   if (customerIsJoiningActiveBotramGroup) {
     throw new Unauthorized('Cannot join botram group. Customer is ordering in active botram group.');
@@ -289,7 +289,7 @@ const exitFromBotramGroupForMemberOnly = async (
       id: foundBotramGroupMember?.id,
       botramGroupId: botramId,
       customerId,
-      OR: [ { status: 'ORDERING' }, { status: 'ORDER_READY' } ],
+      OR: [{ status: 'ORDERING' }, { status: 'ORDER_READY' }],
     },
     data: { status: 'EXIT' },
   });
@@ -552,7 +552,7 @@ const kickMemberBotramGroupByAdmin = async (
   }
   const kickedMember = await prisma.botramGroupMember.update({
     where: { id: foundBotramGroupMember.id, customerId: memberId, botramGroupId: botramId },
-    data: { status: 'EXPELLED'},
+    data: { status: 'EXPELLED' },
   });
   await prisma.customerNotification.create({
     data: {
@@ -587,14 +587,14 @@ const updateMemberStatusPaymentByAdmin = async (
     }
   });
   if (!foundMemberToBeUpdated) {
-    throw new NotFound('Member of botram group is not found.');
+    throw new NotFound('Member is not found.');
   }
 
   const memberOrderInBotramGroup = await prisma.botramGroupMemberOrder.findUnique({
     where: { botramGroupMemberId: foundMemberToBeUpdated.id },
   });
   if (!memberOrderInBotramGroup) {
-    throw new NotFound('Member order to update is not found.');
+    throw new NotFound('Member order is not found.');
   }
   await prisma.order.update({
     where: {
@@ -625,7 +625,7 @@ const updateGroupBotramStatusToAllReadyOrder = async (
   const { id: customerId } = req.user as Pick<Customer, 'id' | 'email'>;
   const { botramId } = req.params;
   if (!botramId) {
-    throw new BadRequest('Invalid request. botramId param is missing.');
+    throw new BadRequest('botramId param is missing.');
   }
 
   const foundBotramGroup = await prisma.botramGroup.findUnique({
@@ -640,18 +640,18 @@ const updateGroupBotramStatusToAllReadyOrder = async (
   }
 
   foundBotramGroup.members
-  .filter((member) => member.status === 'ORDERING')
-  .map(async (member) => {
-    await prisma.customerNotification.create({
-      data: {
-        customerId: member.customerId,
-        title: 'Kamu Belum Pesan Apa-Apa',
-        description: `Kamu belum pesan apa-apa di grup botram ${foundBotramGroup.name} sedangkan anggota yang lain telah sepakat untuk memesan. Kamu secara otomatis bukan merupakan anggota dari grup botram ${foundBotramGroup.name}.`,
-      },
+    .filter((member) => member.status === 'ORDERING')
+    .map(async (member) => {
+      await prisma.customerNotification.create({
+        data: {
+          customerId: member.customerId,
+          title: 'Kamu Belum Pesan Apa-Apa',
+          description: `Kamu belum pesan apa-apa di grup botram ${foundBotramGroup.name} sedangkan anggota yang lain telah sepakat untuk memesan. Kamu secara otomatis bukan merupakan anggota dari grup botram ${foundBotramGroup.name}.`,
+        },
+      });
     });
-  });
   await prisma.botramGroupMember.updateMany({
-    where: { botramGroupId: foundBotramGroup.id, status: 'ORDERING'},
+    where: { botramGroupId: foundBotramGroup.id, status: 'ORDERING' },
     data: { status: 'EXPELLED' },
   });
   await prisma.botramGroup.update({
@@ -678,6 +678,179 @@ const updateGroupBotramStatusToAllReadyOrder = async (
   return foundBotramGroup.id;
 };
 
+const createBotramMemberOrder = async (
+  req: Request
+): Promise<BotramGroupMemberOrder['id'] | Error> => {
+  const { id: customerId } = req.user as Pick<Customer, 'id' | 'email'>;
+  const { botramId } = req.params;
+  if (!botramId) {
+    throw new BadRequest('botramId param is missing.');
+  }
+
+  // cek dulu botram sama membershipnya
+  // udah pake middleware
+  // langsung foud membership wae
+
+  const foundMembership = await prisma.botramGroupMember.findFirst({
+    where: {
+      botramGroupId: botramId,
+      customerId,
+    },
+    include: {
+      botramGroup: {
+        include: {
+          restaurant: true,
+        },
+      },
+    },
+  });
+
+  const body: DTO.CreateBotramMemberOrderBodyRequest =
+    DTO.createBotramMemberOrderBodyRequestSchema.parse(req.body);
+
+  return await prisma.$transaction(async (tx) => {
+    let orderedMenuList: DTO.OrderedMenuPayload[] = [];
+    if (body.orderedItemList.menu.length > 0) {
+      body.orderedItemList.menu.map(async (selectedMenu) => {
+        const foundMenu = await tx.menu.findUnique({
+          where: { id: selectedMenu.id },
+        });
+        if (!foundMenu) {
+          throw new NotFound('Menu is not found.');
+        }
+        if (selectedMenu.quantity > foundMenu.stock) {
+          throw new BadRequest('Item is run out of stock. Please try again later.');
+        }
+        const orderedMenuPayload: DTO.OrderedMenuPayload = {
+          orderedMenu: {
+            menuId: foundMenu.id,
+            menuName: foundMenu.name,
+            menuPrice: foundMenu.price,
+            isDibungkus: selectedMenu.isDibungkus,
+            quantity: selectedMenu.quantity,
+            totalPrice: foundMenu.price * selectedMenu.quantity,
+          },
+          orderedMenuSpicyLevel: selectedMenu.spicyLevel ?? null,
+        };
+        orderedMenuList.push(orderedMenuPayload);
+      });
+    }
+
+    let orderedCustomMenuList: DTO.OrderedCustomMenuPayload[] = [];
+    if (body.orderedItemList.customMenu.length > 0) {
+      body.orderedItemList.customMenu.map(async (selectedCustomMenu) => {
+        const foundCustomMenu = await tx.customMenu.findUnique({
+          where: { id: selectedCustomMenu.id },
+          include: {
+            pickedCustomMenuCompositions: {
+              include: {
+                customMenuComposition: true,
+              },
+            },
+          },
+        });
+        if (!foundCustomMenu) {
+          throw new NotFound('Custom menu is not found.');
+        }
+        foundCustomMenu.pickedCustomMenuCompositions.map((pickedComposition) => {
+          const compareStock = pickedComposition.qty * selectedCustomMenu.quantity;
+          if (compareStock > pickedComposition.customMenuComposition.stock) {
+            throw new BadRequest('Item is run out of stock. Please try again later.');
+          }
+        });
+
+        const orderedCustomMenuPayload: DTO.OrderedCustomMenuPayload = {
+          orderedCustomMenu: {
+            customMenuId: foundCustomMenu.id,
+            customMenuName: foundCustomMenu.name,
+            customMenuPrice: foundCustomMenu.price,
+            isDibungkus: selectedCustomMenu.isDibungkus,
+            quantity: selectedCustomMenu.quantity,
+            totalPrice: (selectedCustomMenu.quantity * foundCustomMenu.price),
+          },
+          orderedCustomMenuSpicyLevel: selectedCustomMenu.spicyLevel ?? null,
+        };
+        orderedCustomMenuList.push(orderedCustomMenuPayload);
+      });
+    }
+
+    let totalOrder = 0;
+    orderedMenuList.map((item) => {
+      totalOrder += item.orderedMenu.totalPrice;
+    });
+    orderedCustomMenuList.map((item) => {
+      totalOrder += item.orderedCustomMenu.totalPrice;
+    });
+
+    const createdOrder = await tx.order.create({
+      data: {
+        customerId,
+        restaurantId: foundMembership!.botramGroup.restaurantId,
+        total: totalOrder,
+      },
+    });
+    if (orderedMenuList.length > 0) {
+      orderedMenuList.map(async (item) => {
+        const createdOrderedMenu = await tx.orderedMenu.create({
+          data: {
+            orderId: createdOrder.id,
+            menuId: item.orderedMenu.menuId,
+            menuName: item.orderedMenu.menuName,
+            menuPrice: item.orderedMenu.menuPrice,
+            quantity: item.orderedMenu.quantity,
+            totalPrice: item.orderedMenu.totalPrice,
+            isDibungkus: item.orderedMenu.isDibungkus,
+          },
+        });
+        if (item.orderedMenuSpicyLevel) {
+          await tx.orderedMenuSpicyLevel.create({
+            data: {
+              orderedMenuId: createdOrderedMenu.id,
+              level: item.orderedMenuSpicyLevel,
+            }
+          });
+        }
+      });
+    }
+    if (orderedCustomMenuList.length > 0) {
+      orderedCustomMenuList.map(async (item) => {
+        const createdOrderedCustomMenu = await tx.orderedCustomMenu.create({
+          data: {
+            orderId: createdOrder.id,
+            customMenuId: item.orderedCustomMenu.customMenuId,
+            customMenuName: item.orderedCustomMenu.customMenuName,
+            customMenuPrice: item.orderedCustomMenu.customMenuPrice,
+            isDibungkus: item.orderedCustomMenu.isDibungkus,
+            quantity: item.orderedCustomMenu.quantity,
+            totalPrice: item.orderedCustomMenu.totalPrice,
+          },
+        });
+
+        if (item.orderedCustomMenuSpicyLevel) {
+          await tx.orderedCustomMenuSpicyLevel.create({
+            data: {
+              orderedCustomMenuId: createdOrderedCustomMenu.id,
+              level: item.orderedCustomMenuSpicyLevel,
+            },
+          });
+        }
+      });
+    }
+
+    const createdBotramMemberOrder = await tx.botramGroupMemberOrder.create({
+      data: {
+        botramGroupMemberId: foundMembership!.id,
+        orderId: createdOrder.id,
+      }
+    });
+    await tx.botramGroupMember.update({
+      where: { id: foundMembership!.id },
+      data: { status: 'ORDER_READY' },
+    });
+    return createdBotramMemberOrder.id;
+  });
+};
+
 export {
   getAllCustomerBotramGroup,
   findCustomerToBeAddedToBotramGroup,
@@ -689,4 +862,5 @@ export {
   kickMemberBotramGroupByAdmin,
   updateMemberStatusPaymentByAdmin,
   updateGroupBotramStatusToAllReadyOrder,
+  createBotramMemberOrder,
 };

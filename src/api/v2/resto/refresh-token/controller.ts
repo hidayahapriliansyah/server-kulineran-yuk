@@ -23,7 +23,7 @@ const validateRefreshToken = async (
 
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Refresh token is valid', {
+      .json(new SuccessAPIResponse('Refresh token is valid.', {
         userId: restoIdToken,
       }));
   } catch (error: any) {

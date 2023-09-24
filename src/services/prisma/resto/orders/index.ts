@@ -49,7 +49,7 @@ const getCountOrder = async (
   const processedByRestoOrder = orders.filter((order) => order.status === 'PROCESSED_BY_RESTO');
   const doneByRestoOrder = orders.filter((order) => order.status === 'DONE_BY_RESTO');
   const canceledByRestoOrder = orders.filter((order) => order.status === 'CANCEL_BY_RESTO');
-  
+
   const result: DTO.GetCountOrderResponse = {
     accepted: acceptedByRestoOrder.length,
     processed: processedByRestoOrder.length,
@@ -296,7 +296,7 @@ const getAllOrders = async (
   const result: DTO.GetAllOrderResponse = {
     orders: ordersMapped,
     pages: totalPages,
-    total: countOrders, 
+    total: countOrders,
   };
   return result;
 };
@@ -406,19 +406,19 @@ const findOrderDetailByCustomerUsername = async (
     }
 
     const botramMemberOrderMapped: DTO.BotramGroupOrderDetailResponse['memberOrder'] =
-    foundBotramGroup.members
-      .filter((member) => member.status === 'ORDER_READY')
-      .map((member) => ({
-        member: {
-          username: member.customer.username,
-          name: member.customer.name,
-        },
-        order: {
-          isPaid: member.memberOrder!.order.isPaid,
-          orderedMenu: orderedMenusMapping(member.memberOrder?.order.orderedMenus ?? []),
-          orderedCustomMenu: orderedCustomMenusMapping(member.memberOrder?.order.orderedCustomMenus ?? []),
-        },
-      }));
+      foundBotramGroup.members
+        .filter((member) => member.status === 'ORDER_READY')
+        .map((member) => ({
+          member: {
+            username: member.customer.username,
+            name: member.customer.name,
+          },
+          order: {
+            isPaid: member.memberOrder!.order.isPaid,
+            orderedMenu: orderedMenusMapping(member.memberOrder?.order.orderedMenus ?? []),
+            orderedCustomMenu: orderedCustomMenusMapping(member.memberOrder?.order.orderedCustomMenus ?? []),
+          },
+        }));
 
     const result: DTO.BotramGroupOrderDetailResponse = {
       id: foundBotramGroup.order!.id,
@@ -457,7 +457,7 @@ const findOrderDetailByCustomerUsername = async (
 
 const getDetailOrderById = async (
   req: Request
-):Promise<DTO.GetDetailOrderResponse | Error> => {
+): Promise<DTO.GetDetailOrderResponse | Error> => {
   const { id: restaurantId } = req.user as Pick<Restaurant, 'id' | 'email'>;
   const { orderId } = req.params;
 
@@ -538,18 +538,18 @@ const getDetailOrderById = async (
 
     const botramMemberOrderMapped: DTO.BotramGroupOrderDetailResponse['memberOrder'] =
       foundBotramOrder.botramGroup.members
-      .filter((member) => member.status === 'ORDER_READY')
-      .map((member) => ({
-        member: {
-          username: member.customer.username,
-          name: member.customer.name,
-        },
-        order: {
-          isPaid: member.memberOrder!.order.isPaid,
-          orderedMenu: orderedMenusMapping(member.memberOrder?.order.orderedMenus ?? []),
-          orderedCustomMenu: orderedCustomMenusMapping(member.memberOrder?.order.orderedCustomMenus ?? []),
-        },
-      }));
+        .filter((member) => member.status === 'ORDER_READY')
+        .map((member) => ({
+          member: {
+            username: member.customer.username,
+            name: member.customer.name,
+          },
+          order: {
+            isPaid: member.memberOrder!.order.isPaid,
+            orderedMenu: orderedMenusMapping(member.memberOrder?.order.orderedMenus ?? []),
+            orderedCustomMenu: orderedCustomMenusMapping(member.memberOrder?.order.orderedCustomMenus ?? []),
+          },
+        }));
 
     const result: DTO.BotramGroupOrderDetailResponse = {
       id: foundBotramOrder.id,
@@ -655,13 +655,13 @@ const updateCustomerOrderStatus = async (
         let orderedMenuTotalPrice = orderedMenu.totalPrice;
         if (orderedMenu.menuPrice !== orderedMenu.menu.price) {
           orderedMenuTotalPrice = orderedMenu.quantity * orderedMenu.menu.price,
-          await prisma.orderedMenu.update({
-            where: { id: orderedMenu.id },
-            data: {
-              menuPrice: orderedMenu.menu.price,
-              totalPrice: orderedMenu.quantity * orderedMenu.menu.price,
-            },
-          });
+            await prisma.orderedMenu.update({
+              where: { id: orderedMenu.id },
+              data: {
+                menuPrice: orderedMenu.menu.price,
+                totalPrice: orderedMenu.quantity * orderedMenu.menu.price,
+              },
+            });
         }
         calculatedTotalOrder += orderedMenuTotalPrice;
       });
@@ -672,7 +672,7 @@ const updateCustomerOrderStatus = async (
         let orderedCustomMenuPrice = orderedCustomMenu.customMenuPrice;
         let currentOrderedCustomMenuPrice = 0;
         orderedCustomMenu.customMenu.pickedCustomMenuCompositions.map((pickCustMenu) => {
-          const isStockAvailable = pickCustMenu.qty > pickCustMenu.customMenuComposition.stock; 
+          const isStockAvailable = pickCustMenu.qty > pickCustMenu.customMenuComposition.stock;
           if (!isStockAvailable) {
             throw new BadRequest('Custom Menu Composition is run out of stock. Please try again later.');
           }
@@ -723,7 +723,7 @@ const updateCustomerOrderStatus = async (
   if (body.status === 'PROCESSED') {
     if (foundCustomerOrder.status !== 'ACCEPTED_BY_RESTO') {
       throw new BadRequest(
-        'status body payload is invalid. PROCESSED is allowed if status order is ACCEPTED_BY_RESTO'
+        'status body payload is invalid. PROCESSED is allowed if status order is ACCEPTED_BY_RESTO.'
       );
     }
     orderUpdateInput = { ...orderUpdateInput, status: 'PROCESSED_BY_RESTO' };
@@ -740,7 +740,7 @@ const updateCustomerOrderStatus = async (
   if (body.status === 'DONE') {
     if (foundCustomerOrder.status !== 'PROCESSED_BY_RESTO') {
       throw new BadRequest(
-        'status body payload is invalid. DONE is allowed if status order is PROCESSED_BY_RESTO'
+        'status body payload is invalid. DONE is allowed if status order is PROCESSED_BY_RESTO.'
       );
     }
     orderUpdateInput = { ...orderUpdateInput, status: 'DONE_BY_RESTO' };
@@ -757,7 +757,7 @@ const updateCustomerOrderStatus = async (
   if (body.status === 'CANCEL') {
     if (foundCustomerOrder.status !== 'PROCESSED_BY_RESTO') {
       throw new BadRequest(
-        'status body payload is invalid. CANCEL is allowed if status order is PROCESSED_BY_RESTO'
+        'status body payload is invalid. CANCEL is allowed if status order is PROCESSED_BY_RESTO.'
       );
     }
     orderUpdateInput = { ...orderUpdateInput, status: 'CANCEL_BY_RESTO' };
@@ -807,7 +807,7 @@ const updateCustomerOrderPaymentStatus = async (
 
   const updatedCustomerOrderPaymentStatus = await prisma.order.update({
     where: { id: foundCustomerOrder.id },
-    data: { isPaid: true},
+    data: { isPaid: true },
   });
   await prisma.customerNotification.create({
     data: {
@@ -917,13 +917,13 @@ const updateBotramOrderStatus = async (
             let orderedMenuTotalPrice = orderedMenu.totalPrice;
             if (orderedMenu.menuPrice !== orderedMenu.menu.price) {
               orderedMenuTotalPrice = orderedMenu.quantity * orderedMenu.menu.price,
-              await prisma.orderedMenu.update({
-                where: { id: orderedMenu.id },
-                data: {
-                  menuPrice: orderedMenu.menu.price,
-                  totalPrice: orderedMenu.quantity * orderedMenu.menu.price,
-                },
-              });
+                await prisma.orderedMenu.update({
+                  where: { id: orderedMenu.id },
+                  data: {
+                    menuPrice: orderedMenu.menu.price,
+                    totalPrice: orderedMenu.quantity * orderedMenu.menu.price,
+                  },
+                });
             }
             calculatedTotalMemberBotramOrder += orderedMenuTotalPrice;
           });
@@ -934,7 +934,7 @@ const updateBotramOrderStatus = async (
             let orderedCustomMenuPrice = orderedCustomMenu.customMenuPrice;
             let currentOrderedCustomMenuPrice = 0;
             orderedCustomMenu.customMenu.pickedCustomMenuCompositions.map((pickCustMenu) => {
-              const isStockAvailable = pickCustMenu.qty > pickCustMenu.customMenuComposition.stock; 
+              const isStockAvailable = pickCustMenu.qty > pickCustMenu.customMenuComposition.stock;
               if (!isStockAvailable) {
                 throw new BadRequest('Custom Menu Composition is run out of stock. Please try again later.');
               }
@@ -1074,7 +1074,7 @@ const updateBotramOrderStatus = async (
     };
   }
   await prisma.order.updateMany({
-    where: { id: { in: updatedStatusOrderIdList }},
+    where: { id: { in: updatedStatusOrderIdList } },
     data: { ...updateManyMemberOrderInput },
   });
 

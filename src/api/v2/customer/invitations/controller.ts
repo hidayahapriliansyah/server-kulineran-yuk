@@ -44,7 +44,7 @@ const acceptInvitationBotramGroup = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const result = 
+    const result =
       await invitationService.acceptInvitationBotramGroup(req) as DTO.InvitationBotramGroupResponse['id'];
 
     res
@@ -68,7 +68,7 @@ const rejectInvitationsBotramGroup = async (
 
     res
       .status(StatusCodes.OK)
-      .json(new SuccessAPIResponse('Reject invitation successfully', {
+      .json(new SuccessAPIResponse('Reject invitation successfully.', {
         invitationId: result,
       }));
   } catch (error: any) {

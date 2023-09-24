@@ -22,9 +22,6 @@ const isEmailRestoVerified = async (
 
     next();
   } catch (error: any) {
-    if (error.name === 'CastError') {
-      error = new Unauthenticated('Access denied. Please authenticate to access this resource.');
-    }
     next(error);
   }
 };

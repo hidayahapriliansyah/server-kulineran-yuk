@@ -14,7 +14,7 @@ const getProvinceController = async (
     res
       .status(StatusCodes.OK)
       .json(
-        new SuccessAPIResponse('Getting provinces data successfully', result)
+        new SuccessAPIResponse('Getting provinces data successfully.', result)
       );
   } catch (error: any) {
     next(error)

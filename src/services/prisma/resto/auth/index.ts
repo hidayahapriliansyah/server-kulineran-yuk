@@ -45,7 +45,7 @@ const signinForm = async (
 ): Promise<Restaurant | Error> => {
   const { email, password } = req.body as DTO.SigninFormBody;
   if (!email || !password) {
-    throw new BadRequest('email or password property is missing.');
+    throw new BadRequest('email or password body payload is missing.');
   }
   const foundRestaurant = await prisma.restaurant.findFirst({
     where: {

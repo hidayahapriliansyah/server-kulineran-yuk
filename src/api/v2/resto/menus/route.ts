@@ -8,7 +8,7 @@ import * as menuController from './controller';
 const restoMenusRouter = Router();
 
 // middleware
-restoMenusRouter.use(authenticationAdminRestoAccount, minimumSetupAccount, isEmailRestoVerified,); 
+restoMenusRouter.use(authenticationAdminRestoAccount, minimumSetupAccount, isEmailRestoVerified,);
 
 restoMenusRouter.get('/etalase', menuController.getAllEtalase);
 restoMenusRouter.post('/etalase', menuController.createEtalase);
@@ -18,7 +18,7 @@ restoMenusRouter.delete('/etalase/:etalaseId', menuController.deleteEtalase);
 restoMenusRouter.get('/', menuController.getAllRestaurantMenu);
 restoMenusRouter.post('/', menuController.createRestaurantMenu);
 restoMenusRouter.get('/:slug', menuController.getRestaurantMenuBySlug);
-restoMenusRouter.put('/:menuId', menuController.updateRestaurantMenu); 
-restoMenusRouter.delete('/:menuId', menuController.deleteRestaurantMenu); 
+restoMenusRouter.put('/:menuId', menuController.updateRestaurantMenu);
+restoMenusRouter.delete('/:menuId', menuController.deleteRestaurantMenu);
 
 export default restoMenusRouter;
