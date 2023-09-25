@@ -21,10 +21,16 @@ type PurchaseBotramItem = PurchaseNotBotramItem & {
   }
 };
 
-type GetPurchaseResponse = (PurchaseNotBotramItem | PurchaseBotramItem)[] | [];
+type PurchasedOrderResponse = (PurchaseNotBotramItem | PurchaseBotramItem)[] | [];
+type GetPurchaseResponse = {
+  orders: PurchasedOrderResponse,
+  pages: number,
+  total: number,
+}
 
 export {
   PurchaseNotBotramItem,
   PurchaseBotramItem,
+  PurchasedOrderResponse,
   GetPurchaseResponse,
 };

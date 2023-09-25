@@ -65,7 +65,12 @@ const getPurchase = async (
     skip: numberedLimit * (numberedPage - 1),
   });
 
-  const result: DTO.GetPurchaseResponse = purchases.map((purchase) => {
+  const countPurchasedOrder = await prisma.order.count({
+    where: { customerId, ...filter, status: 'ACCEPTED_BY_CUSTOMER' },
+  });
+  const totalPages = Math.ceil(countPurchasedOrder / numberedLimit);
+
+  const orders: DTO.PurchasedOrderResponse = purchases.map((purchase) => {
     const purchaseItem: DTO.PurchaseNotBotramItem = {
       id: purchase.id,
       createdAt: purchase.createdAt,
@@ -87,6 +92,13 @@ const getPurchase = async (
     }
     return purchaseItem;
   });
+
+  const result: DTO.GetPurchaseResponse = {
+    orders,
+    pages: totalPages,
+    total: countPurchasedOrder,
+  };
+
   return result;
 };
 

@@ -694,10 +694,6 @@ const createBotramMemberOrder = async (
     throw new BadRequest('botramId param is missing.');
   }
 
-  // cek dulu botram sama membershipnya
-  // udah pake middleware
-  // langsung foud membership wae
-
   const foundMembership = await prisma.botramGroupMember.findFirst({
     where: {
       botramGroupId: botramId,
@@ -711,6 +707,10 @@ const createBotramMemberOrder = async (
       },
     },
   });
+
+  if (foundMembership!.status === 'ORDER_READY') {
+    throw new BadRequest('Member botram sudah memiliki pesanan.');
+  }
 
   const body: DTO.CreateBotramMemberOrderBodyRequest =
     DTO.createBotramMemberOrderBodyRequestSchema.parse(req.body);
